@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anchor — a regulation gym for the still-hoping</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#FFF8EC;
+    --panel:#FFFFFF;
+    --ink:#211B3D;
+    --electric:#2E6FF2;
+    --turquoise:#18C7B8;
+    --coral:#FF6F59;
+    --sunshine:#FFC93C;
+    --muted:#7A7390;
+    --line:#EDE3CE;
+    --display: 'Fraunces', 'Georgia', serif;
+    --body: 'Inter', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:32px 20px 80px;}
+
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--electric); margin-bottom:10px; font-weight:600;
+  }
+  h1{
+    font-family:var(--display); font-weight:600; font-size:clamp(28px,6vw,40px);
+    line-height:1.1; color:var(--ink);
+  }
+  .sub{color:var(--muted); font-size:15px; max-width:480px; margin-top:10px; line-height:1.5;}
+
+  nav{display:flex; gap:6px; margin:28px 0 24px; border-bottom:2px solid var(--line); padding-bottom:0;}
+  nav button{
+    background:none; border:none; color:var(--muted); font-family:var(--body);
+    font-size:14px; font-weight:600; padding:10px 4px; cursor:pointer;
+    border-bottom:3px solid transparent; margin-right:18px; transition:color .2s, border-color .2s;
+  }
+  nav button.active{color:var(--ink); border-bottom-color:var(--coral);}
+  nav button:focus-visible{outline:2px solid var(--electric); outline-offset:2px;}
+
+  section{display:none;}
+  section.active{display:block; animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  /* Breathe */
+  .breathe-stage{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 0 24px;
+  }
+  .orb-field{position:relative; width:240px; height:240px; display:flex; align-items:center; justify-content:center;}
+  .orb{
+    width:90px; height:90px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--sky), #3C6B8C 70%);
+    box-shadow:0 0 60px rgba(124,184,222,0.35);
+    transition:transform 4s ease-in-out, box-shadow 4s ease-in-out;
+  }
+  .ring{
+    position:absolute; inset:0; border-radius:50%; border:1px solid #2A3F52;
+  }
+  .phase-label{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--sky); margin-top:24px; min-height:20px;
+  }
+  .phase-count{font-family:var(--display); font-size:34px; color:var(--sand); margin-top:6px;}
+
+  .pattern-row{display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap;}
+  .pattern-btn{
+    background:var(--midnight-2); border:1px solid #2A3343; color:var(--muted);
+    font-family:var(--mono); font-size:12px; padding:8px 14px; border-radius:20px; cursor:pointer;
+  }
+  .pattern-btn.active{border-color:var(--coral); color:var(--sand);}
+
+  .start-btn{
+    display:block; margin:28px auto 0; background:var(--coral); color:var(--midnight);
+    font-family:var(--body); font-weight:600; font-size:15px; border:none;
+    padding:13px 32px; border-radius:30px; cursor:pointer; transition:opacity .2s;
+  }
+  .start-btn:hover{opacity:0.9;}
+  .start-btn.stop{background:var(--midnight-2); color:var(--sand); border:1px solid #2A3343;}
+
+  /* Journal */
+  .field-label{
+    font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--sky); margin-bottom:8px; display:block;
+  }
+  textarea, input[type=text]{
+    width:100%; background:var(--midnight-2); border:1px solid #2A3343; border-radius:10px;
+    color:var(--sand); font-family:var(--body); font-size:15px; padding:14px;
+    resize:vertical; min-height:80px; margin-bottom:18px;
+  }
+  textarea:focus, input:focus{outline:none; border-color:var(--sky);}
+  .save-btn{
+    background:var(--sage); color:var(--midnight); border:none; font-weight:600;
+    font-family:var(--body); font-size:14px; padding:11px 24px; border-radius:24px; cursor:pointer;
+  }
+  .entries{margin-top:32px; display:flex; flex-direction:column; gap:14px;}
+  .entry{
+    background:var(--midnight-2); border-left:2px solid var(--coral); border-radius:6px;
+    padding:14px 16px;
+  }
+  .entry-date{font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:6px;}
+  .entry-row{font-size:14px; line-height:1.5; margin-bottom:4px;}
+  .entry-row b{color:var(--sky); font-weight:500;}
+  .empty-state{color:var(--muted); font-size:14px; padding:24px 0; text-align:center; font-style:italic;}
+
+  /* Plan/Share */
+  .plan-card{
+    background:var(--midnight-2); border:1px solid #2A3343; border-radius:14px;
+    padding:24px; margin-bottom:20px;
+  }
+  .plan-card h3{font-family:var(--display); font-weight:500; font-size:19px; margin-bottom:10px; color:var(--sand);}
+  .plan-card p{font-size:14px; color:var(--muted); line-height:1.6;}
+  .share-row{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
+  .share-btn{
+    flex:1; min-width:150px; display:flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:10px; padding:13px 16px; font-family:var(--body);
+    font-weight:600; font-size:14px; cursor:pointer; transition:opacity .2s;
+  }
+  .share-btn:hover{opacity:0.88;}
+  .btn-pdf{background:var(--coral); color:var(--midnight);}
+  .btn-whatsapp{background:#25D366; color:#0B1A0F;}
+  .note{font-size:12px; color:var(--muted); margin-top:14px; line-height:1.5;}
+
+  footer{margin-top:48px; border-top:1px solid #2A3343; padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Self-regulation, while you wait</div>
+    <h1>Anchor</h1>
+    <p class="sub">A gym, not a partner. Practice calming your own nervous system and naming what you need — so you show up steadier when someone real is in front of you.</p>
+  </header>
+
+  <nav>
+    <button class="tab-btn active" data-tab="breathe">Breathe</button>
+    <button class="tab-btn" data-tab="journal">Journal</button>
+    <button class="tab-btn" data-tab="plan">Plan &amp; Share</button>
+  </nav>
+
+  <!-- BREATHE -->
+  <section id="breathe" class="active">
+    <div class="pattern-row">
+      <button class="pattern-btn active" data-pattern="box">Box (4-4-4-4)</button>
+      <button class="pattern-btn" data-pattern="478">4-7-8</button>
+      <button class="pattern-btn" data-pattern="sigh">Physiological sigh</button>
+    </div>
+    <div class="breathe-stage">
+      <div class="orb-field">
+        <div class="ring" style="width:100%;height:100%;"></div>
+        <div class="ring" style="width:70%;height:70%; top:15%; left:15%;"></div>
+        <div class="orb" id="orb"></div>
+      </div>
+      <div class="phase-label" id="phaseLabel">press start when ready</div>
+      <div class="phase-count" id="phaseCount">&nbsp;</div>
+    </div>
+    <button class="start-btn" id="startBtn">Start session</button>
+  </section>
+
+  <!-- JOURNAL -->
+  <section id="journal">
+    <label class="field-label">What dysregulated you today?</label>
+    <textarea id="trigger" placeholder="e.g. saw a couple at dinner, felt a wave of 'will this ever happen for me'"></textarea>
+
+    <label class="field-label">What did you do, and did it help?</label>
+    <textarea id="response" placeholder="e.g. went for a walk, named the feeling out loud — helped some, still sat heavy"></textarea>
+
+    <label class="field-label">One thing you'd want a future partner to know about this</label>
+    <textarea id="forFuture" placeholder="e.g. I don't need fixing, I need someone to just sit with me for a minute"></textarea>
+
+    <button class="save-btn" id="saveEntry">Save entry</button>
+
+    <div class="entries" id="entryList"></div>
+  </section>
+
+  <!-- PLAN & SHARE -->
+  <section id="plan">
+    <div class="plan-card">
+      <h3>Your regulation plan</h3>
+      <p>Built from your journal entries. This turns your private reflections into language you can actually use — with a future partner, a friend, or just yourself on a hard day.</p>
+    </div>
+    <div class="share-row">
+      <button class="share-btn btn-pdf" id="downloadPdf">↓ Download as PDF</button>
+      <button class="share-btn btn-whatsapp" id="shareWhatsapp">↗ Share to WhatsApp</button>
+    </div>
+    <p class="note">The PDF downloads straight to your device — from there you can email it to yourself or save it anywhere you like. WhatsApp opens a pre-filled message you can send to yourself, a friend, or a partner. Nothing here ever leaves your browser unless you choose to send it.</p>
+  </section>
+
+  <footer>
+    Everything you write stays on this device (local storage only) — nothing is uploaded anywhere. This tool supports self-regulation skills; it isn't a substitute for therapy, and it isn't a substitute for the real connection you're working toward.
+  </footer>
+
+</div>
+
+<script>
+// ---------- TAB NAV ----------
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='plan') renderPlan();
+    if(btn.dataset.tab==='journal') renderEntries();
+  });
+});
+
+// ---------- BREATHING ----------
+const patterns = {
+  box: [{label:'inhale', secs:4, scale:1.5}, {label:'hold', secs:4, scale:1.5}, {label:'exhale', secs:4, scale:1}, {label:'hold', secs:4, scale:1}],
+  478: [{label:'inhale', secs:4, scale:1.5}, {label:'hold', secs:7, scale:1.5}, {label:'exhale', secs:8, scale:1}],
+  sigh: [{label:'inhale', secs:2, scale:1.3}, {label:'inhale again', secs:1.5, scale:1.6}, {label:'long exhale', secs:6, scale:1}]
+};
+let currentPattern = 'box';
+let breathing = false;
+let breathTimer = null;
+let stepIndex = 0;
+
+document.querySelectorAll('.pattern-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.pattern-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPattern = btn.dataset.pattern;
+    if(breathing) stopBreathing();
+  });
+});
+
+const orb = document.getElementById('orb');
+const phaseLabel = document.getElementById('phaseLabel');
+const phaseCount = document.getElementById('phaseCount');
+const startBtn = document.getElementById('startBtn');
+
+function runStep(){
+  const steps = patterns[currentPattern];
+  const step = steps[stepIndex % steps.length];
+  phaseLabel.textContent = step.label;
+  orb.style.transition = `transform ${step.secs}s ease-in-out, box-shadow ${step.secs}s ease-in-out`;
+  orb.style.transform = `scale(${step.scale})`;
+  orb.style.boxShadow = step.scale > 1.2 ? '0 0 90px rgba(124,184,222,0.55)' : '0 0 40px rgba(124,184,222,0.25)';
+
+  let remaining = Math.round(step.secs);
+  phaseCount.textContent = remaining;
+  const countInterval = setInterval(()=>{
+    remaining -= 1;
+    phaseCount.textContent = remaining > 0 ? remaining : '';
+    if(remaining <= 0) clearInterval(countInterval);
+  }, 1000);
+
+  breathTimer = setTimeout(()=>{
+    stepIndex++;
+    if(breathing) runStep();
+  }, step.secs * 1000);
+}
+
+function startBreathing(){
+  breathing = true;
+  stepIndex = 0;
+  startBtn.textContent = 'Stop session';
+  startBtn.classList.add('stop');
+  runStep();
+}
+function stopBreathing(){
+  breathing = false;
+  clearTimeout(breathTimer);
+  startBtn.textContent = 'Start session';
+  startBtn.classList.remove('stop');
+  phaseLabel.textContent = 'press start when ready';
+  phaseCount.textContent = '\u00A0';
+  orb.style.transform = 'scale(1)';
+  orb.style.boxShadow = '0 0 60px rgba(124,184,222,0.35)';
+}
+startBtn.addEventListener('click', ()=>{
+  breathing ? stopBreathing() : startBreathing();
+});
+
+// ---------- JOURNAL ----------
+function getEntries(){
+  return JSON.parse(localStorage.getItem('anchor_entries') || '[]');
+}
+function saveEntries(entries){
+  localStorage.setItem('anchor_entries', JSON.stringify(entries));
+}
+document.getElementById('saveEntry').addEventListener('click', ()=>{
+  const trigger = document.getElementById('trigger').value.trim();
+  const response = document.getElementById('response').value.trim();
+  const forFuture = document.getElementById('forFuture').value.trim();
+  if(!trigger && !response && !forFuture) return;
+  const entries = getEntries();
+  entries.unshift({
+    date: new Date().toISOString(),
+    trigger, response, forFuture
+  });
+  saveEntries(entries);
+  document.getElementById('trigger').value='';
+  document.getElementById('response').value='';
+  document.getElementById('forFuture').value='';
+  renderEntries();
+});
+
+function renderEntries(){
+  const list = document.getElementById('entryList');
+  const entries = getEntries();
+  if(entries.length === 0){
+    list.innerHTML = '<div class="empty-state">No entries yet — your first one will show up here.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(e=>{
+    const d = new Date(e.date);
+    return `<div class="entry">
+      <div class="entry-date">${d.toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'})}</div>
+      ${e.trigger ? `<div class="entry-row"><b>Trigger:</b> ${escapeHtml(e.trigger)}</div>` : ''}
+      ${e.response ? `<div class="entry-row"><b>Response:</b> ${escapeHtml(e.response)}</div>` : ''}
+      ${e.forFuture ? `<div class="entry-row"><b>For a future partner:</b> ${escapeHtml(e.forFuture)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+renderEntries();
+
+// ---------- PLAN & SHARE ----------
+function buildPlanText(){
+  const entries = getEntries();
+  let text = "ANCHOR — My Self-Regulation Plan\n";
+  text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
+  text += "----------------------------------------\n\n";
+
+  if(entries.length === 0){
+    text += "No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.\n";
+    return text;
+  }
+
+  const futureLines = entries.filter(e=>e.forFuture).map(e=>"- " + e.forFuture);
+  const responseLines = entries.filter(e=>e.response).map(e=>"- " + e.response);
+
+  text += "WHAT TENDS TO HELP ME (from recent entries):\n";
+  text += (responseLines.slice(0,5).join("\n") || "- (not enough entries yet)") + "\n\n";
+
+  text += "WHAT I'D WANT A PARTNER TO KNOW:\n";
+  text += (futureLines.slice(0,5).join("\n") || "- (not enough entries yet)") + "\n\n";
+
+  text += "RECENT ENTRIES:\n";
+  entries.slice(0,5).forEach(e=>{
+    const d = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
+    text += `\n[${d}]\n`;
+    if(e.trigger) text += `Trigger: ${e.trigger}\n`;
+    if(e.response) text += `Response: ${e.response}\n`;
+    if(e.forFuture) text += `For future partner: ${e.forFuture}\n`;
+  });
+
+  return text;
+}
+
+function renderPlan(){
+  // plan card content stays static; data is generated on export
+}
+
+document.getElementById('downloadPdf').addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const text = buildPlanText();
+  const margin = 50;
+  const maxWidth = 495;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(11);
+  const lines = doc.splitTextToSize(text, maxWidth);
+  let y = margin;
+  lines.forEach(line=>{
+    if(y > 760){ doc.addPage(); y = margin; }
+    doc.text(line, margin, y);
+    y += 16;
+  });
+  doc.save('anchor-regulation-plan.pdf');
+});
+
+document.getElementById('shareWhatsapp').addEventListener('click', ()=>{
+  const text = buildPlanText();
+  const url = 'https://wa.me/?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+});
+</script>
+</body>
+</html>
