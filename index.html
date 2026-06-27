@@ -117,6 +117,45 @@
   .entry-row b{color:var(--sky); font-weight:500;}
   .empty-state{color:var(--muted); font-size:14px; padding:24px 0; text-align:center; font-style:italic;}
 
+  /* Situations */
+  .sit-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    margin-bottom:14px; overflow:hidden;
+  }
+  .sit-head{
+    display:flex; align-items:center; gap:12px; padding:16px 18px; cursor:pointer;
+    user-select:none;
+  }
+  .sit-dot{
+    width:10px; height:10px; border-radius:50%; flex-shrink:0;
+  }
+  .sit-title{font-family:var(--display); font-weight:600; font-size:17px; color:var(--ink); flex:1;}
+  .sit-chevron{font-family:var(--mono); font-size:13px; color:var(--muted); transition:transform .2s;}
+  .sit-card.open .sit-chevron{transform:rotate(90deg);}
+  .sit-body{display:none; padding:0 18px 18px 18px;}
+  .sit-card.open .sit-body{display:block;}
+  .sit-why{font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:14px; padding-left:22px;}
+  .check-item{
+    display:flex; align-items:flex-start; gap:10px; padding:9px 0; padding-left:22px;
+    border-top:1px solid var(--line); cursor:pointer;
+  }
+  .check-item:first-of-type{border-top:none;}
+  .check-box{
+    width:18px; height:18px; border-radius:5px; border:2px solid var(--line);
+    flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:var(--panel); transition:background .15s, border-color .15s;
+  }
+  .check-item.checked .check-box{background:var(--turquoise); border-color:var(--turquoise); content:'';}
+  .check-item.checked .check-box::after{content:'✓';}
+  .check-text{font-size:14px; line-height:1.45; color:var(--ink);}
+  .check-item.checked .check-text{color:var(--muted); text-decoration:line-through;}
+  .sit-reset{
+    display:flex; align-items:center; gap:6px; margin-top:14px; padding-left:22px;
+    background:none; border:none; cursor:pointer; font-family:var(--mono);
+    font-size:11px; letter-spacing:0.04em; color:var(--muted); text-transform:uppercase;
+  }
+  .sit-reset:hover{color:var(--coral);}
+
   /* Plan/Share */
   .plan-card{
     background:var(--midnight-2); border:1px solid #2A3343; border-radius:14px;
@@ -149,6 +188,7 @@
 
   <nav>
     <button class="tab-btn active" data-tab="breathe">Breathe</button>
+    <button class="tab-btn" data-tab="situations">Situations</button>
     <button class="tab-btn" data-tab="journal">Journal</button>
     <button class="tab-btn" data-tab="plan">Plan &amp; Share</button>
   </nav>
@@ -170,6 +210,12 @@
       <div class="phase-count" id="phaseCount">&nbsp;</div>
     </div>
     <button class="start-btn" id="startBtn">Start session</button>
+  </section>
+
+  <!-- SITUATIONS -->
+  <section id="situations">
+    <p class="sub" style="margin-bottom:22px;">Pick the one closest to what's happening. Check off steps as you go — they're tools, not a script. Skip what doesn't fit.</p>
+    <div id="situationList"></div>
   </section>
 
   <!-- JOURNAL -->
@@ -335,6 +381,166 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 renderEntries();
+
+// ---------- SITUATIONS ----------
+const situations = [
+  {
+    id: 'ghosted',
+    title: 'Got ghosted',
+    color: 'var(--coral)',
+    why: "Silence after connection reads as threat to the brain — it triggers the same alarm as rejection, even with someone you barely knew. The steps below aren't about getting an answer; they're about not spiraling while you wait for one (or for closure that may never come).",
+    steps: [
+      "Set a personal deadline for how long you'll wonder — after 48-72 hrs, mentally close the loop regardless of whether they reply",
+      "Name the feeling out loud: 'I feel rejected and a bit humiliated' — labeling it lowers its intensity",
+      "Resist the urge to re-read the whole chat thread looking for clues — this re-triggers the spiral, it doesn't solve it",
+      "Do one grounding action: a walk, a shower, calling a friend — something that puts your body in the present",
+      "Write one line in your journal about what (if anything) this brought up about an older pattern"
+    ]
+  },
+  {
+    id: 'comparison',
+    title: 'Saw a couple / wedding / baby announcement and felt a pang',
+    color: 'var(--electric)',
+    why: "This is a comparison spiral, not a fact about your life. Social comparison lights up real distress in the brain — it's not 'just' jealousy, but it also isn't information about your worth or your timeline.",
+    steps: [
+      "Notice the thought without obeying it: 'I'm having the thought that everyone else has this and I don't'",
+      "Box breathing for 4 rounds before doing anything else (open the Breathe tab)",
+      "Ask: is this pang about wanting connection, or about a story that I'm behind? Those need different responses",
+      "Avoid scrolling further into social media right now — it's pouring fuel on this specific fire",
+      "Do one thing that reminds you your life has its own shape: text a friend, work on something you care about"
+    ]
+  },
+  {
+    id: 'pre-date',
+    title: 'Pre-date anxiety',
+    color: 'var(--sunshine)',
+    why: "Anticipatory anxiety is your body preparing for a threat that probably isn't one. The goal isn't to eliminate the nerves — it's to stop them from running the show.",
+    steps: [
+      "Physiological sigh ×3 right before you leave (double inhale, long exhale — in the Breathe tab)",
+      "Name one realistic worst case ('it's awkward and we don't click') and notice you'd survive it fine",
+      "Set an intention for the date that isn't outcome-based: 'I want to be curious' instead of 'I want them to like me'",
+      "Eat something beforehand — low blood sugar mimics and amplifies anxiety",
+      "Remind yourself: a date is data, not a verdict on you"
+    ]
+  },
+  {
+    id: 'post-date',
+    title: 'Post-date overthinking',
+    color: 'var(--turquoise)',
+    why: "Replaying every word is your brain trying to get certainty in an uncertain situation. It feels productive; it rarely is.",
+    steps: [
+      "Give yourself one contained window to reflect (10 min, timer on) — then stop on purpose",
+      "Write down what you actually enjoyed about the date, not just what might've gone wrong",
+      "If you're waiting on a text, set a 'check phone' schedule instead of checking constantly",
+      "Ground in your body — overthinking lives in the head; a walk or stretch interrupts the loop",
+      "Remember: you don't need to decode their behavior in real time. Their actions over days will tell you more than your analysis tonight"
+    ]
+  },
+  {
+    id: 'milestone',
+    title: "Milestone loneliness (birthday, holidays, 'still no one?')",
+    color: 'var(--coral)',
+    why: "Calendar markers amplify whatever story you're already carrying about being behind. The date itself isn't the problem — the meaning you're attaching to it is.",
+    steps: [
+      "Name what you're actually grieving — is it the relationship, or the milestone, or both?",
+      "Plan something for that specific day in advance so it isn't just you and the silence",
+      "Have one honest line ready for nosy questions ('still working on it, thanks for asking') so you're not caught off guard",
+      "Let yourself feel sad without adding 'and that means something's wrong with me' on top of it",
+      "Journal it — this is exactly the kind of entry that becomes useful later (see the Journal tab)"
+    ]
+  },
+  {
+    id: 'old-grief',
+    title: 'An ex resurfaces, or old relationship grief shows up',
+    color: 'var(--electric)',
+    why: "Grief about past relationships doesn't always show up when you expect it. It can hit out of nowhere — a song, a photo, a similar laugh — and that's normal, not a setback.",
+    steps: [
+      "Let the wave happen for a minute before trying to push past it — suppressing it usually makes it last longer",
+      "Resist contacting them while activated — wait until you're regulated, then decide if it's still something you want to do",
+      "Ask what specifically you're missing — them, or just having someone, or a version of yourself from that time",
+      "Reach out to a person who knows the full story, not just an algorithm or a stranger",
+      "Note it in your journal under 'what I'd want a future partner to know' — old grief often points to something worth naming early in a new relationship"
+    ]
+  },
+  {
+    id: 'self-worth',
+    title: "What's wrong with me that I'm still single?",
+    color: 'var(--sunshine)',
+    why: "This question assumes singleness is a verdict rather than a circumstance. It rarely holds up under actual scrutiny, but it feels true when you're dysregulated — which is exactly why it needs a body-first response, not a debate.",
+    steps: [
+      "Regulate first, reason second — this question is almost never answerable while you're upset",
+      "Separate facts from the story: 'I'm 40-something and single' is a fact; 'something's wrong with me' is a story",
+      "List three things in your life that are working, unrelated to relationship status",
+      "If this question shows up often, it's worth more than a checklist — a therapist can help unpack where it's coming from",
+      "Write the kindest true sentence you can about yourself right now, even if it feels small"
+    ]
+  }
+];
+
+function getChecks(){
+  return JSON.parse(localStorage.getItem('anchor_checks') || '{}');
+}
+function saveChecks(c){
+  localStorage.setItem('anchor_checks', JSON.stringify(c));
+}
+
+function renderSituations(){
+  const container = document.getElementById('situationList');
+  const checks = getChecks();
+  container.innerHTML = situations.map(sit=>{
+    const stepsHtml = sit.steps.map((step, i)=>{
+      const key = sit.id + '-' + i;
+      const isChecked = !!checks[key];
+      return `<div class="check-item ${isChecked?'checked':''}" data-key="${key}">
+        <div class="check-box"></div>
+        <div class="check-text">${escapeHtml(step)}</div>
+      </div>`;
+    }).join('');
+    return `<div class="sit-card ${sit.id==='ghosted'?'open':''}" data-id="${sit.id}">
+      <div class="sit-head">
+        <div class="sit-dot" style="background:${sit.color}"></div>
+        <div class="sit-title">${escapeHtml(sit.title)}</div>
+        <div class="sit-chevron">›</div>
+      </div>
+      <div class="sit-body">
+        <div class="sit-why">${escapeHtml(sit.why)}</div>
+        ${stepsHtml}
+        <button class="sit-reset" data-reset="${sit.id}">↺ Reset checklist</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.sit-head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      head.closest('.sit-card').classList.toggle('open');
+    });
+  });
+  container.querySelectorAll('.check-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const key = item.dataset.key;
+      const c = getChecks();
+      c[key] = !c[key];
+      saveChecks(c);
+      item.classList.toggle('checked');
+    });
+  });
+  container.querySelectorAll('.sit-reset').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const sitId = btn.dataset.reset;
+      const c = getChecks();
+      Object.keys(c).forEach(key=>{
+        if(key.startsWith(sitId + '-')) delete c[key];
+      });
+      saveChecks(c);
+      renderSituations();
+      // keep this card open after re-render
+      const card = container.querySelector(`.sit-card[data-id="${sitId}"]`);
+      if(card) card.classList.add('open');
+    });
+  });
+}
+renderSituations();
 
 // ---------- PLAN & SHARE ----------
 function buildPlanText(){
