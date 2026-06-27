@@ -64,7 +64,7 @@
   .orb-field{position:relative; width:240px; height:240px; display:flex; align-items:center; justify-content:center;}
   .orb{
     width:90px; height:90px; border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, var(--sky), #3C6B8C 70%);
+    background:radial-gradient(circle at 35% 30%, var(--electric), #1B4FC4 70%);
     box-shadow:0 0 60px rgba(124,184,222,0.35);
     transition:transform 4s ease-in-out, box-shadow 4s ease-in-out;
   }
@@ -73,38 +73,59 @@
   }
   .phase-label{
     font-family:var(--mono); font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--sky); margin-top:24px; min-height:20px;
+    color:var(--electric); margin-top:24px; min-height:20px;
   }
-  .phase-count{font-family:var(--display); font-size:34px; color:var(--sand); margin-top:6px;}
+  .phase-count{font-family:var(--display); font-size:34px; color:var(--ink); margin-top:6px;}
 
   .pattern-row{display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap;}
   .pattern-btn{
     background:var(--midnight-2); border:1px solid #2A3343; color:var(--muted);
     font-family:var(--mono); font-size:12px; padding:8px 14px; border-radius:20px; cursor:pointer;
   }
-  .pattern-btn.active{border-color:var(--coral); color:var(--sand);}
+  .pattern-btn.active{border-color:var(--coral); color:var(--ink);}
 
   .start-btn{
-    display:block; margin:28px auto 0; background:var(--coral); color:var(--midnight);
+    display:block; margin:28px auto 0; background:var(--coral); color:#fff;
     font-family:var(--body); font-weight:600; font-size:15px; border:none;
     padding:13px 32px; border-radius:30px; cursor:pointer; transition:opacity .2s;
   }
   .start-btn:hover{opacity:0.9;}
-  .start-btn.stop{background:var(--midnight-2); color:var(--sand); border:1px solid #2A3343;}
+  .start-btn.stop{background:var(--panel); color:var(--ink); border:1px solid var(--line);}
 
   /* Journal */
   .field-label{
     font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.08em;
-    color:var(--sky); margin-bottom:8px; display:block;
+    color:var(--electric); margin-bottom:8px; display:block;
   }
   textarea, input[type=text]{
     width:100%; background:var(--midnight-2); border:1px solid #2A3343; border-radius:10px;
-    color:var(--sand); font-family:var(--body); font-size:15px; padding:14px;
+    color:var(--ink); font-family:var(--body); font-size:15px; padding:14px;
     resize:vertical; min-height:80px; margin-bottom:18px;
   }
-  textarea:focus, input:focus{outline:none; border-color:var(--sky);}
+  textarea:focus, input:focus{outline:none; border-color:var(--electric);}
+
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
+  .chip{
+    background:var(--panel); border:1.5px solid var(--line); color:var(--ink);
+    font-family:var(--body); font-size:13px; font-weight:500; padding:7px 14px;
+    border-radius:20px; cursor:pointer; transition:background .15s, border-color .15s, color .15s;
+  }
+  .chip.selected{background:var(--electric); border-color:var(--electric); color:#fff;}
+
+  select{
+    width:100%; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    color:var(--ink); font-family:var(--body); font-size:14px; padding:12px 14px;
+    margin-bottom:18px; cursor:pointer;
+  }
+  select:focus{outline:none; border-color:var(--electric);}
+
+  .streak-line{
+    font-family:var(--mono); font-size:12px; color:var(--turquoise); margin-bottom:18px;
+    padding:10px 14px; background:rgba(24,199,184,0.1); border-radius:8px; display:none;
+  }
+  .streak-line.show{display:block;}
   .save-btn{
-    background:var(--sage); color:var(--midnight); border:none; font-weight:600;
+    background:var(--turquoise); color:#fff; border:none; font-weight:600;
     font-family:var(--body); font-size:14px; padding:11px 24px; border-radius:24px; cursor:pointer;
   }
   .entries{margin-top:32px; display:flex; flex-direction:column; gap:14px;}
@@ -114,7 +135,7 @@
   }
   .entry-date{font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:6px;}
   .entry-row{font-size:14px; line-height:1.5; margin-bottom:4px;}
-  .entry-row b{color:var(--sky); font-weight:500;}
+  .entry-row b{color:var(--electric); font-weight:500;}
   .empty-state{color:var(--muted); font-size:14px; padding:24px 0; text-align:center; font-style:italic;}
 
   /* Situations */
@@ -161,7 +182,7 @@
     background:var(--midnight-2); border:1px solid #2A3343; border-radius:14px;
     padding:24px; margin-bottom:20px;
   }
-  .plan-card h3{font-family:var(--display); font-weight:500; font-size:19px; margin-bottom:10px; color:var(--sand);}
+  .plan-card h3{font-family:var(--display); font-weight:500; font-size:19px; margin-bottom:10px; color:var(--ink);}
   .plan-card p{font-size:14px; color:var(--muted); line-height:1.6;}
   .share-row{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
   .share-btn{
@@ -170,7 +191,7 @@
     font-weight:600; font-size:14px; cursor:pointer; transition:opacity .2s;
   }
   .share-btn:hover{opacity:0.88;}
-  .btn-pdf{background:var(--coral); color:var(--midnight);}
+  .btn-pdf{background:var(--coral); color:#fff;}
   .btn-whatsapp{background:#25D366; color:#0B1A0F;}
   .note{font-size:12px; color:var(--muted); margin-top:14px; line-height:1.5;}
 
@@ -220,17 +241,29 @@
 
   <!-- JOURNAL -->
   <section id="journal">
+    <label class="field-label">Name what you're feeling (pick any that fit)</label>
+    <div class="chip-row" id="emotionChips"></div>
+
     <label class="field-label">What dysregulated you today?</label>
     <textarea id="trigger" placeholder="e.g. saw a couple at dinner, felt a wave of 'will this ever happen for me'"></textarea>
 
+    <label class="field-label">If this connects to a situation you've checklisted, which one?</label>
+    <select id="situationTag">
+      <option value="">— not sure / none of these —</option>
+    </select>
+
     <label class="field-label">What did you do, and did it help?</label>
     <textarea id="response" placeholder="e.g. went for a walk, named the feeling out loud — helped some, still sat heavy"></textarea>
+
+    <label class="field-label">Even with this feeling here, what did you still do (or want to do) that matters to you?</label>
+    <textarea id="valuesAction" placeholder="e.g. still texted a friend back, still went to the gym — the feeling didn't get the final say"></textarea>
 
     <label class="field-label">One thing you'd want a future partner to know about this</label>
     <textarea id="forFuture" placeholder="e.g. I don't need fixing, I need someone to just sit with me for a minute"></textarea>
 
     <button class="save-btn" id="saveEntry">Save entry</button>
 
+    <div class="streak-line" id="streakLine"></div>
     <div class="entries" id="entryList"></div>
   </section>
 
@@ -335,42 +368,110 @@ startBtn.addEventListener('click', ()=>{
 });
 
 // ---------- JOURNAL ----------
+const EMOTION_OPTIONS = ['Anxious','Sad','Lonely','Angry','Ashamed','Hopeless','Jealous','Numb','Hopeful','Relieved'];
+let selectedEmotions = [];
+
+function renderEmotionChips(){
+  const row = document.getElementById('emotionChips');
+  row.innerHTML = EMOTION_OPTIONS.map(em=>
+    `<button type="button" class="chip ${selectedEmotions.includes(em)?'selected':''}" data-emotion="${em}">${em}</button>`
+  ).join('');
+  row.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const em = chip.dataset.emotion;
+      if(selectedEmotions.includes(em)){
+        selectedEmotions = selectedEmotions.filter(x=>x!==em);
+      } else {
+        selectedEmotions.push(em);
+      }
+      chip.classList.toggle('selected');
+    });
+  });
+}
+renderEmotionChips();
+
 function getEntries(){
   return JSON.parse(localStorage.getItem('anchor_entries') || '[]');
 }
 function saveEntries(entries){
   localStorage.setItem('anchor_entries', JSON.stringify(entries));
 }
+
+function getStreak(){
+  const entries = getEntries();
+  if(entries.length === 0) return 0;
+  const days = [...new Set(entries.map(e=>new Date(e.date).toDateString()))];
+  days.sort((a,b)=>new Date(b)-new Date(a));
+  let streak = 0;
+  let cursor = new Date();
+  for(const d of days){
+    if(new Date(d).toDateString() === cursor.toDateString()){
+      streak++;
+      cursor.setDate(cursor.getDate()-1);
+    } else if(streak === 0 && new Date(d).toDateString() === new Date(cursor.getTime()+86400000).toDateString()){
+      continue;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderStreak(){
+  const line = document.getElementById('streakLine');
+  const entries = getEntries();
+  if(entries.length === 0){ line.classList.remove('show'); return; }
+  const streak = getStreak();
+  line.classList.add('show');
+  if(streak >= 2){
+    line.textContent = `${streak}-day streak — you've shown up for this ${streak} days running.`;
+  } else {
+    line.textContent = `${entries.length} entr${entries.length===1?'y':'ies'} logged so far.`;
+  }
+}
+
 document.getElementById('saveEntry').addEventListener('click', ()=>{
   const trigger = document.getElementById('trigger').value.trim();
   const response = document.getElementById('response').value.trim();
+  const valuesAction = document.getElementById('valuesAction').value.trim();
   const forFuture = document.getElementById('forFuture').value.trim();
-  if(!trigger && !response && !forFuture) return;
+  const situationTag = document.getElementById('situationTag').value;
+  if(!trigger && !response && !forFuture && !valuesAction && selectedEmotions.length===0) return;
   const entries = getEntries();
   entries.unshift({
     date: new Date().toISOString(),
-    trigger, response, forFuture
+    emotions: [...selectedEmotions],
+    situationTag,
+    trigger, response, valuesAction, forFuture
   });
   saveEntries(entries);
   document.getElementById('trigger').value='';
   document.getElementById('response').value='';
+  document.getElementById('valuesAction').value='';
   document.getElementById('forFuture').value='';
+  document.getElementById('situationTag').value='';
+  selectedEmotions = [];
+  renderEmotionChips();
   renderEntries();
 });
 
 function renderEntries(){
   const list = document.getElementById('entryList');
   const entries = getEntries();
+  renderStreak();
   if(entries.length === 0){
     list.innerHTML = '<div class="empty-state">No entries yet — your first one will show up here.</div>';
     return;
   }
   list.innerHTML = entries.map(e=>{
     const d = new Date(e.date);
+    const sitLabel = e.situationTag ? (situations.find(s=>s.id===e.situationTag)?.title || '') : '';
     return `<div class="entry">
-      <div class="entry-date">${d.toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'})}</div>
+      <div class="entry-date">${d.toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'})}${sitLabel ? ' · '+escapeHtml(sitLabel) : ''}</div>
+      ${e.emotions && e.emotions.length ? `<div class="entry-row"><b>Felt:</b> ${e.emotions.map(escapeHtml).join(', ')}</div>` : ''}
       ${e.trigger ? `<div class="entry-row"><b>Trigger:</b> ${escapeHtml(e.trigger)}</div>` : ''}
       ${e.response ? `<div class="entry-row"><b>Response:</b> ${escapeHtml(e.response)}</div>` : ''}
+      ${e.valuesAction ? `<div class="entry-row"><b>Did anyway:</b> ${escapeHtml(e.valuesAction)}</div>` : ''}
       ${e.forFuture ? `<div class="entry-row"><b>For a future partner:</b> ${escapeHtml(e.forFuture)}</div>` : ''}
     </div>`;
   }).join('');
@@ -380,7 +481,6 @@ function escapeHtml(str){
   div.textContent = str;
   return div.innerHTML;
 }
-renderEntries();
 
 // ---------- SITUATIONS ----------
 const situations = [
@@ -542,6 +642,16 @@ function renderSituations(){
 }
 renderSituations();
 
+// Populate the journal's situation-tag dropdown now that situations exists
+const sitSelect = document.getElementById('situationTag');
+situations.forEach(sit=>{
+  const opt = document.createElement('option');
+  opt.value = sit.id;
+  opt.textContent = sit.title;
+  sitSelect.appendChild(opt);
+});
+renderEntries();
+
 // ---------- PLAN & SHARE ----------
 function buildPlanText(){
   const entries = getEntries();
@@ -554,11 +664,49 @@ function buildPlanText(){
     return text;
   }
 
+  // Consistency / competence framing
+  const streak = getStreak();
+  text += "SHOWING UP:\n";
+  text += `${entries.length} entr${entries.length===1?'y':'ies'} logged total.`;
+  if(streak >= 2) text += ` Currently on a ${streak}-day streak.`;
+  text += "\n\n";
+
+  // Affect-labeling pattern: which emotions show up most
+  const emotionCounts = {};
+  entries.forEach(e=>(e.emotions||[]).forEach(em=>{
+    emotionCounts[em] = (emotionCounts[em]||0) + 1;
+  }));
+  const topEmotions = Object.entries(emotionCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  if(topEmotions.length){
+    text += "WHAT I MOST OFTEN NAME FEELING:\n";
+    text += topEmotions.map(([em,count])=>`- ${em} (${count}x)`).join("\n") + "\n\n";
+  }
+
+  // Situation pattern: which triggers recur
+  const sitCounts = {};
+  entries.forEach(e=>{
+    if(e.situationTag){
+      const label = situations.find(s=>s.id===e.situationTag)?.title || e.situationTag;
+      sitCounts[label] = (sitCounts[label]||0) + 1;
+    }
+  });
+  const topSits = Object.entries(sitCounts).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  if(topSits.length){
+    text += "SITUATIONS THAT COME UP MOST:\n";
+    text += topSits.map(([label,count])=>`- ${label} (${count}x)`).join("\n") + "\n\n";
+  }
+
   const futureLines = entries.filter(e=>e.forFuture).map(e=>"- " + e.forFuture);
   const responseLines = entries.filter(e=>e.response).map(e=>"- " + e.response);
+  const valuesLines = entries.filter(e=>e.valuesAction).map(e=>"- " + e.valuesAction);
 
-  text += "WHAT TENDS TO HELP ME (from recent entries):\n";
+  text += "WHAT TENDS TO HELP ME:\n";
   text += (responseLines.slice(0,5).join("\n") || "- (not enough entries yet)") + "\n\n";
+
+  if(valuesLines.length){
+    text += "THINGS I DID ANYWAY, EVEN WHILE FEELING THIS — PROOF THE FEELING DIDN'T GET THE FINAL SAY:\n";
+    text += valuesLines.slice(0,5).join("\n") + "\n\n";
+  }
 
   text += "WHAT I'D WANT A PARTNER TO KNOW:\n";
   text += (futureLines.slice(0,5).join("\n") || "- (not enough entries yet)") + "\n\n";
@@ -567,8 +715,10 @@ function buildPlanText(){
   entries.slice(0,5).forEach(e=>{
     const d = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
     text += `\n[${d}]\n`;
+    if(e.emotions && e.emotions.length) text += `Felt: ${e.emotions.join(', ')}\n`;
     if(e.trigger) text += `Trigger: ${e.trigger}\n`;
     if(e.response) text += `Response: ${e.response}\n`;
+    if(e.valuesAction) text += `Did anyway: ${e.valuesAction}\n`;
     if(e.forFuture) text += `For future partner: ${e.forFuture}\n`;
   });
 
