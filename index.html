@@ -124,6 +124,18 @@
     padding:10px 14px; background:rgba(24,199,184,0.1); border-radius:8px; display:none;
   }
   .streak-line.show{display:block;}
+
+  .journal-header-row{
+    display:none; align-items:center; justify-content:space-between;
+    margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line);
+  }
+  .journal-header-row.show{display:flex;}
+  .journal-count{font-family:var(--mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;}
+  .journal-reset-btn{
+    background:none; border:none; cursor:pointer; font-family:var(--mono);
+    font-size:11px; letter-spacing:0.04em; color:var(--muted); text-transform:uppercase;
+  }
+  .journal-reset-btn:hover{color:var(--coral);}
   .save-btn{
     background:var(--turquoise); color:#fff; border:none; font-weight:600;
     font-family:var(--body); font-size:14px; padding:11px 24px; border-radius:24px; cursor:pointer;
@@ -293,6 +305,12 @@
     <button class="save-btn" id="saveEntry">Save entry</button>
 
     <div class="streak-line" id="streakLine"></div>
+
+    <div class="journal-header-row" id="journalHeaderRow">
+      <span class="journal-count" id="journalCount"></span>
+      <button class="journal-reset-btn" id="resetJournal">↺ Reset all journal entries</button>
+    </div>
+
     <div class="entries" id="entryList"></div>
   </section>
 
@@ -505,12 +523,17 @@ document.getElementById('saveEntry').addEventListener('click', ()=>{
 
 function renderEntries(){
   const list = document.getElementById('entryList');
+  const headerRow = document.getElementById('journalHeaderRow');
+  const countLabel = document.getElementById('journalCount');
   const entries = getEntries();
   renderStreak();
   if(entries.length === 0){
     list.innerHTML = '<div class="empty-state">No entries yet — your first one will show up here.</div>';
+    headerRow.classList.remove('show');
     return;
   }
+  headerRow.classList.add('show');
+  countLabel.textContent = `${entries.length} entr${entries.length===1?'y':'ies'}`;
   list.innerHTML = entries.map(e=>{
     const d = new Date(e.date);
     const sitLabel = e.situationTag ? (situations.find(s=>s.id===e.situationTag)?.title || '') : '';
@@ -524,6 +547,17 @@ function renderEntries(){
     </div>`;
   }).join('');
 }
+
+document.getElementById('resetJournal').addEventListener('click', ()=>{
+  const entries = getEntries();
+  const confirmed = confirm(
+    `This will permanently delete all ${entries.length} journal entr${entries.length===1?'y':'ies'} on this device. This can't be undone. Continue?`
+  );
+  if(!confirmed) return;
+  saveEntries([]);
+  renderEntries();
+});
+
 function escapeHtml(str){
   const div = document.createElement('div');
   div.textContent = str;
