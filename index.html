@@ -92,6 +92,60 @@
   .start-btn:hover{opacity:0.9;}
   .start-btn.stop{background:var(--panel); color:var(--ink); border:1px solid var(--line);}
 
+  /* Breathe sub-nav */
+  .subnav{display:flex; gap:6px; margin-bottom:20px; background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:4px; width:fit-content;}
+  .subnav-btn{
+    background:none; border:none; cursor:pointer; font-family:var(--body); font-weight:600;
+    font-size:13px; color:var(--muted); padding:8px 16px; border-radius:20px; transition:background .15s, color .15s;
+  }
+  .subnav-btn.active{background:var(--electric); color:#fff;}
+  .subview{display:none;}
+  .subview.active{display:block;}
+
+  /* Visualize tools */
+  .vis-tool-row{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .vis-tool-btn{
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    font-family:var(--body); font-size:13px; font-weight:600; padding:9px 16px;
+    border-radius:20px; cursor:pointer;
+  }
+  .vis-tool-btn.active{border-color:var(--turquoise); color:var(--ink); background:rgba(24,199,184,0.1);}
+  .vis-tool{display:none;}
+  .vis-tool.active{display:block;}
+  .vis-desc{font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:16px; max-width:520px;}
+
+  .leaves-stage{
+    width:100%; height:280px; border-radius:16px; overflow:hidden; position:relative;
+    background:linear-gradient(180deg, #E8F3F1 0%, #D6EAE6 100%); border:1px solid var(--line);
+    margin-bottom:14px;
+  }
+  #leavesCanvas{width:100%; height:100%; display:block;}
+  .leaves-input-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .leaves-input-row input{
+    flex:1; min-width:200px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    color:var(--ink); font-family:var(--body); font-size:14px; padding:12px 14px;
+  }
+  .leaves-input-row input:focus{outline:none; border-color:var(--turquoise);}
+  .leaf-place-btn{
+    background:var(--turquoise); color:#fff; border:none; font-weight:600; font-family:var(--body);
+    font-size:14px; padding:12px 20px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  }
+
+  .anchor-steps{display:flex; flex-direction:column; gap:10px;}
+  .anchor-step{
+    display:flex; align-items:flex-start; gap:14px; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; cursor:pointer; transition:border-color .15s;
+  }
+  .anchor-step.done{border-color:var(--turquoise); background:rgba(24,199,184,0.06);}
+  .anchor-step-num{
+    width:26px; height:26px; border-radius:50%; background:var(--electric); color:#fff;
+    font-family:var(--mono); font-size:12px; font-weight:600; display:flex; align-items:center;
+    justify-content:center; flex-shrink:0;
+  }
+  .anchor-step.done .anchor-step-num{background:var(--turquoise);}
+  .anchor-step-text{font-size:14.5px; line-height:1.5; color:var(--ink);}
+  .anchor-step.done .anchor-step-text{color:var(--muted);}
+
   /* Journal */
   .field-label{
     font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.08em;
@@ -188,6 +242,12 @@
     font-size:11px; letter-spacing:0.04em; color:var(--muted); text-transform:uppercase;
   }
   .sit-reset:hover{color:var(--coral);}
+  .sit-try-btn{
+    display:block; margin:2px 0 16px 22px; background:var(--turquoise); color:#fff;
+    border:none; font-family:var(--body); font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:20px; cursor:pointer;
+  }
+  .sit-try-btn:hover{opacity:0.9;}
 
   /* Plan/Share */
   .plan-card{
@@ -284,21 +344,57 @@
 
   <!-- BREATHE -->
   <section id="breathe" class="active">
-    <div class="pattern-row">
-      <button class="pattern-btn active" data-pattern="box">Box (4-4-4-4)</button>
-      <button class="pattern-btn" data-pattern="478">4-7-8</button>
-      <button class="pattern-btn" data-pattern="sigh">Physiological sigh</button>
+    <div class="subnav">
+      <button class="subnav-btn active" data-subtab="breathing">Breathing</button>
+      <button class="subnav-btn" data-subtab="visualize">Visualize</button>
     </div>
-    <div class="breathe-stage">
-      <div class="orb-field">
-        <div class="ring" style="width:100%;height:100%;"></div>
-        <div class="ring" style="width:70%;height:70%; top:15%; left:15%;"></div>
-        <div class="orb" id="orb"></div>
+
+    <!-- Breathing sub-view -->
+    <div class="subview active" id="sub-breathing">
+      <div class="pattern-row">
+        <button class="pattern-btn active" data-pattern="box">Box (4-4-4-4)</button>
+        <button class="pattern-btn" data-pattern="478">4-7-8</button>
+        <button class="pattern-btn" data-pattern="sigh">Physiological sigh</button>
+        <button class="pattern-btn" data-pattern="coherence">Coherence (5-5)</button>
+        <button class="pattern-btn" data-pattern="exhale">Extended exhale (4-8)</button>
       </div>
-      <div class="phase-label" id="phaseLabel">press start when ready</div>
-      <div class="phase-count" id="phaseCount">&nbsp;</div>
+      <div class="breathe-stage">
+        <div class="orb-field">
+          <div class="ring" style="width:100%;height:100%;"></div>
+          <div class="ring" style="width:70%;height:70%; top:15%; left:15%;"></div>
+          <div class="orb" id="orb"></div>
+        </div>
+        <div class="phase-label" id="phaseLabel">press start when ready</div>
+        <div class="phase-count" id="phaseCount">&nbsp;</div>
+      </div>
+      <button class="start-btn" id="startBtn">Start session</button>
     </div>
-    <button class="start-btn" id="startBtn">Start session</button>
+
+    <!-- Visualize sub-view -->
+    <div class="subview" id="sub-visualize">
+      <div class="vis-tool-row">
+        <button class="vis-tool-btn active" data-vis="leaves">🍃 Leaves on a Stream</button>
+        <button class="vis-tool-btn" data-vis="anchor">⚓ Drop the Anchor</button>
+      </div>
+
+      <!-- Leaves on a Stream -->
+      <div class="vis-tool active" id="vis-leaves">
+        <p class="vis-desc">Notice the thought. Place it on a leaf. Watch it drift — you don't have to fight it or believe it, just let it pass.</p>
+        <div class="leaves-stage">
+          <canvas id="leavesCanvas"></canvas>
+        </div>
+        <div class="leaves-input-row">
+          <input type="text" id="leafInput" placeholder="What's on your mind right now?" maxlength="60">
+          <button class="leaf-place-btn" id="leafPlaceBtn">Place on a leaf</button>
+        </div>
+      </div>
+
+      <!-- Drop the Anchor -->
+      <div class="vis-tool" id="vis-anchor">
+        <p class="vis-desc">For when you feel swept away, dissociated, or stuck in your head. Move through these slowly — there's no rush.</p>
+        <div class="anchor-steps" id="anchorSteps"></div>
+      </div>
+    </div>
   </section>
 
   <!-- SITUATIONS -->
@@ -399,6 +495,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     if(btn.dataset.tab==='journal') renderEntries();
     if(btn.dataset.tab==='play') initPopGame();
     else popRunning = false;
+    if(btn.dataset.tab!=='breathe') leavesRunning = false;
   });
 });
 
@@ -406,7 +503,9 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 const patterns = {
   box: [{label:'inhale', secs:4, scale:1.5}, {label:'hold', secs:4, scale:1.5}, {label:'exhale', secs:4, scale:1}, {label:'hold', secs:4, scale:1}],
   478: [{label:'inhale', secs:4, scale:1.5}, {label:'hold', secs:7, scale:1.5}, {label:'exhale', secs:8, scale:1}],
-  sigh: [{label:'inhale', secs:2, scale:1.3}, {label:'inhale again', secs:1.5, scale:1.6}, {label:'long exhale', secs:6, scale:1}]
+  sigh: [{label:'inhale', secs:2, scale:1.3}, {label:'inhale again', secs:1.5, scale:1.6}, {label:'long exhale', secs:6, scale:1}],
+  coherence: [{label:'inhale', secs:5, scale:1.5}, {label:'exhale', secs:5, scale:1}],
+  exhale: [{label:'inhale', secs:4, scale:1.5}, {label:'long exhale', secs:8, scale:1}]
 };
 let currentPattern = 'box';
 let breathing = false;
@@ -419,6 +518,30 @@ document.querySelectorAll('.pattern-btn').forEach(btn=>{
     btn.classList.add('active');
     currentPattern = btn.dataset.pattern;
     if(breathing) stopBreathing();
+  });
+});
+
+// Breathe sub-nav: Breathing vs Visualize
+document.querySelectorAll('.subnav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.subview').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sub-'+btn.dataset.subtab).classList.add('active');
+    if(btn.dataset.subtab === 'visualize') initLeavesCanvas();
+    else { leavesRunning = false; if(breathing) stopBreathing(); }
+  });
+});
+
+// Visualize tool switching: Leaves vs Anchor
+document.querySelectorAll('.vis-tool-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.vis-tool-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.vis-tool').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('vis-'+btn.dataset.vis).classList.add('active');
+    if(btn.dataset.vis === 'leaves') initLeavesCanvas();
+    if(btn.dataset.vis === 'anchor'){ leavesRunning = false; renderAnchorSteps(); }
   });
 });
 
@@ -610,6 +733,7 @@ const situations = [
   {
     id: 'ghosted',
     emoji: '👻',
+    recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
     title: 'Got ghosted',
     color: 'var(--coral)',
     why: "Silence after connection reads as threat to the brain — it triggers the same alarm as rejection, even with someone you barely knew. The steps below aren't about getting an answer; they're about not spiraling while you wait for one (or for closure that may never come).",
@@ -624,6 +748,7 @@ const situations = [
   {
     id: 'comparison',
     emoji: '💭',
+    recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
     title: 'Saw a couple / wedding / baby announcement and felt a pang',
     color: 'var(--electric)',
     why: "This is a comparison spiral, not a fact about your life. Social comparison lights up real distress in the brain — it's not 'just' jealousy, but it also isn't information about your worth or your timeline.",
@@ -638,6 +763,7 @@ const situations = [
   {
     id: 'pre-date',
     emoji: '😰',
+    recommended: {type:'breathing', pattern:'coherence', label:'🌬️ Try: Coherence breathing (5-5)'},
     title: 'Pre-date anxiety',
     color: 'var(--sunshine)',
     why: "Anticipatory anxiety is your body preparing for a threat that probably isn't one. The goal isn't to eliminate the nerves — it's to stop them from running the show.",
@@ -652,6 +778,7 @@ const situations = [
   {
     id: 'post-date',
     emoji: '🔁',
+    recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
     title: 'Post-date overthinking',
     color: 'var(--turquoise)',
     why: "Replaying every word is your brain trying to get certainty in an uncertain situation. It feels productive; it rarely is.",
@@ -666,6 +793,7 @@ const situations = [
   {
     id: 'milestone',
     emoji: '🎂',
+    recommended: {type:'breathing', pattern:'exhale', label:'🌬️ Try: Extended exhale (4-8)'},
     title: "Milestone loneliness (birthday, holidays, 'still no one?')",
     color: 'var(--coral)',
     why: "Calendar markers amplify whatever story you're already carrying about being behind. The date itself isn't the problem — the meaning you're attaching to it is.",
@@ -680,6 +808,7 @@ const situations = [
   {
     id: 'old-grief',
     emoji: '🌧️',
+    recommended: {type:'breathing', pattern:'exhale', label:'🌬️ Try: Extended exhale (4-8)'},
     title: 'An ex resurfaces, or old relationship grief shows up',
     color: 'var(--electric)',
     why: "Grief about past relationships doesn't always show up when you expect it. It can hit out of nowhere — a song, a photo, a similar laugh — and that's normal, not a setback.",
@@ -694,6 +823,7 @@ const situations = [
   {
     id: 'self-worth',
     emoji: '🪞',
+    recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
     title: "What's wrong with me that I'm still single?",
     color: 'var(--sunshine)',
     why: "This question assumes singleness is a verdict rather than a circumstance. It rarely holds up under actual scrutiny, but it feels true when you're dysregulated — which is exactly why it needs a body-first response, not a debate.",
@@ -734,6 +864,7 @@ function renderSituations(){
       </div>
       <div class="sit-body">
         <div class="sit-why">${escapeHtml(sit.why)}</div>
+        ${sit.recommended ? `<button class="sit-try-btn" data-try='${JSON.stringify(sit.recommended).replace(/'/g,"&#39;")}'>${sit.recommended.label}</button>` : ''}
         ${stepsHtml}
         <button class="sit-reset" data-reset="${sit.id}">↺ Reset checklist</button>
       </div>
@@ -754,6 +885,13 @@ function renderSituations(){
       item.classList.toggle('checked');
     });
   });
+  container.querySelectorAll('.sit-try-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const rec = JSON.parse(btn.dataset.try.replace(/&#39;/g,"'"));
+      goToExercise(rec);
+    });
+  });
   container.querySelectorAll('.sit-reset').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
@@ -771,6 +909,20 @@ function renderSituations(){
   });
 }
 renderSituations();
+
+function goToExercise(rec){
+  document.querySelector('.tab-btn[data-tab="breathe"]').click();
+  if(rec.type === 'breathing'){
+    document.querySelector('.subnav-btn[data-subtab="breathing"]').click();
+    const patternBtn = document.querySelector(`.pattern-btn[data-pattern="${rec.pattern}"]`);
+    if(patternBtn) patternBtn.click();
+  } else if(rec.type === 'visual'){
+    document.querySelector('.subnav-btn[data-subtab="visualize"]').click();
+    const visBtn = document.querySelector(`.vis-tool-btn[data-vis="${rec.tool}"]`);
+    if(visBtn) visBtn.click();
+  }
+  document.querySelector('.wrap').scrollIntoView({behavior:'smooth', block:'start'});
+}
 
 // Populate the journal's situation-tag dropdown now that situations exists
 const sitSelect = document.getElementById('situationTag');
@@ -1210,6 +1362,132 @@ function handlePopTap(e){
     }
   }
 }
+
+// ---------- VISUALIZE: Leaves on a Stream ----------
+let leavesCanvas = null, leavesCtx = null;
+let leaves = [];
+let leavesInitialized = false;
+let leavesRunning = false;
+let leavesDpr = 1;
+
+function resizeLeavesCanvas(){
+  if(!leavesCanvas) return;
+  const rect = leavesCanvas.parentElement.getBoundingClientRect();
+  leavesDpr = window.devicePixelRatio || 1;
+  leavesCanvas.width = rect.width * leavesDpr;
+  leavesCanvas.height = rect.height * leavesDpr;
+  leavesCtx.setTransform(leavesDpr, 0, 0, leavesDpr, 0, 0);
+}
+
+function addLeaf(text){
+  const rect = leavesCanvas.parentElement.getBoundingClientRect();
+  leaves.push({
+    x: -60,
+    y: 40 + Math.random() * (rect.height - 80),
+    text: text.slice(0, 40),
+    speed: 0.5 + Math.random()*0.3,
+    bob: Math.random()*Math.PI*2,
+    alpha: 1
+  });
+}
+
+function leavesLoop(){
+  if(!leavesRunning) return;
+  const rect = leavesCanvas.parentElement.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  leavesCtx.clearRect(0,0,w,h);
+
+  // decorative stream lines
+  leavesCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+  leavesCtx.lineWidth = 1.5;
+  for(let i=0;i<3;i++){
+    const baseY = h*0.25 + i*h*0.25;
+    leavesCtx.beginPath();
+    for(let x=0;x<=w;x+=10){
+      const yy = baseY + Math.sin((x*0.02) + (Date.now()*0.0006) + i) * 6;
+      if(x===0) leavesCtx.moveTo(x,yy); else leavesCtx.lineTo(x,yy);
+    }
+    leavesCtx.stroke();
+  }
+
+  leaves.forEach(l=>{
+    l.x += l.speed;
+    l.bob += 0.04;
+    const drawY = l.y + Math.sin(l.bob)*5;
+    if(l.x > w*0.78) l.alpha = Math.max(0, l.alpha - 0.012);
+
+    leavesCtx.globalAlpha = l.alpha;
+    leavesCtx.font = '20px serif';
+    leavesCtx.textBaseline = 'middle';
+    leavesCtx.fillText('🍃', l.x, drawY);
+
+    leavesCtx.font = '12px Inter, sans-serif';
+    leavesCtx.fillStyle = '#21433D';
+    leavesCtx.fillText(l.text, l.x+24, drawY);
+  });
+  leavesCtx.globalAlpha = 1;
+
+  leaves = leaves.filter(l=> l.x < w+80 && l.alpha > 0);
+
+  requestAnimationFrame(leavesLoop);
+}
+
+function initLeavesCanvas(){
+  if(!leavesInitialized){
+    leavesCanvas = document.getElementById('leavesCanvas');
+    leavesCtx = leavesCanvas.getContext('2d');
+    window.addEventListener('resize', resizeLeavesCanvas);
+    document.getElementById('leafPlaceBtn').addEventListener('click', placeCurrentLeaf);
+    document.getElementById('leafInput').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') placeCurrentLeaf();
+    });
+    leavesInitialized = true;
+  }
+  resizeLeavesCanvas();
+  if(!leavesRunning){
+    leavesRunning = true;
+    requestAnimationFrame(leavesLoop);
+  }
+}
+function placeCurrentLeaf(){
+  const input = document.getElementById('leafInput');
+  const text = input.value.trim();
+  if(!text) return;
+  addLeaf(text);
+  input.value = '';
+}
+
+// ---------- VISUALIZE: Drop the Anchor ----------
+const ANCHOR_STEPS_LIST = [
+  "Feel your feet flat on the floor — notice the contact, the weight of your body.",
+  "Take one slow stretch: reach your arms up, or roll your shoulders back.",
+  "Name 5 things you can see around you right now.",
+  "Name 4 things you can hear.",
+  "Name 3 things you can physically feel — fabric, temperature, your own breath.",
+  '"I am here, right now, and this moment is survivable." Say it out loud or in your head.'
+];
+let anchorDone = [];
+
+function renderAnchorSteps(){
+  const container = document.getElementById('anchorSteps');
+  if(anchorDone.length !== ANCHOR_STEPS_LIST.length){
+    anchorDone = ANCHOR_STEPS_LIST.map(()=>false);
+  }
+  container.innerHTML = ANCHOR_STEPS_LIST.map((step,i)=>`
+    <div class="anchor-step ${anchorDone[i]?'done':''}" data-idx="${i}">
+      <div class="anchor-step-num">${anchorDone[i]?'✓':i+1}</div>
+      <div class="anchor-step-text">${escapeHtml(step)}</div>
+    </div>
+  `).join('');
+  container.querySelectorAll('.anchor-step').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = parseInt(el.dataset.idx,10);
+      anchorDone[idx] = !anchorDone[idx];
+      renderAnchorSteps();
+    });
+  });
+}
+renderAnchorSteps();
 
 function initPopGame(){
   if(!popInitialized){
