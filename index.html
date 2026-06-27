@@ -666,36 +666,16 @@ situations.forEach(sit=>{
 renderEntries();
 
 // ---------- PLAN & SHARE ----------
-function buildPlanText(){
+function buildPlanData(){
   const entries = getEntries();
-  let text = "ANCHOR — My Self-Regulation Plan\n";
-  text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
-  text += "----------------------------------------\n\n";
-
-  if(entries.length === 0){
-    text += "No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.\n";
-    return text;
-  }
-
-  // Consistency / competence framing
   const streak = getStreak();
-  text += "SHOWING UP:\n";
-  text += `${entries.length} entr${entries.length===1?'y':'ies'} logged total.`;
-  if(streak >= 2) text += ` Currently on a ${streak}-day streak.`;
-  text += "\n\n";
 
-  // Affect-labeling pattern: which emotions show up most
   const emotionCounts = {};
   entries.forEach(e=>(e.emotions||[]).forEach(em=>{
     emotionCounts[em] = (emotionCounts[em]||0) + 1;
   }));
   const topEmotions = Object.entries(emotionCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
-  if(topEmotions.length){
-    text += "WHAT I MOST OFTEN NAME FEELING:\n";
-    text += topEmotions.map(([em,count])=>`- ${em} (${count}x)`).join("\n") + "\n\n";
-  }
 
-  // Situation pattern: which triggers recur
   const sitCounts = {};
   entries.forEach(e=>{
     if(e.situationTag){
@@ -704,30 +684,60 @@ function buildPlanText(){
     }
   });
   const topSits = Object.entries(sitCounts).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  if(topSits.length){
-    text += "SITUATIONS THAT COME UP MOST:\n";
-    text += topSits.map(([label,count])=>`- ${label} (${count}x)`).join("\n") + "\n\n";
+
+  return {
+    entries,
+    streak,
+    topEmotions,
+    topSits,
+    futureLines: entries.filter(e=>e.forFuture).map(e=>e.forFuture),
+    responseLines: entries.filter(e=>e.response).map(e=>e.response),
+    valuesLines: entries.filter(e=>e.valuesAction).map(e=>e.valuesAction),
+    recent: entries.slice(0,5)
+  };
+}
+
+function buildPlanText(){
+  const d = buildPlanData();
+  let text = "ANCHOR — My Self-Regulation Plan\n";
+  text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
+  text += "----------------------------------------\n\n";
+
+  if(d.entries.length === 0){
+    text += "No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.\n";
+    return text;
   }
 
-  const futureLines = entries.filter(e=>e.forFuture).map(e=>"- " + e.forFuture);
-  const responseLines = entries.filter(e=>e.response).map(e=>"- " + e.response);
-  const valuesLines = entries.filter(e=>e.valuesAction).map(e=>"- " + e.valuesAction);
+  text += "SHOWING UP:\n";
+  text += `${d.entries.length} entr${d.entries.length===1?'y':'ies'} logged total.`;
+  if(d.streak >= 2) text += ` Currently on a ${d.streak}-day streak.`;
+  text += "\n\n";
+
+  if(d.topEmotions.length){
+    text += "WHAT I MOST OFTEN NAME FEELING:\n";
+    text += d.topEmotions.map(([em,count])=>`- ${em} (${count}x)`).join("\n") + "\n\n";
+  }
+
+  if(d.topSits.length){
+    text += "SITUATIONS THAT COME UP MOST:\n";
+    text += d.topSits.map(([label,count])=>`- ${label} (${count}x)`).join("\n") + "\n\n";
+  }
 
   text += "WHAT TENDS TO HELP ME:\n";
-  text += (responseLines.slice(0,5).join("\n") || "- (not enough entries yet)") + "\n\n";
+  text += (d.responseLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
 
-  if(valuesLines.length){
+  if(d.valuesLines.length){
     text += "THINGS I DID ANYWAY, EVEN WHILE FEELING THIS — PROOF THE FEELING DIDN'T GET THE FINAL SAY:\n";
-    text += valuesLines.slice(0,5).join("\n") + "\n\n";
+    text += d.valuesLines.slice(0,5).map(l=>"- "+l).join("\n") + "\n\n";
   }
 
   text += "WHAT I'D WANT A PARTNER TO KNOW:\n";
-  text += (futureLines.slice(0,5).join("\n") || "- (not enough entries yet)") + "\n\n";
+  text += (d.futureLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
 
   text += "RECENT ENTRIES:\n";
-  entries.slice(0,5).forEach(e=>{
-    const d = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
-    text += `\n[${d}]\n`;
+  d.recent.forEach(e=>{
+    const dt = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
+    text += `\n[${dt}]\n`;
     if(e.emotions && e.emotions.length) text += `Felt: ${e.emotions.join(', ')}\n`;
     if(e.trigger) text += `Trigger: ${e.trigger}\n`;
     if(e.response) text += `Response: ${e.response}\n`;
@@ -745,18 +755,162 @@ function renderPlan(){
 document.getElementById('downloadPdf').addEventListener('click', ()=>{
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:'pt', format:'a4'});
-  const text = buildPlanText();
+  const data = buildPlanData();
+
+  const PAGE_W = 595.28, PAGE_H = 841.89;
   const margin = 50;
-  const maxWidth = 495;
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(11);
-  const lines = doc.splitTextToSize(text, maxWidth);
-  let y = margin;
-  lines.forEach(line=>{
-    if(y > 760){ doc.addPage(); y = margin; }
-    doc.text(line, margin, y);
-    y += 16;
-  });
+  const contentW = PAGE_W - margin*2;
+  const colors = {
+    bg: '#FFF8EC', ink: '#211B3D', electric: '#2E6FF2',
+    turquoise: '#18C7B8', coral: '#FF6F59', sunshine: '#FFC93C', muted: '#7A7390'
+  };
+  let y = 0;
+
+  function drawCoverHeader(){
+    doc.setFillColor(colors.electric);
+    doc.rect(0, 0, PAGE_W, 118, 'F');
+    // small accent dots, brand "signature"
+    doc.setFillColor(colors.coral); doc.circle(margin+6, 46, 6, 'F');
+    doc.setFillColor(colors.sunshine); doc.circle(margin+22, 46, 6, 'F');
+    doc.setFillColor(colors.turquoise); doc.circle(margin+38, 46, 6, 'F');
+
+    doc.setTextColor('#FFFFFF');
+    doc.setFont('helvetica','bold'); doc.setFontSize(28);
+    doc.text('ANCHOR', margin, 78);
+    doc.setFont('helvetica','normal'); doc.setFontSize(11);
+    doc.text('Self-Regulation Plan', margin, 96);
+
+    doc.setFontSize(10);
+    doc.text(new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}), PAGE_W-margin, 78, {align:'right'});
+    doc.text('A gym, not a partner.', PAGE_W-margin, 96, {align:'right'});
+
+    y = 150;
+  }
+
+  function drawSlimHeader(){
+    doc.setFillColor(colors.electric);
+    doc.rect(0, 0, PAGE_W, 36, 'F');
+    doc.setTextColor('#FFFFFF');
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.text('ANCHOR', margin, 24);
+    y = 60;
+  }
+
+  function ensureSpace(neededHeight){
+    if(y + neededHeight > PAGE_H - 70){
+      doc.addPage();
+      drawSlimHeader();
+    }
+  }
+
+  function sectionTitle(title, color){
+    ensureSpace(30);
+    doc.setFillColor(color);
+    doc.roundedRect(margin, y-9, 10, 10, 2, 2, 'F');
+    doc.setTextColor(colors.ink);
+    doc.setFont('helvetica','bold'); doc.setFontSize(12.5);
+    doc.text(title.toUpperCase(), margin+18, y);
+    y += 8;
+    doc.setDrawColor(230,225,210);
+    doc.line(margin, y+4, PAGE_W-margin, y+4);
+    y += 20;
+  }
+
+  function bodyText(str, opts={}){
+    doc.setFont('helvetica', opts.bold ? 'bold' : 'normal');
+    doc.setFontSize(opts.size || 10.5);
+    doc.setTextColor(opts.color || colors.ink);
+    const lines = doc.splitTextToSize(str, contentW - (opts.indent||0));
+    lines.forEach(line=>{
+      ensureSpace(16);
+      doc.text(line, margin + (opts.indent||0), y);
+      y += opts.lineHeight || 15;
+    });
+  }
+
+  function bulletList(items, color){
+    items.forEach(item=>{
+      ensureSpace(16);
+      doc.setFillColor(color);
+      doc.circle(margin+4, y-3.5, 2, 'F');
+      bodyText(item, {indent:14});
+      y += 3;
+    });
+  }
+
+  // ---- Cover / header ----
+  drawCoverHeader();
+
+  if(data.entries.length === 0){
+    bodyText("No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.", {size:11});
+  } else {
+    // Showing up
+    sectionTitle('Showing up', colors.turquoise);
+    let showingUp = `${data.entries.length} entr${data.entries.length===1?'y':'ies'} logged total.`;
+    if(data.streak >= 2) showingUp += ` Currently on a ${data.streak}-day streak.`;
+    bodyText(showingUp);
+    y += 8;
+
+    // Top emotions
+    if(data.topEmotions.length){
+      sectionTitle('What I most often name feeling', colors.electric);
+      bulletList(data.topEmotions.map(([em,c])=>`${EMOTION_EMOJI[em]||''} ${em} — ${c}x`), colors.electric);
+      y += 8;
+    }
+
+    // Top situations
+    if(data.topSits.length){
+      sectionTitle('Situations that come up most', colors.coral);
+      bulletList(data.topSits.map(([label,c])=>`${label} — ${c}x`), colors.coral);
+      y += 8;
+    }
+
+    // What helps
+    sectionTitle('What tends to help me', colors.turquoise);
+    bulletList(data.responseLines.slice(0,5).length ? data.responseLines.slice(0,5) : ['Not enough entries yet'], colors.turquoise);
+    y += 8;
+
+    // Values actions (ACT)
+    if(data.valuesLines.length){
+      sectionTitle('Things I did anyway', colors.sunshine);
+      bodyText("Proof the feeling didn't get the final say:", {size:9.5, color: colors.muted});
+      y += 4;
+      bulletList(data.valuesLines.slice(0,5), colors.sunshine);
+      y += 8;
+    }
+
+    // For a future partner
+    sectionTitle("What I'd want a partner to know", colors.electric);
+    bulletList(data.futureLines.slice(0,5).length ? data.futureLines.slice(0,5) : ['Not enough entries yet'], colors.electric);
+    y += 8;
+
+    // Recent entries
+    sectionTitle('Recent entries', colors.coral);
+    data.recent.forEach(e=>{
+      ensureSpace(20);
+      const dt = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
+      bodyText(dt, {bold:true, size:10});
+      if(e.emotions && e.emotions.length) bodyText(`Felt: ${e.emotions.join(', ')}`, {indent:8, color: colors.muted});
+      if(e.trigger) bodyText(`Trigger: ${e.trigger}`, {indent:8});
+      if(e.response) bodyText(`Response: ${e.response}`, {indent:8});
+      if(e.valuesAction) bodyText(`Did anyway: ${e.valuesAction}`, {indent:8});
+      if(e.forFuture) bodyText(`For future partner: ${e.forFuture}`, {indent:8});
+      y += 10;
+    });
+  }
+
+  // ---- Footer on every page ----
+  const totalPages = doc.internal.getNumberOfPages();
+  for(let p=1; p<=totalPages; p++){
+    doc.setPage(p);
+    doc.setDrawColor(230,225,210);
+    doc.line(margin, PAGE_H-50, PAGE_W-margin, PAGE_H-50);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.setTextColor(colors.muted);
+    doc.text('© ' + new Date().getFullYear() + ' Wakara Technologies Limited. All rights reserved.', margin, PAGE_H-34);
+    doc.text(`Page ${p} of ${totalPages}`, PAGE_W-margin, PAGE_H-34, {align:'right'});
+  }
+
   doc.save('anchor-regulation-plan.pdf');
 });
 
