@@ -233,6 +233,32 @@
   .pdf-modal-download{background:var(--coral); color:#fff;}
   .pdf-modal-close{background:var(--bg); color:var(--ink); border:1px solid var(--line);}
   .pdf-iframe{flex:1; border:none; width:100%; background:#525659;}
+
+  /* Play */
+  .play-stage{
+    position:relative; width:100%; height:480px; border-radius:18px; overflow:hidden;
+    background:linear-gradient(180deg, #FFF8EC 0%, #FDEFD8 100%);
+    border:1px solid var(--line);
+  }
+  #popCanvas{width:100%; height:100%; display:block; touch-action:none; cursor:pointer;}
+  .play-hud{
+    position:absolute; top:14px; left:14px; right:14px; display:flex;
+    align-items:center; justify-content:space-between; pointer-events:none;
+  }
+  .play-hud > *{pointer-events:auto;}
+  #popCount{
+    font-family:var(--mono); font-size:12px; color:var(--ink); background:rgba(255,255,255,0.75);
+    padding:6px 12px; border-radius:20px; backdrop-filter:blur(4px);
+  }
+  .play-restart{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    background:rgba(255,255,255,0.85); border:1px solid var(--line); color:var(--muted);
+    padding:7px 14px; border-radius:20px; cursor:pointer;
+  }
+  .play-restart:hover{color:var(--coral);}
+  @media (max-width:480px){
+    .play-stage{height:420px;}
+  }
   @media (max-width:600px){
     .pdf-modal{padding:0;}
     .pdf-modal-inner{height:100vh; border-radius:0; max-width:100%;}
@@ -253,6 +279,7 @@
     <button class="tab-btn" data-tab="situations">Situations</button>
     <button class="tab-btn" data-tab="journal">Journal</button>
     <button class="tab-btn" data-tab="plan">Plan &amp; Share</button>
+    <button class="tab-btn" data-tab="play">Play</button>
   </nav>
 
   <!-- BREATHE -->
@@ -327,6 +354,18 @@
     <p class="note">Preview opens your plan as a PDF right in the browser — from there you can download it, then email it to yourself or save it anywhere you like. WhatsApp opens a pre-filled message you can send to yourself, a friend, or a partner. Nothing here ever leaves your browser unless you choose to send it.</p>
   </section>
 
+  <!-- PLAY -->
+  <section id="play">
+    <p class="sub" style="margin-bottom:6px;">No score to lose, nothing to win. Tap the worries as they drift up and let them go.</p>
+    <div class="play-stage">
+      <canvas id="popCanvas"></canvas>
+      <div class="play-hud">
+        <span id="popCount">0 popped</span>
+        <button class="play-restart" id="popRestart">↺ Clear the air</button>
+      </div>
+    </div>
+  </section>
+
   <!-- PDF PREVIEW MODAL -->
   <div class="pdf-modal" id="pdfModal">
     <div class="pdf-modal-inner">
@@ -358,6 +397,8 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.getElementById(btn.dataset.tab).classList.add('active');
     if(btn.dataset.tab==='plan') renderPlan();
     if(btn.dataset.tab==='journal') renderEntries();
+    if(btn.dataset.tab==='play') initPopGame();
+    else popRunning = false;
   });
 });
 
@@ -1029,6 +1070,169 @@ document.getElementById('shareWhatsapp').addEventListener('click', ()=>{
 });
 
 document.getElementById('copyYear').textContent = new Date().getFullYear();
+
+// ---------- PLAY: Pop the Worries ----------
+const POP_WORDS = [
+  'what if', 'not enough', 'too late', "they'll judge", 'compare',
+  'overthink', 'replay it', 'spiral', 'doubt', 'behind',
+  'alone', 'rejected', 'what now', 'still single'
+];
+const POP_COLORS = ['#2E6FF2', '#FF6F59', '#18C7B8', '#FFC93C'];
+
+let popCtx = null, popCanvas = null;
+let popBubbles = [];
+let popParticles = [];
+let popCount = 0;
+let popInitialized = false;
+let popLastSpawn = 0;
+let popRunning = false;
+let popDpr = 1;
+
+function resizePopCanvas(){
+  if(!popCanvas) return;
+  const rect = popCanvas.parentElement.getBoundingClientRect();
+  popDpr = window.devicePixelRatio || 1;
+  popCanvas.width = rect.width * popDpr;
+  popCanvas.height = rect.height * popDpr;
+  popCtx.setTransform(popDpr, 0, 0, popDpr, 0, 0);
+}
+
+function spawnBubble(){
+  const rect = popCanvas.parentElement.getBoundingClientRect();
+  const r = 28 + Math.random()*22;
+  popBubbles.push({
+    x: r + Math.random() * (rect.width - r*2),
+    y: rect.height + r,
+    r,
+    speed: 0.4 + Math.random()*0.5,
+    sway: Math.random()*Math.PI*2,
+    swaySpeed: 0.015 + Math.random()*0.015,
+    swayAmp: 10 + Math.random()*16,
+    color: POP_COLORS[Math.floor(Math.random()*POP_COLORS.length)],
+    word: POP_WORDS[Math.floor(Math.random()*POP_WORDS.length)],
+    alpha: 0,
+    popped: false
+  });
+}
+
+function popBubble(b){
+  b.popped = true;
+  popCount++;
+  document.getElementById('popCount').textContent = `${popCount} popped`;
+  for(let i=0;i<10;i++){
+    const angle = (Math.PI*2/10)*i + Math.random()*0.4;
+    popParticles.push({
+      x: b.x, y: b.y,
+      vx: Math.cos(angle)*(1.5+Math.random()*1.5),
+      vy: Math.sin(angle)*(1.5+Math.random()*1.5),
+      r: 2+Math.random()*2,
+      color: b.color,
+      life: 1
+    });
+  }
+}
+
+function popLoop(ts){
+  if(!popRunning) return;
+  const rect = popCanvas.parentElement.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  popCtx.clearRect(0,0,w,h);
+
+  if(ts - popLastSpawn > 1100 && popBubbles.length < 9){
+    spawnBubble();
+    popLastSpawn = ts;
+  }
+
+  popBubbles.forEach(b=>{
+    if(b.popped) return;
+    b.y -= b.speed;
+    b.sway += b.swaySpeed;
+    b.alpha = Math.min(1, b.alpha + 0.03);
+    const drawX = b.x + Math.sin(b.sway)*b.swayAmp;
+
+    popCtx.globalAlpha = b.alpha * 0.85;
+    popCtx.beginPath();
+    popCtx.arc(drawX, b.y, b.r, 0, Math.PI*2);
+    popCtx.fillStyle = b.color;
+    popCtx.fill();
+
+    popCtx.globalAlpha = b.alpha * 0.35;
+    popCtx.beginPath();
+    popCtx.arc(drawX - b.r*0.3, b.y - b.r*0.3, b.r*0.35, 0, Math.PI*2);
+    popCtx.fillStyle = '#FFFFFF';
+    popCtx.fill();
+
+    popCtx.globalAlpha = b.alpha;
+    popCtx.fillStyle = '#FFFFFF';
+    popCtx.font = `${Math.max(10, b.r*0.32)}px Inter, sans-serif`;
+    popCtx.textAlign = 'center';
+    popCtx.textBaseline = 'middle';
+    popCtx.fillText(b.word, drawX, b.y);
+
+    b._drawX = drawX;
+  });
+  popCtx.globalAlpha = 1;
+
+  popBubbles = popBubbles.filter(b=>!b.popped && b.y + b.r > -10);
+
+  popParticles.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.life -= 0.025;
+    popCtx.globalAlpha = Math.max(0, p.life);
+    popCtx.beginPath();
+    popCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    popCtx.fillStyle = p.color;
+    popCtx.fill();
+  });
+  popCtx.globalAlpha = 1;
+  popParticles = popParticles.filter(p=>p.life > 0);
+
+  requestAnimationFrame(popLoop);
+}
+
+function getEventPos(e){
+  const rect = popCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+function handlePopTap(e){
+  e.preventDefault();
+  const pos = getEventPos(e);
+  for(let i=popBubbles.length-1; i>=0; i--){
+    const b = popBubbles[i];
+    if(b.popped) continue;
+    const dx = pos.x - (b._drawX ?? b.x);
+    const dy = pos.y - b.y;
+    if(dx*dx + dy*dy <= b.r*b.r){
+      popBubble(b);
+      break;
+    }
+  }
+}
+
+function initPopGame(){
+  if(!popInitialized){
+    popCanvas = document.getElementById('popCanvas');
+    popCtx = popCanvas.getContext('2d');
+    popCanvas.addEventListener('mousedown', handlePopTap);
+    popCanvas.addEventListener('touchstart', handlePopTap, {passive:false});
+    window.addEventListener('resize', resizePopCanvas);
+    document.getElementById('popRestart').addEventListener('click', ()=>{
+      popBubbles = [];
+      popParticles = [];
+      popCount = 0;
+      document.getElementById('popCount').textContent = '0 popped';
+    });
+    popInitialized = true;
+  }
+  resizePopCanvas();
+  if(!popRunning){
+    popRunning = true;
+    popLastSpawn = 0;
+    requestAnimationFrame(popLoop);
+  }
+}
 </script>
 </body>
 </html>
