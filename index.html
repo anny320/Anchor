@@ -197,6 +197,34 @@
 
   footer{margin-top:48px; border-top:1px solid var(--line); padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
   .copyright{margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--muted); opacity:0.8;}
+
+  /* PDF preview modal */
+  .pdf-modal{
+    display:none; position:fixed; inset:0; background:rgba(33,27,61,0.55);
+    z-index:1000; align-items:center; justify-content:center; padding:24px;
+  }
+  .pdf-modal.show{display:flex;}
+  .pdf-modal-inner{
+    background:var(--panel); border-radius:14px; width:100%; max-width:720px; height:90vh;
+    display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .pdf-modal-bar{
+    display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+    border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .pdf-modal-title{font-family:var(--display); font-weight:600; font-size:15px; color:var(--ink);}
+  .pdf-modal-actions{display:flex; gap:8px;}
+  .pdf-modal-btn{
+    border:none; border-radius:8px; padding:8px 14px; font-family:var(--body); font-weight:600;
+    font-size:13px; cursor:pointer;
+  }
+  .pdf-modal-download{background:var(--coral); color:#fff;}
+  .pdf-modal-close{background:var(--bg); color:var(--ink); border:1px solid var(--line);}
+  .pdf-iframe{flex:1; border:none; width:100%; background:#525659;}
+  @media (max-width:600px){
+    .pdf-modal{padding:0;}
+    .pdf-modal-inner{height:100vh; border-radius:0; max-width:100%;}
+  }
 </style>
 </head>
 <body>
@@ -275,11 +303,25 @@
       <p>Built from your journal entries. This turns your private reflections into language you can actually use — with a future partner, a friend, or just yourself on a hard day.</p>
     </div>
     <div class="share-row">
-      <button class="share-btn btn-pdf" id="downloadPdf">↓ Download as PDF</button>
+      <button class="share-btn btn-pdf" id="previewPdf">👁 Preview PDF</button>
       <button class="share-btn btn-whatsapp" id="shareWhatsapp">↗ Share to WhatsApp</button>
     </div>
-    <p class="note">The PDF downloads straight to your device — from there you can email it to yourself or save it anywhere you like. WhatsApp opens a pre-filled message you can send to yourself, a friend, or a partner. Nothing here ever leaves your browser unless you choose to send it.</p>
+    <p class="note">Preview opens your plan as a PDF right in the browser — from there you can download it, then email it to yourself or save it anywhere you like. WhatsApp opens a pre-filled message you can send to yourself, a friend, or a partner. Nothing here ever leaves your browser unless you choose to send it.</p>
   </section>
+
+  <!-- PDF PREVIEW MODAL -->
+  <div class="pdf-modal" id="pdfModal">
+    <div class="pdf-modal-inner">
+      <div class="pdf-modal-bar">
+        <span class="pdf-modal-title">Anchor — Plan preview</span>
+        <div class="pdf-modal-actions">
+          <button class="pdf-modal-btn pdf-modal-download" id="modalDownload">↓ Download</button>
+          <button class="pdf-modal-btn pdf-modal-close" id="modalClose">✕ Close</button>
+        </div>
+      </div>
+      <iframe id="pdfFrame" class="pdf-iframe"></iframe>
+    </div>
+  </div>
 
   <footer>
     Everything you write stays on this device (local storage only) — nothing is uploaded anywhere. This tool supports self-regulation skills; it isn't a substitute for therapy, and it isn't a substitute for the real connection you're working toward.
@@ -699,51 +741,61 @@ function buildPlanData(){
 
 function buildPlanText(){
   const d = buildPlanData();
-  let text = "ANCHOR — My Self-Regulation Plan\n";
+  let text = "⚓ *ANCHOR* — My Self-Regulation Plan\n";
   text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
+  text += "_A gym, not a partner._\n";
   text += "----------------------------------------\n\n";
 
   if(d.entries.length === 0){
     text += "No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.\n";
+    text += "\n----------------------------------------\n";
+    text += "© " + new Date().getFullYear() + " Wakara Technologies Limited\n";
     return text;
   }
 
-  text += "SHOWING UP:\n";
+  text += "*🧭 Showing up*\n";
   text += `${d.entries.length} entr${d.entries.length===1?'y':'ies'} logged total.`;
   if(d.streak >= 2) text += ` Currently on a ${d.streak}-day streak.`;
   text += "\n\n";
 
   if(d.topEmotions.length){
-    text += "WHAT I MOST OFTEN NAME FEELING:\n";
-    text += d.topEmotions.map(([em,count])=>`- ${em} (${count}x)`).join("\n") + "\n\n";
+    text += "*💛 What I most often name feeling*\n";
+    text += d.topEmotions.map(([em,count])=>`${EMOTION_EMOJI[em]||'•'} ${em} (${count}x)`).join("\n") + "\n\n";
   }
 
   if(d.topSits.length){
-    text += "SITUATIONS THAT COME UP MOST:\n";
-    text += d.topSits.map(([label,count])=>`- ${label} (${count}x)`).join("\n") + "\n\n";
+    text += "*📍 Situations that come up most*\n";
+    text += d.topSits.map(([label,count])=>{
+      const sit = situations.find(s=>s.title===label);
+      return `${sit?.emoji||'•'} ${label} (${count}x)`;
+    }).join("\n") + "\n\n";
   }
 
-  text += "WHAT TENDS TO HELP ME:\n";
+  text += "*🌬️ What tends to help me*\n";
   text += (d.responseLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
 
   if(d.valuesLines.length){
-    text += "THINGS I DID ANYWAY, EVEN WHILE FEELING THIS — PROOF THE FEELING DIDN'T GET THE FINAL SAY:\n";
+    text += "*✅ Things I did anyway*\n";
+    text += "_Proof the feeling didn't get the final say:_\n";
     text += d.valuesLines.slice(0,5).map(l=>"- "+l).join("\n") + "\n\n";
   }
 
-  text += "WHAT I'D WANT A PARTNER TO KNOW:\n";
+  text += "*💬 What I'd want a partner to know*\n";
   text += (d.futureLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
 
-  text += "RECENT ENTRIES:\n";
+  text += "*🗒️ Recent entries*\n";
   d.recent.forEach(e=>{
     const dt = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
-    text += `\n[${dt}]\n`;
-    if(e.emotions && e.emotions.length) text += `Felt: ${e.emotions.join(', ')}\n`;
+    text += `\n*[${dt}]*\n`;
+    if(e.emotions && e.emotions.length) text += `Felt: ${e.emotions.map(em=>`${EMOTION_EMOJI[em]||''} ${em}`).join(', ')}\n`;
     if(e.trigger) text += `Trigger: ${e.trigger}\n`;
     if(e.response) text += `Response: ${e.response}\n`;
     if(e.valuesAction) text += `Did anyway: ${e.valuesAction}\n`;
     if(e.forFuture) text += `For future partner: ${e.forFuture}\n`;
   });
+
+  text += "\n----------------------------------------\n";
+  text += "© " + new Date().getFullYear() + " Wakara Technologies Limited\n";
 
   return text;
 }
@@ -752,7 +804,7 @@ function renderPlan(){
   // plan card content stays static; data is generated on export
 }
 
-document.getElementById('downloadPdf').addEventListener('click', ()=>{
+function buildAnchorPdf(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:'pt', format:'a4'});
   const data = buildPlanData();
@@ -911,7 +963,29 @@ document.getElementById('downloadPdf').addEventListener('click', ()=>{
     doc.text(`Page ${p} of ${totalPages}`, PAGE_W-margin, PAGE_H-34, {align:'right'});
   }
 
-  doc.save('anchor-regulation-plan.pdf');
+  return doc;
+}
+
+let currentPdfDoc = null;
+let currentPdfUrl = null;
+
+document.getElementById('previewPdf').addEventListener('click', ()=>{
+  currentPdfDoc = buildAnchorPdf();
+  if(currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
+  currentPdfUrl = currentPdfDoc.output('bloburl');
+  document.getElementById('pdfFrame').src = currentPdfUrl;
+  document.getElementById('pdfModal').classList.add('show');
+});
+
+document.getElementById('modalDownload').addEventListener('click', ()=>{
+  if(currentPdfDoc) currentPdfDoc.save('anchor-regulation-plan.pdf');
+});
+
+document.getElementById('modalClose').addEventListener('click', ()=>{
+  document.getElementById('pdfModal').classList.remove('show');
+});
+document.getElementById('pdfModal').addEventListener('click', (e)=>{
+  if(e.target.id === 'pdfModal') document.getElementById('pdfModal').classList.remove('show');
 });
 
 document.getElementById('shareWhatsapp').addEventListener('click', ()=>{
