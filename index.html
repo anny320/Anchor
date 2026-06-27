@@ -195,7 +195,8 @@
   .btn-whatsapp{background:#25D366; color:#0B1A0F;}
   .note{font-size:12px; color:var(--muted); margin-top:14px; line-height:1.5;}
 
-  footer{margin-top:48px; border-top:1px solid #2A3343; padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
+  footer{margin-top:48px; border-top:1px solid var(--line); padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
+  .copyright{margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--muted); opacity:0.8;}
 </style>
 </head>
 <body>
@@ -282,6 +283,7 @@
 
   <footer>
     Everything you write stays on this device (local storage only) — nothing is uploaded anywhere. This tool supports self-regulation skills; it isn't a substitute for therapy, and it isn't a substitute for the real connection you're working toward.
+    <div class="copyright">© <span id="copyYear"></span> Wakara Technologies Limited. All rights reserved.</div>
   </footer>
 
 </div>
@@ -369,12 +371,16 @@ startBtn.addEventListener('click', ()=>{
 
 // ---------- JOURNAL ----------
 const EMOTION_OPTIONS = ['Anxious','Sad','Lonely','Angry','Ashamed','Hopeless','Jealous','Numb','Hopeful','Relieved'];
+const EMOTION_EMOJI = {
+  'Anxious':'😬','Sad':'😔','Lonely':'🫂','Angry':'😠','Ashamed':'😳',
+  'Hopeless':'😞','Jealous':'😕','Numb':'😶','Hopeful':'🙂','Relieved':'😌'
+};
 let selectedEmotions = [];
 
 function renderEmotionChips(){
   const row = document.getElementById('emotionChips');
   row.innerHTML = EMOTION_OPTIONS.map(em=>
-    `<button type="button" class="chip ${selectedEmotions.includes(em)?'selected':''}" data-emotion="${em}">${em}</button>`
+    `<button type="button" class="chip ${selectedEmotions.includes(em)?'selected':''}" data-emotion="${em}">${EMOTION_EMOJI[em]} ${em}</button>`
   ).join('');
   row.querySelectorAll('.chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
@@ -468,7 +474,7 @@ function renderEntries(){
     const sitLabel = e.situationTag ? (situations.find(s=>s.id===e.situationTag)?.title || '') : '';
     return `<div class="entry">
       <div class="entry-date">${d.toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'})}${sitLabel ? ' · '+escapeHtml(sitLabel) : ''}</div>
-      ${e.emotions && e.emotions.length ? `<div class="entry-row"><b>Felt:</b> ${e.emotions.map(escapeHtml).join(', ')}</div>` : ''}
+      ${e.emotions && e.emotions.length ? `<div class="entry-row"><b>Felt:</b> ${e.emotions.map(em=>`${EMOTION_EMOJI[em]||''} ${escapeHtml(em)}`).join(', ')}</div>` : ''}
       ${e.trigger ? `<div class="entry-row"><b>Trigger:</b> ${escapeHtml(e.trigger)}</div>` : ''}
       ${e.response ? `<div class="entry-row"><b>Response:</b> ${escapeHtml(e.response)}</div>` : ''}
       ${e.valuesAction ? `<div class="entry-row"><b>Did anyway:</b> ${escapeHtml(e.valuesAction)}</div>` : ''}
@@ -486,6 +492,7 @@ function escapeHtml(str){
 const situations = [
   {
     id: 'ghosted',
+    emoji: '👻',
     title: 'Got ghosted',
     color: 'var(--coral)',
     why: "Silence after connection reads as threat to the brain — it triggers the same alarm as rejection, even with someone you barely knew. The steps below aren't about getting an answer; they're about not spiraling while you wait for one (or for closure that may never come).",
@@ -499,6 +506,7 @@ const situations = [
   },
   {
     id: 'comparison',
+    emoji: '💭',
     title: 'Saw a couple / wedding / baby announcement and felt a pang',
     color: 'var(--electric)',
     why: "This is a comparison spiral, not a fact about your life. Social comparison lights up real distress in the brain — it's not 'just' jealousy, but it also isn't information about your worth or your timeline.",
@@ -512,6 +520,7 @@ const situations = [
   },
   {
     id: 'pre-date',
+    emoji: '😰',
     title: 'Pre-date anxiety',
     color: 'var(--sunshine)',
     why: "Anticipatory anxiety is your body preparing for a threat that probably isn't one. The goal isn't to eliminate the nerves — it's to stop them from running the show.",
@@ -525,6 +534,7 @@ const situations = [
   },
   {
     id: 'post-date',
+    emoji: '🔁',
     title: 'Post-date overthinking',
     color: 'var(--turquoise)',
     why: "Replaying every word is your brain trying to get certainty in an uncertain situation. It feels productive; it rarely is.",
@@ -538,6 +548,7 @@ const situations = [
   },
   {
     id: 'milestone',
+    emoji: '🎂',
     title: "Milestone loneliness (birthday, holidays, 'still no one?')",
     color: 'var(--coral)',
     why: "Calendar markers amplify whatever story you're already carrying about being behind. The date itself isn't the problem — the meaning you're attaching to it is.",
@@ -551,6 +562,7 @@ const situations = [
   },
   {
     id: 'old-grief',
+    emoji: '🌧️',
     title: 'An ex resurfaces, or old relationship grief shows up',
     color: 'var(--electric)',
     why: "Grief about past relationships doesn't always show up when you expect it. It can hit out of nowhere — a song, a photo, a similar laugh — and that's normal, not a setback.",
@@ -564,6 +576,7 @@ const situations = [
   },
   {
     id: 'self-worth',
+    emoji: '🪞',
     title: "What's wrong with me that I'm still single?",
     color: 'var(--sunshine)',
     why: "This question assumes singleness is a verdict rather than a circumstance. It rarely holds up under actual scrutiny, but it feels true when you're dysregulated — which is exactly why it needs a body-first response, not a debate.",
@@ -599,7 +612,7 @@ function renderSituations(){
     return `<div class="sit-card ${sit.id==='ghosted'?'open':''}" data-id="${sit.id}">
       <div class="sit-head">
         <div class="sit-dot" style="background:${sit.color}"></div>
-        <div class="sit-title">${escapeHtml(sit.title)}</div>
+        <div class="sit-title">${sit.emoji||''} ${escapeHtml(sit.title)}</div>
         <div class="sit-chevron">›</div>
       </div>
       <div class="sit-body">
@@ -752,6 +765,8 @@ document.getElementById('shareWhatsapp').addEventListener('click', ()=>{
   const url = 'https://wa.me/?text=' + encodeURIComponent(text);
   window.open(url, '_blank');
 });
+
+document.getElementById('copyYear').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
