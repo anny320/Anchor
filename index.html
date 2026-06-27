@@ -906,7 +906,7 @@ function buildAnchorPdf(){
     // Top emotions
     if(data.topEmotions.length){
       sectionTitle('What I most often name feeling', colors.electric);
-      bulletList(data.topEmotions.map(([em,c])=>`${EMOTION_EMOJI[em]||''} ${em} — ${c}x`), colors.electric);
+      bulletList(data.topEmotions.map(([em,c])=>`${em} — ${c}x`), colors.electric);
       y += 8;
     }
 
