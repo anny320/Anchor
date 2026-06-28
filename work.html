@@ -41,6 +41,20 @@
   .wrap{max-width:680px; margin:0 auto; padding:32px 20px 80px;}
 
   header{margin-bottom:28px;}
+  .edition-switch{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    margin-bottom:24px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .edition-switch-link{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.03em; text-decoration:none;
+    color:var(--muted); padding:6px 0;
+  }
+  .edition-switch-link:hover{color:var(--ink);}
+  .edition-switch-other{
+    color:#fff; background:var(--coral); padding:7px 14px; border-radius:16px;
+  }
+  .edition-switch-other:hover{opacity:0.9; color:#fff;}
+
   .eyebrow{
     font-family:var(--mono); font-size:12px; letter-spacing:0.12em;
     text-transform:uppercase; color:var(--electric); margin-bottom:10px; font-weight:600;
@@ -336,6 +350,11 @@
 </head>
 <body>
 <div class="wrap">
+
+  <div class="edition-switch">
+    <a href="index.html" class="edition-switch-link">← Anchor home</a>
+    <a href="love.html" class="edition-switch-link edition-switch-other">Switch to Anchor for Love →</a>
+  </div>
 
   <header>
     <div class="eyebrow">Self-regulation, on the clock</div>
