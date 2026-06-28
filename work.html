@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anchor — a regulation gym for the still-hoping</title>
+<title>Anchor for Work — a regulation gym for the working day</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
@@ -41,6 +41,7 @@
     font-family:var(--display); font-weight:600; font-size:clamp(28px,6vw,40px);
     line-height:1.1; color:var(--ink);
   }
+  .work-tag{color:var(--turquoise); font-weight:500;}
   .sub{color:var(--muted); font-size:15px; max-width:480px; margin-top:10px; line-height:1.5;}
 
   nav{display:flex; gap:6px; margin:28px 0 24px; border-bottom:2px solid var(--line); padding-bottom:0;}
@@ -329,9 +330,9 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Self-regulation, while you wait</div>
-    <h1>Anchor</h1>
-    <p class="sub">A gym, not a partner. Practice calming your own nervous system and naming what you need — so you show up steadier when someone real is in front of you.</p>
+    <div class="eyebrow">Self-regulation, on the clock</div>
+    <h1>Anchor <span class="work-tag">for Work</span></h1>
+    <p class="sub">A gym, not a therapist. Practice calming your own nervous system and naming what you need — so the bad meeting, the harsh feedback, or the looming deadline doesn't run the rest of your day.</p>
   </header>
 
   <nav>
@@ -409,7 +410,7 @@
     <div class="chip-row" id="emotionChips"></div>
 
     <label class="field-label">What dysregulated you today?</label>
-    <textarea id="trigger" placeholder="e.g. saw a couple at dinner, felt a wave of 'will this ever happen for me'"></textarea>
+    <textarea id="trigger" placeholder="e.g. got blunt feedback in front of the team, felt my face go hot"></textarea>
 
     <label class="field-label">If this connects to a situation you've checklisted, which one?</label>
     <select id="situationTag">
@@ -417,13 +418,13 @@
     </select>
 
     <label class="field-label">What did you do, and did it help?</label>
-    <textarea id="response" placeholder="e.g. went for a walk, named the feeling out loud — helped some, still sat heavy"></textarea>
+    <textarea id="response" placeholder="e.g. stepped outside for 5 minutes, did a few rounds of box breathing — helped enough to get back in the room"></textarea>
 
     <label class="field-label">Even with this feeling here, what did you still do (or want to do) that matters to you?</label>
     <textarea id="valuesAction" placeholder="e.g. still texted a friend back, still went to the gym — the feeling didn't get the final say"></textarea>
 
-    <label class="field-label">One thing you'd want a future partner to know about this</label>
-    <textarea id="forFuture" placeholder="e.g. I don't need fixing, I need someone to just sit with me for a minute"></textarea>
+    <label class="field-label">One thing you'd want your manager or a trusted colleague to understand</label>
+    <textarea id="forFuture" placeholder="e.g. I am not slacking, I needed a minute to reset before I could focus again"></textarea>
 
     <button class="save-btn" id="saveEntry">Save entry</button>
 
@@ -441,7 +442,7 @@
   <section id="plan">
     <div class="plan-card">
       <h3>Your regulation plan</h3>
-      <p>Built from your journal entries. This turns your private reflections into language you can actually use — with a future partner, a friend, or just yourself on a hard day.</p>
+      <p>Built from your journal entries. This turns your private reflections into language you can actually use — in a 1:1, with a colleague, or just for yourself on a hard day.</p>
     </div>
     <div class="share-row">
       <button class="share-btn btn-pdf" id="previewPdf">👁 Preview PDF</button>
@@ -594,10 +595,10 @@ startBtn.addEventListener('click', ()=>{
 });
 
 // ---------- JOURNAL ----------
-const EMOTION_OPTIONS = ['Anxious','Sad','Lonely','Angry','Ashamed','Hopeless','Jealous','Numb','Hopeful','Relieved'];
+const EMOTION_OPTIONS = ['Anxious','Overwhelmed','Frustrated','Burnt out','Insecure','Angry','Ashamed','Numb','Hopeful','Relieved'];
 const EMOTION_EMOJI = {
-  'Anxious':'😬','Sad':'😔','Lonely':'🫂','Angry':'😠','Ashamed':'😳',
-  'Hopeless':'😞','Jealous':'😕','Numb':'😶','Hopeful':'🙂','Relieved':'😌'
+  'Anxious':'😬','Overwhelmed':'😵','Frustrated':'😤','Burnt out':'🥱','Insecure':'😟',
+  'Angry':'😠','Ashamed':'😳','Numb':'😶','Hopeful':'🙂','Relieved':'😌'
 };
 let selectedEmotions = [];
 
@@ -707,7 +708,7 @@ function renderEntries(){
       ${e.trigger ? `<div class="entry-row"><b>Trigger:</b> ${escapeHtml(e.trigger)}</div>` : ''}
       ${e.response ? `<div class="entry-row"><b>Response:</b> ${escapeHtml(e.response)}</div>` : ''}
       ${e.valuesAction ? `<div class="entry-row"><b>Did anyway:</b> ${escapeHtml(e.valuesAction)}</div>` : ''}
-      ${e.forFuture ? `<div class="entry-row"><b>For a future partner:</b> ${escapeHtml(e.forFuture)}</div>` : ''}
+      ${e.forFuture ? `<div class="entry-row"><b>For my manager/colleague:</b> ${escapeHtml(e.forFuture)}</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -731,183 +732,153 @@ function escapeHtml(str){
 // ---------- SITUATIONS ----------
 const situations = [
   {
-    id: 'ghosted',
-    emoji: '👻',
-    recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
-    title: 'Got ghosted',
+    id: 'deadline-panic',
+    emoji: '⏰',
+    recommended: {type:'breathing', pattern:'box', label:'🌬️ Try: Box breathing (4-4-4-4)'},
+    title: 'Tight deadline panic',
     color: 'var(--coral)',
-    why: "Silence after connection reads as threat to the brain — it triggers the same alarm as rejection, even with someone you barely knew. The steps below aren't about getting an answer; they're about not spiraling while you wait for one (or for closure that may never come).",
+    why: "Deadline panic floods the body with the same alarm as physical danger, even though nothing is actually chasing you. The urgency is real; the alarm-level activation usually isn't proportional, and it actively makes focused work harder, not easier.",
     steps: [
-      "Set a personal deadline for how long you'll wonder — after 48-72 hrs, mentally close the loop regardless of whether they reply",
-      "Name the feeling out loud: 'I feel rejected and a bit humiliated' — labeling it lowers its intensity",
-      "Resist the urge to re-read the whole chat thread looking for clues — this re-triggers the spiral, it doesn't solve it",
-      "Do one grounding action: a walk, a shower, calling a friend — something that puts your body in the present",
-      "Write one line in your journal about what (if anything) this brought up about an older pattern"
+      "Box breathing for 4 rounds before opening the document again — working from a flooded state produces worse output, not faster output",
+      "Write down the actual next concrete step, not the whole project — panic collapses everything into one overwhelming blob",
+      "Triage: what's the real deadline vs. the deadline you've imagined being more rigid than it is? Worth a 2-minute check if unsure",
+      "If you're behind, send the 'this will be late / here's my plan' message now rather than disappearing — the silence is usually worse than the lateness",
+      "Set a stop-time for tonight even if it's not done — diminishing returns kick in fast under panic"
     ]
   },
   {
-    id: 'comparison',
-    emoji: '💭',
-    recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
-    title: 'Saw a couple / wedding / baby announcement and felt a pang',
+    id: 'difficult-feedback',
+    emoji: '📝',
+    recommended: {type:'breathing', pattern:'exhale', label:'🌬️ Try: Extended exhale (4-8)'},
+    title: 'Got harsh or unexpected feedback',
     color: 'var(--electric)',
-    why: "This is a comparison spiral, not a fact about your life. Social comparison lights up real distress in the brain — it's not 'just' jealousy, but it also isn't information about your worth or your timeline.",
+    why: "Critical feedback can trigger the same sting as social rejection, especially if it lands somewhere you already felt unsure. The content might be useful; the delivery or timing of the sting often isn't something you need to relitigate in your head all night.",
     steps: [
-      "Notice the thought without obeying it: 'I'm having the thought that everyone else has this and I don't'",
-      "Box breathing for 4 rounds before doing anything else (open the Breathe tab)",
-      "Ask: is this pang about wanting connection, or about a story that I'm behind? Those need different responses",
-      "Avoid scrolling further into social media right now — it's pouring fuel on this specific fire",
-      "Do one thing that reminds you your life has its own shape: text a friend, work on something you care about"
+      "Don't respond in the moment if you're flooded — 'thanks, let me sit with this and follow up' is a complete response",
+      "Extended exhale breathing for a few minutes before re-reading the feedback or replaying the conversation",
+      "Separate what's actually actionable from what just hurt — those are two different lists",
+      "Ask yourself: is this feedback about my work, or did it land as 'I'm not good enough'? Those need different responses",
+      "If the delivery was genuinely harsh (not just honest), that's worth naming separately from the content — both things can be true at once"
     ]
   },
   {
-    id: 'pre-date',
-    emoji: '😰',
-    recommended: {type:'breathing', pattern:'coherence', label:'🌬️ Try: Coherence breathing (5-5)'},
-    title: 'Pre-date anxiety',
+    id: 'colleague-conflict',
+    emoji: '⚡',
+    recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
+    title: 'Conflict with a colleague',
     color: 'var(--sunshine)',
-    why: "Anticipatory anxiety is your body preparing for a threat that probably isn't one. The goal isn't to eliminate the nerves — it's to stop them from running the show.",
+    why: "Workplace conflict is hard to walk away from the way you might in other parts of life — you'll likely see this person tomorrow. That makes regulating before you respond more important, not less.",
     steps: [
-      "Physiological sigh ×3 right before you leave (double inhale, long exhale — in the Breathe tab)",
-      "Name one realistic worst case ('it's awkward and we don't click') and notice you'd survive it fine",
-      "Set an intention for the date that isn't outcome-based: 'I want to be curious' instead of 'I want them to like me'",
-      "Eat something beforehand — low blood sugar mimics and amplifies anxiety",
-      "Remind yourself: a date is data, not a verdict on you"
+      "Don't send the email/Slack message while activated — draft it, then sit on it for at least 20 minutes",
+      "Ground yourself: feet on the floor, one slow stretch, come back into your body before deciding what to do next",
+      "Separate the behavior from the story you're telling about their intentions — 'they cut me off in the meeting' vs. 'they think I'm incompetent' are different claims",
+      "Decide what outcome you actually want from addressing this — being right, or working together — and let that guide your tone",
+      "If it's a pattern and not a one-off, that's worth raising with more structure (a manager, HR) rather than re-litigating it alone each time"
     ]
   },
   {
-    id: 'post-date',
-    emoji: '🔁',
+    id: 'imposter-syndrome',
+    emoji: '🎭',
     recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
-    title: 'Post-date overthinking',
+    title: "Imposter syndrome — 'they're going to find out I don't belong here'",
     color: 'var(--turquoise)',
-    why: "Replaying every word is your brain trying to get certainty in an uncertain situation. It feels productive; it rarely is.",
+    why: "This thought feels like insight but is usually just anxiety wearing a convincing costume. It rarely correlates with actual competence — some of the most capable people feel it the most, precisely because they're aware of how much they don't know.",
     steps: [
-      "Give yourself one contained window to reflect (10 min, timer on) — then stop on purpose",
-      "Write down what you actually enjoyed about the date, not just what might've gone wrong",
-      "If you're waiting on a text, set a 'check phone' schedule instead of checking constantly",
-      "Ground in your body — overthinking lives in the head; a walk or stretch interrupts the loop",
-      "Remember: you don't need to decode their behavior in real time. Their actions over days will tell you more than your analysis tonight"
+      "Notice the thought without treating it as evidence: 'I'm having the thought that I don't belong here'",
+      "Place it on a leaf and let it drift rather than spiraling into reviewing every mistake you've ever made",
+      "List one concrete thing you actually know how to do well — specifics counter the vague global feeling",
+      "Remember: competence and confidence often develop on different timelines. Feeling unsure isn't proof of being unqualified",
+      "If this feeling is constant rather than occasional, it might be worth naming to a mentor or therapist rather than carrying alone"
     ]
   },
   {
-    id: 'milestone',
-    emoji: '🎂',
-    recommended: {type:'breathing', pattern:'exhale', label:'🌬️ Try: Extended exhale (4-8)'},
-    title: "Milestone loneliness (birthday, holidays, 'still no one?')",
-    color: 'var(--coral)',
-    why: "Calendar markers amplify whatever story you're already carrying about being behind. The date itself isn't the problem — the meaning you're attaching to it is.",
-    steps: [
-      "Name what you're actually grieving — is it the relationship, or the milestone, or both?",
-      "Plan something for that specific day in advance so it isn't just you and the silence",
-      "Have one honest line ready for nosy questions ('still working on it, thanks for asking') so you're not caught off guard",
-      "Let yourself feel sad without adding 'and that means something's wrong with me' on top of it",
-      "Journal it — this is exactly the kind of entry that becomes useful later (see the Journal tab)"
-    ]
-  },
-  {
-    id: 'old-grief',
-    emoji: '🌧️',
-    recommended: {type:'breathing', pattern:'exhale', label:'🌬️ Try: Extended exhale (4-8)'},
-    title: 'An ex resurfaces, or old relationship grief shows up',
-    color: 'var(--electric)',
-    why: "Grief about past relationships doesn't always show up when you expect it. It can hit out of nowhere — a song, a photo, a similar laugh — and that's normal, not a setback.",
-    steps: [
-      "Let the wave happen for a minute before trying to push past it — suppressing it usually makes it last longer",
-      "Resist contacting them while activated — wait until you're regulated, then decide if it's still something you want to do",
-      "Ask what specifically you're missing — them, or just having someone, or a version of yourself from that time",
-      "Reach out to a person who knows the full story, not just an algorithm or a stranger",
-      "Note it in your journal under 'what I'd want a future partner to know' — old grief often points to something worth naming early in a new relationship"
-    ]
-  },
-  {
-    id: 'self-worth',
-    emoji: '🪞',
-    recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
-    title: "What's wrong with me that I'm still single?",
-    color: 'var(--sunshine)',
-    why: "This question assumes singleness is a verdict rather than a circumstance. It rarely holds up under actual scrutiny, but it feels true when you're dysregulated — which is exactly why it needs a body-first response, not a debate.",
-    steps: [
-      "Regulate first, reason second — this question is almost never answerable while you're upset",
-      "Separate facts from the story: 'I'm 40-something and single' is a fact; 'something's wrong with me' is a story",
-      "List three things in your life that are working, unrelated to relationship status",
-      "If this question shows up often, it's worth more than a checklist — a therapist can help unpack where it's coming from",
-      "Write the kindest true sentence you can about yourself right now, even if it feels small"
-    ]
-  },
-  {
-    id: 'situationship',
-    emoji: '🌀',
-    recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
-    title: "Situationship limbo — afraid to ask 'what are we?'",
-    color: 'var(--electric)',
-    why: "Ambiguity keeps hope alive, which is exactly why it's so hard to leave even when it's not working. The fear isn't really the question — it's that asking it might force an answer you don't want to hear.",
-    steps: [
-      "Notice if you're avoiding the question to protect the relationship, or to protect yourself from a 'no'",
-      "Get clear privately first: what do *you* actually want this to become? Vague hope isn't a need you can act on",
-      "Try naming the ambiguity itself out loud, without demanding a label: 'I've noticed we haven't talked about what this is — I'd like to'",
-      "Remind yourself a clear 'no' is more useful to you long-term than a comfortable maybe, even though it hurts more upfront",
-      "If you decide not to ask yet, make sure that's a choice, not just avoidance with a good excuse"
-    ]
-  },
-  {
-    id: 'family-pressure',
-    emoji: '👵',
+    id: 'burnout',
+    emoji: '🔥',
     recommended: {type:'breathing', pattern:'coherence', label:'🌬️ Try: Coherence breathing (5-5)'},
-    title: "Family gathering interrogation — 'when are you settling down?'",
+    title: 'Burnout / running on empty',
     color: 'var(--coral)',
-    why: "The question usually isn't really about you — it's small talk, old-generation script, or someone else's anxiety landing on you. That doesn't make it sting less, but it helps to know you're not actually on trial.",
+    why: "Burnout isn't just being tired — it's a state where your usual coping tools stop working as well as they used to. It tends to build slowly and get normalized, which is exactly why it's worth naming explicitly rather than pushing through quietly.",
     steps: [
-      "Decide your line in advance: a short, true, low-detail answer you can say without thinking ('still figuring it out, thanks for asking')",
-      "A few rounds of coherence breathing before the event lowers your baseline reactivity going in",
-      "Remember you're allowed to redirect: 'How's your garden/job/trip going?' works fine as a deflection",
-      "If someone pushes past your line, a flat 'I'd rather not get into it today' is a complete sentence",
-      "Afterward, give yourself a debrief — even one line in the journal — rather than carrying the irritation silently into the week"
+      "Take stock honestly: are you exhausted, or are you burnt out? They need different responses — rest helps the first, only fewer demands fixes the second",
+      "Coherence breathing for a few minutes won't fix burnout, but it can lower the baseline enough to think clearly about next steps",
+      "Identify one thing you can actually take off your plate this week, even something small",
+      "Notice if you've stopped doing things that used to recharge you — that's often the clearest sign, more than just feeling tired",
+      "If this has lasted more than a few weeks, it's worth a real conversation with your manager or a professional, not just another long weekend"
     ]
   },
   {
-    id: 'couples-only',
-    emoji: '👥',
+    id: 'job-search-rejection',
+    emoji: '📭',
     recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
-    title: "Friend group going couples-only",
-    color: 'var(--sunshine)',
-    why: "This isn't envy of one couple — it's the slower, structural feeling of watching your social world reshape itself around pairs, with you left figuring out where you fit. That's a real loss worth naming, not just a mood to push through.",
-    steps: [
-      "Name what's actually happening: 'my friend group's plans are shifting around couples' — separate the fact from 'I'm being replaced'",
-      "Ground yourself in the present moment rather than projecting forward to every future gathering",
-      "Consider whether there's one friend you can be direct with: 'I've noticed I feel like the extra one lately' — often more is shared back than you'd expect",
-      "Actively build or maintain at least one friendship or activity that isn't filtered through couple-dynamics, so your social life doesn't depend entirely on this group",
-      "It's okay for this to just be sad for a while — it doesn't need an immediate fix"
-    ]
-  },
-  {
-    id: 'too-much',
-    emoji: '🤐',
-    recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
-    title: 'Fear of being "too much"',
-    color: 'var(--turquoise)',
-    why: "Shrinking yourself preemptively — toning down excitement, opinions, or needs — feels like protection, but it usually just delays the real test of whether someone's a fit, while quietly teaching you that your full self isn't welcome.",
-    steps: [
-      "Notice the specific moment you're editing yourself — what did you almost say or do, and then didn't?",
-      "Ask: am I adjusting because of something this person actually signaled, or because of an old pattern I'm bringing in?",
-      "Let the thought 'I'm too much' exist without obeying it — place it on a leaf and watch it drift rather than acting on it immediately",
-      "Try being 10% more yourself than feels safe in a low-stakes moment, and notice what actually happens (often: nothing bad)",
-      "Remember: someone who needs you smaller isn't a fit you want to win anyway"
-    ]
-  },
-  {
-    id: 'sunday-loneliness',
-    emoji: '🌆',
-    recommended: {type:'breathing', pattern:'exhale', label:'🌬️ Try: Extended exhale (4-8)'},
-    title: 'Sunday evening loneliness',
+    title: 'Job application rejected (or silence after interview)',
     color: 'var(--electric)',
-    why: "Not every wave of loneliness has a trigger. Unstructured, quiet hours — Sunday evenings especially — can let it surface on its own, with nothing to blame and nothing to fix. That's normal, not a sign something's wrong.",
+    why: "A rejection or unexplained silence after putting yourself forward stings in a very particular way — you made yourself visible and the answer (or non-answer) feels personal even when it usually isn't.",
     steps: [
-      "Let it be ambient — you don't need to find the 'reason' for it before you're allowed to feel better",
-      "Extended exhale breathing for a few minutes; this kind of loneliness responds well to slow vagal-calming rather than distraction",
-      "Do one small, low-effort act of structure for the evening — light a candle, queue a show, text one person — not to fix the feeling, just to not be alone with it in silence",
-      "If this is a recurring weekly pattern, consider whether a standing plan (a class, a call, a routine) could sit in that specific time slot",
-      "Avoid scrolling dating apps specifically in this state — decisions made from this kind of loneliness rarely reflect what you actually want"
+      "Ground yourself before reading too much into it: a rejection is information about fit at one company at one moment, not a verdict on your worth",
+      "Set a personal limit on how long you'll wonder about silence — after that, treat it as a no and move your attention elsewhere",
+      "Separate what you can learn (if any feedback was given) from what's just disappointment — both can be processed, but differently",
+      "Do one grounding, present-moment action before going back to job boards — searching from a flooded state tends to produce worse cover letters and worse decisions",
+      "Keep a running note of any positive signal from the process (a compliment, a good conversation) — rejection makes those easy to forget"
+    ]
+  },
+  {
+    id: 'career-comparison',
+    emoji: '📈',
+    recommended: {type:'visual', tool:'leaves', label:'🍃 Try: Leaves on a Stream'},
+    title: "Comparing yourself to a peer's promotion or success",
+    color: 'var(--sunshine)',
+    why: "Career comparison spirals the same way dating-life comparison does — someone else's visible win becomes evidence of your own invisible failure, even though you're seeing only their highlight reel, not their full timeline.",
+    steps: [
+      "Notice the thought without obeying it: 'I'm having the thought that I'm behind' is different from 'I am behind'",
+      "Place the specific comparison on a leaf and let it drift rather than building a whole narrative around it",
+      "Ask what you're actually after — is it the title, the money, the recognition, or just proof you're not behind? Each points to a different real action",
+      "Remember career timelines are not synchronized; what looks like 'ahead' often comes with trade-offs you can't see from outside",
+      "If this comparison is frequent, it might be worth a direct, unemotional look at your own goals rather than someone else's"
+    ]
+  },
+  {
+    id: 'before-hard-conversation',
+    emoji: '😟',
+    recommended: {type:'breathing', pattern:'coherence', label:'🌬️ Try: Coherence breathing (5-5)'},
+    title: 'Before a hard conversation (raise, review, resignation)',
+    color: 'var(--turquoise)',
+    why: "Anticipatory anxiety before a high-stakes conversation is your body rehearsing for a threat. The goal isn't to eliminate the nerves — it's to walk in steady enough to say what you actually mean.",
+    steps: [
+      "Coherence breathing for a few minutes beforehand — slow, steady, no holds — to bring your baseline down before you walk in",
+      "Write down the 2-3 things you actually want to say, so nerves don't make you forget your own point",
+      "Name the realistic worst case ('they say no') and notice that outcome is survivable and doesn't end anything",
+      "Separate the ask from your worth — a 'no' to a raise or a request is not a verdict on your value",
+      "Remind yourself: you can pause, ask for a moment, or follow up in writing — you don't have to resolve everything in real time"
+    ]
+  },
+  {
+    id: 'overwhelmed-workload',
+    emoji: '🌊',
+    recommended: {type:'visual', tool:'anchor', label:'⚓ Try: Drop the Anchor'},
+    title: 'Overwhelmed — too much on the plate at once',
+    color: 'var(--coral)',
+    why: "When everything feels urgent at once, the nervous system treats the whole workload like a single threat, which makes it harder to actually prioritize. Grounding first usually unlocks clearer triage, not the other way around.",
+    steps: [
+      "Ground yourself: feet on the floor, name 5 things you can see — get out of the spinning-thoughts state before trying to plan",
+      "Write out everything on your plate in one place — externalizing it usually makes it feel more manageable than it does in your head",
+      "Pick one task to do next, not the whole list — overwhelm often comes from holding everything as equally urgent",
+      "Say out loud or in writing what you're deprioritizing, and that it's a choice, not a failure",
+      "Check whether this is a one-week spike or a recurring pattern — recurring overwhelm is a workload conversation, not just a breathing exercise"
+    ]
+  },
+  {
+    id: 'public-speaking',
+    emoji: '🎤',
+    recommended: {type:'breathing', pattern:'sigh', label:'🌬️ Try: Physiological sigh'},
+    title: 'Presentation or public speaking anxiety',
+    color: 'var(--electric)',
+    why: "The body's threat response doesn't distinguish well between a stage and an actual predator — the racing heart and shaky hands are an old system doing its job a bit too well for a low-actual-danger situation.",
+    steps: [
+      "Physiological sigh ×3 right before you go on — it's the fastest physiological down-regulator available in the moment",
+      "Name what's realistic: most audiences are neutral-to-supportive, not hostile, even when it doesn't feel that way",
+      "Have your first line memorized cold — the opening is the hardest part; once you're moving, nerves usually settle",
+      "Remember a shaky voice or a stumble is rarely as visible to others as it feels to you in the moment",
+      "Afterward, resist the urge to only replay the parts that felt rocky — note what actually went fine too"
     ]
   }
 ];
@@ -1095,9 +1066,9 @@ function buildPlanData(){
 
 function buildPlanText(){
   const d = buildPlanData();
-  let text = "⚓ *ANCHOR* — My Self-Regulation Plan\n";
+  let text = "⚓ *ANCHOR FOR WORK* — My Self-Regulation Plan\n";
   text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
-  text += "_A gym, not a partner._\n";
+  text += "_A gym, not a therapist._\n";
   text += "----------------------------------------\n\n";
 
   if(d.entries.length === 0){
@@ -1134,7 +1105,7 @@ function buildPlanText(){
     text += d.valuesLines.slice(0,5).map(l=>"- "+l).join("\n") + "\n\n";
   }
 
-  text += "*💬 What I'd want a partner to know*\n";
+  text += "*💬 What I'd want a manager/colleague to understand*\n";
   text += (d.futureLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
 
   text += "*🗒️ Recent entries*\n";
@@ -1145,7 +1116,7 @@ function buildPlanText(){
     if(e.trigger) text += `Trigger: ${e.trigger}\n`;
     if(e.response) text += `Response: ${e.response}\n`;
     if(e.valuesAction) text += `Did anyway: ${e.valuesAction}\n`;
-    if(e.forFuture) text += `For future partner: ${e.forFuture}\n`;
+    if(e.forFuture) text += `For manager/colleague: ${e.forFuture}\n`;
   });
 
   text += "\n----------------------------------------\n";
@@ -1182,13 +1153,13 @@ function buildAnchorPdf(){
 
     doc.setTextColor('#FFFFFF');
     doc.setFont('helvetica','bold'); doc.setFontSize(28);
-    doc.text('ANCHOR', margin, 78);
+    doc.text('ANCHOR FOR WORK', margin, 78);
     doc.setFont('helvetica','normal'); doc.setFontSize(11);
     doc.text('Self-Regulation Plan', margin, 96);
 
     doc.setFontSize(10);
     doc.text(new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}), PAGE_W-margin, 78, {align:'right'});
-    doc.text('A gym, not a partner.', PAGE_W-margin, 96, {align:'right'});
+    doc.text('A gym, not a therapist.', PAGE_W-margin, 96, {align:'right'});
 
     y = 150;
   }
@@ -1286,7 +1257,7 @@ function buildAnchorPdf(){
     }
 
     // For a future partner
-    sectionTitle("What I'd want a partner to know", colors.electric);
+    sectionTitle("What I'd want a manager/colleague to understand", colors.electric);
     bulletList(data.futureLines.slice(0,5).length ? data.futureLines.slice(0,5) : ['Not enough entries yet'], colors.electric);
     y += 8;
 
@@ -1300,7 +1271,7 @@ function buildAnchorPdf(){
       if(e.trigger) bodyText(`Trigger: ${e.trigger}`, {indent:8});
       if(e.response) bodyText(`Response: ${e.response}`, {indent:8});
       if(e.valuesAction) bodyText(`Did anyway: ${e.valuesAction}`, {indent:8});
-      if(e.forFuture) bodyText(`For future partner: ${e.forFuture}`, {indent:8});
+      if(e.forFuture) bodyText(`For manager/colleague: ${e.forFuture}`, {indent:8});
       y += 10;
     });
   }
@@ -1352,9 +1323,9 @@ document.getElementById('copyYear').textContent = new Date().getFullYear();
 
 // ---------- PLAY: Pop the Worries ----------
 const POP_WORDS = [
-  'what if', 'not enough', 'too late', "they'll judge", 'compare',
-  'overthink', 'replay it', 'spiral', 'doubt', 'behind',
-  'alone', 'rejected', 'what now', 'still single'
+  'deadline', 'not enough', 'imposter', "they'll notice", 'compare',
+  'overthink', 'replay it', 'behind', 'doubt', 'burnt out',
+  'what if I fail', 'rejected', 'overwhelmed', 'inbox zero'
 ];
 const POP_COLORS = ['#2E6FF2', '#FF6F59', '#18C7B8', '#FFC93C'];
 
