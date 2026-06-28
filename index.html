@@ -69,6 +69,40 @@
   .hero .lede em{color:var(--ink); font-style:normal; font-weight:600;}
 
   /* ---- What's inside ---- */
+  /* Featured limited-time card */
+  .featured-card{
+    display:block; text-decoration:none; color:inherit; position:relative;
+    background:linear-gradient(135deg, #FFFBEF 0%, #FFF3D6 100%);
+    border:1.5px solid var(--sunshine); border-radius:22px;
+    padding:30px 28px; margin-bottom:48px; overflow:hidden;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .featured-card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(255,201,60,0.25);}
+  .featured-card::after{
+    content:'⚽'; position:absolute; top:-10px; right:-6px; font-size:90px;
+    opacity:0.08; transform:rotate(12deg);
+  }
+  .featured-badge{
+    display:inline-block; font-family:var(--mono); font-size:11px; font-weight:600;
+    letter-spacing:0.04em; color:#8A5B00; background:rgba(255,201,60,0.35);
+    padding:6px 12px; border-radius:14px; margin-bottom:14px;
+  }
+  .featured-title{
+    font-family:var(--display); font-weight:600; font-size:26px; color:var(--ink); margin-bottom:8px;
+  }
+  .featured-accent{color:#B8860B;}
+  .featured-tagline{font-size:14.5px; color:var(--muted); line-height:1.55; margin-bottom:18px; max-width:480px;}
+  .featured-tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px;}
+  .featured-tag{
+    font-family:var(--mono); font-size:11px; padding:5px 11px; border-radius:14px;
+    background:rgba(255,255,255,0.7); border:1px solid rgba(184,134,11,0.25); color:var(--ink);
+  }
+  .featured-cta{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--body); font-weight:600;
+    font-size:14px; padding:11px 22px; border-radius:24px; color:#fff;
+    background:linear-gradient(135deg, #B8860B, #DDA520);
+  }
+
   .inside{margin-bottom:64px;}
   .inside-title{
     font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
@@ -189,6 +223,18 @@
     <h1>Anchor</h1>
     <p class="lede">Anchor doesn't fix the hard moment — it helps you <em>steady yourself</em> through it, so you show up clearer for whatever comes next: a date, a deadline, a difficult conversation, or just a quiet Sunday evening.</p>
   </div>
+
+  <a href="matchday.html" class="featured-card">
+    <div class="featured-badge">⚽ Limited time — live through the final, July 19</div>
+    <div class="featured-title">Anchor <span class="featured-accent">for Match Day</span></div>
+    <p class="featured-tagline">Penalty shootout dread. VAR rage. 3am kickoffs. A fun companion for the chaos of caring this much about 90 minutes.</p>
+    <div class="featured-tags">
+      <span class="featured-tag">🎯 Penalty shootouts</span>
+      <span class="featured-tag">💔 Knocked out grief</span>
+      <span class="featured-tag">🌙 3am kickoffs</span>
+    </div>
+    <span class="featured-cta">Open Anchor for Match Day →</span>
+  </a>
 
   <div class="inside">
     <div class="inside-title">Every edition includes</div>
