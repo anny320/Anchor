@@ -139,6 +139,32 @@
   }
   .philosophy .sub{font-family:var(--body); font-size:13px; color:var(--muted); margin-top:10px;}
 
+  .landing-share-row{display:flex; justify-content:center; margin-bottom:48px;}
+  .share-btn-small{
+    font-family:var(--body); font-weight:600; font-size:13px; color:var(--ink);
+    background:var(--panel); border:1px solid var(--line); padding:10px 18px;
+    border-radius:20px; cursor:pointer;
+  }
+  .share-btn-small:hover{border-color:var(--electric);}
+
+  .share-popover{
+    display:none; position:fixed; z-index:950; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:10px;
+    box-shadow:0 14px 36px rgba(33,27,61,0.18); width:200px;
+  }
+  .share-popover.show{display:block;}
+  .share-popover-title{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--muted); padding:4px 8px 8px;
+  }
+  .share-popover-opt{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+    background:none; border:none; cursor:pointer; font-family:var(--body); font-size:13.5px;
+    color:var(--ink); padding:9px 8px; border-radius:8px; text-decoration:none;
+  }
+  .share-popover-opt:hover{background:var(--bg);}
+  .share-popover-opt span{font-size:15px; width:20px; text-align:center;}
+
   footer{
     text-align:center; border-top:1px solid var(--line); padding-top:20px; color:var(--muted);
     font-size:12px; line-height:1.6;
@@ -228,6 +254,23 @@
     <div class="sub">Anchor builds the skill of steadying yourself — it doesn't replace the people, professionals, or real connection that actually carry you through.</div>
   </div>
 
+  <div class="landing-share-row">
+    <button class="share-btn-small" id="shareAppBtn">📤 Share Anchor with a friend</button>
+  </div>
+
+  <div class="share-popover" id="sharePopover">
+    <div class="share-popover-title">Share Anchor</div>
+    <a class="share-popover-opt" id="shareWhatsappLink" target="_blank" rel="noopener">
+      <span>💬</span> WhatsApp
+    </a>
+    <a class="share-popover-opt" id="shareXLink" target="_blank" rel="noopener">
+      <span>𝕏</span> X / Twitter
+    </a>
+    <button class="share-popover-opt" id="shareCopyLink">
+      <span>🔗</span> Copy link
+    </button>
+  </div>
+
   <footer>
     Everything you write in either edition stays on your device — nothing is uploaded anywhere.
     <div class="copyright">© <span id="copyYear"></span> Wakara Technologies Limited. All rights reserved.</div>
@@ -236,6 +279,49 @@
 </div>
 <script>
 document.getElementById('copyYear').textContent = new Date().getFullYear();
+
+(function setupShare(){
+  const shareData = {
+    title: 'Anchor',
+    text: "I found this self-regulation tool called Anchor — free, private, helps with both dating-life stress and work stress. Thought you might find it useful too.",
+    url: window.location.href.split('#')[0]
+  };
+
+  const btn = document.getElementById('shareAppBtn');
+  const popover = document.getElementById('sharePopover');
+
+  btn.addEventListener('click', async ()=>{
+    if(navigator.share){
+      try { await navigator.share(shareData); } catch(err){ /* user cancelled, fine */ }
+      return;
+    }
+    const rect = btn.getBoundingClientRect();
+    popover.style.top = (rect.bottom + 8) + 'px';
+    popover.style.left = rect.left + 'px';
+    popover.classList.toggle('show');
+  });
+
+  document.getElementById('shareWhatsappLink').href =
+    'https://wa.me/?text=' + encodeURIComponent(shareData.text + ' ' + shareData.url);
+  document.getElementById('shareXLink').href =
+    'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareData.text) + '&url=' + encodeURIComponent(shareData.url);
+
+  document.getElementById('shareCopyLink').addEventListener('click', async ()=>{
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      const btnEl = document.getElementById('shareCopyLink');
+      const original = btnEl.innerHTML;
+      btnEl.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(()=>{ btnEl.innerHTML = original; popover.classList.remove('show'); }, 1200);
+    } catch(err){ /* clipboard unavailable */ }
+  });
+
+  document.addEventListener('click', (e)=>{
+    if(!popover.contains(e.target) && e.target !== btn){
+      popover.classList.remove('show');
+    }
+  });
+})();
 </script>
 </body>
 </html>
