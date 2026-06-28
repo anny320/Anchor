@@ -293,6 +293,38 @@
   footer{margin-top:48px; border-top:1px solid var(--line); padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
   .copyright{margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--muted); opacity:0.8;}
 
+  /* Calm Check toast */
+  .calm-toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%, 120%);
+    background:var(--panel); border:1px solid var(--line); border-radius:20px;
+    padding:20px 24px 18px; box-shadow:0 16px 40px rgba(33,27,61,0.18);
+    z-index:900; width:min(360px, calc(100vw - 32px)); text-align:center;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    opacity:0; pointer-events:none;
+  }
+  .calm-toast.show{ transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+  .calm-toast-close{
+    position:absolute; top:10px; right:12px; background:none; border:none; cursor:pointer;
+    color:var(--muted); font-size:13px; padding:4px;
+  }
+  .calm-toast-close:hover{color:var(--ink);}
+  .calm-toast-title{
+    font-family:var(--display); font-weight:600; font-size:16px; color:var(--ink); margin-bottom:14px;
+  }
+  .calm-toast-options{display:flex; justify-content:space-between; gap:8px;}
+  .calm-opt{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:var(--bg); border:1px solid var(--line); border-radius:14px;
+    padding:10px 6px; cursor:pointer; font-family:var(--body); font-size:11px;
+    color:var(--muted); font-weight:600; transition:transform .15s, border-color .15s, background .15s;
+  }
+  .calm-opt:hover{transform:translateY(-2px); border-color:var(--turquoise);}
+  .calm-opt.picked{background:var(--turquoise); border-color:var(--turquoise); color:#fff;}
+  .calm-emoji{font-size:22px;}
+  .calm-toast-thanks{
+    font-family:var(--body); font-size:13.5px; color:var(--ink); padding:8px 0 2px;
+  }
+
   /* PDF preview modal */
   .pdf-modal{
     display:none; position:fixed; inset:0; background:rgba(33,27,61,0.55);
@@ -490,6 +522,18 @@
     </div>
   </section>
 
+  <!-- CALM CHECK TOAST -->
+  <div class="calm-toast" id="calmToast">
+    <button class="calm-toast-close" id="calmToastClose" aria-label="Dismiss">✕</button>
+    <div class="calm-toast-title" id="calmToastTitle">How's the water now? 🌊</div>
+    <div class="calm-toast-options">
+      <button class="calm-opt" data-rating="stormy"><span class="calm-emoji">🌊</span>Stormy</button>
+      <button class="calm-opt" data-rating="choppy"><span class="calm-emoji">🐚</span>Choppy</button>
+      <button class="calm-opt" data-rating="calm"><span class="calm-emoji">💧</span>Calmer</button>
+      <button class="calm-opt" data-rating="glassy"><span class="calm-emoji">✨</span>Glassy</button>
+    </div>
+  </div>
+
   <!-- PDF PREVIEW MODAL -->
   <div class="pdf-modal" id="pdfModal">
     <div class="pdf-modal-inner">
@@ -512,6 +556,79 @@
 </div>
 
 <script>
+// ---------- CALM CHECK (fun micro-rating) ----------
+function getCalmRatings(){
+  return JSON.parse(localStorage.getItem('anchor_work_calmratings') || '[]');
+}
+function saveCalmRating(context, rating, detail){
+  const ratings = getCalmRatings();
+  ratings.unshift({date: new Date().toISOString(), context, detail: detail||null, rating});
+  localStorage.setItem('anchor_work_calmratings', JSON.stringify(ratings));
+}
+
+const CALM_TITLES = {
+  breathing: "How's the water now? 🌊",
+  anchor: "Anchor dropped. How's the water? ⚓",
+  leaves: "Leaf sent off. How's the water? 🍃",
+  situation: "Checklist done. How's the water? 🧭"
+};
+
+let calmToastTimeout = null;
+
+function showCalmCheck(context, detail){
+  const toast = document.getElementById('calmToast');
+  const title = document.getElementById('calmToastTitle');
+  title.textContent = CALM_TITLES[context] || "How's the water now? 🌊";
+  toast.dataset.context = context;
+  toast.dataset.detail = detail || '';
+  toast.querySelectorAll('.calm-opt').forEach(b=>{
+    b.classList.remove('picked');
+    b.style.display = '';
+  });
+  const oldThanks = toast.querySelector('.calm-toast-thanks');
+  if(oldThanks) oldThanks.remove();
+  const optionsRow = toast.querySelector('.calm-toast-options');
+  optionsRow.style.display = 'flex';
+
+  toast.classList.add('show');
+  clearTimeout(calmToastTimeout);
+  calmToastTimeout = setTimeout(()=>{ hideCalmCheck(); }, 9000);
+}
+
+function hideCalmCheck(){
+  document.getElementById('calmToast').classList.remove('show');
+  clearTimeout(calmToastTimeout);
+}
+
+document.getElementById('calmToastClose').addEventListener('click', hideCalmCheck);
+
+document.querySelectorAll('.calm-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const toast = document.getElementById('calmToast');
+    const rating = btn.dataset.rating;
+    saveCalmRating(toast.dataset.context, rating, toast.dataset.detail);
+
+    btn.classList.add('picked');
+    clearTimeout(calmToastTimeout);
+
+    const thanksMap = {
+      stormy: "That's okay — even showing up counts. 💙",
+      choppy: "Some movement is still movement.",
+      calm: "Glad that helped a little.",
+      glassy: "Love that. Carry it with you. ✨"
+    };
+    setTimeout(()=>{
+      const optionsRow = toast.querySelector('.calm-toast-options');
+      optionsRow.style.display = 'none';
+      const thanks = document.createElement('div');
+      thanks.className = 'calm-toast-thanks';
+      thanks.textContent = thanksMap[rating] || 'Thanks for checking in.';
+      toast.appendChild(thanks);
+      setTimeout(hideCalmCheck, 1800);
+    }, 350);
+  });
+});
+
 // ---------- TAB NAV ----------
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -600,9 +717,11 @@ function runStep(){
   }, step.secs * 1000);
 }
 
+let breathingSessionStart = null;
 function startBreathing(){
   breathing = true;
   stepIndex = 0;
+  breathingSessionStart = Date.now();
   startBtn.textContent = 'Stop session';
   startBtn.classList.add('stop');
   runStep();
@@ -618,7 +737,13 @@ function stopBreathing(){
   orb.style.boxShadow = '0 0 60px rgba(124,184,222,0.35)';
 }
 startBtn.addEventListener('click', ()=>{
-  breathing ? stopBreathing() : startBreathing();
+  if(breathing){
+    const elapsed = breathingSessionStart ? Date.now() - breathingSessionStart : 0;
+    stopBreathing();
+    if(elapsed > 12000) showCalmCheck('breathing', currentPattern);
+  } else {
+    startBreathing();
+  }
 });
 
 // ---------- JOURNAL ----------
@@ -649,10 +774,10 @@ function renderEmotionChips(){
 renderEmotionChips();
 
 function getEntries(){
-  return JSON.parse(localStorage.getItem('anchor_entries') || '[]');
+  return JSON.parse(localStorage.getItem('anchor_work_entries') || '[]');
 }
 function saveEntries(entries){
-  localStorage.setItem('anchor_entries', JSON.stringify(entries));
+  localStorage.setItem('anchor_work_entries', JSON.stringify(entries));
 }
 
 function getStreak(){
@@ -923,10 +1048,10 @@ const situations = [
 ];
 
 function getChecks(){
-  return JSON.parse(localStorage.getItem('anchor_checks') || '{}');
+  return JSON.parse(localStorage.getItem('anchor_work_checks') || '{}');
 }
 function saveChecks(c){
-  localStorage.setItem('anchor_checks', JSON.stringify(c));
+  localStorage.setItem('anchor_work_checks', JSON.stringify(c));
 }
 
 function renderSituations(){
@@ -965,9 +1090,18 @@ function renderSituations(){
     item.addEventListener('click', ()=>{
       const key = item.dataset.key;
       const c = getChecks();
-      c[key] = !c[key];
+      const wasChecked = !!c[key];
+      c[key] = !wasChecked;
       saveChecks(c);
       item.classList.toggle('checked');
+
+      const card = item.closest('.sit-card');
+      const sitId = card.dataset.id;
+      const sit = situations.find(s=>s.id===sitId);
+      if(sit && !wasChecked){
+        const allDone = sit.steps.every((_, i)=> !!c[sitId+'-'+i]);
+        if(allDone) showCalmCheck('situation', sit.title);
+      }
     });
   });
   container.querySelectorAll('.sit-try-btn').forEach(btn=>{
@@ -1619,8 +1753,11 @@ function renderAnchorSteps(){
   container.querySelectorAll('.anchor-step').forEach(el=>{
     el.addEventListener('click', ()=>{
       const idx = parseInt(el.dataset.idx,10);
+      const wasComplete = anchorDone.every(Boolean);
       anchorDone[idx] = !anchorDone[idx];
       renderAnchorSteps();
+      const isComplete = anchorDone.every(Boolean);
+      if(isComplete && !wasComplete) showCalmCheck('anchor');
     });
   });
 }
