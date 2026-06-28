@@ -658,16 +658,28 @@ function saveEntries(entries){
 function getStreak(){
   const entries = getEntries();
   if(entries.length === 0) return 0;
-  const days = [...new Set(entries.map(e=>new Date(e.date).toDateString()))];
-  days.sort((a,b)=>new Date(b)-new Date(a));
+
+  const days = [...new Set(entries.map(e=>new Date(e.date).toDateString()))]
+    .map(d=>new Date(d));
+  days.sort((a,b)=>b-a); // most recent first
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+
+  let cursor;
+  if(days[0].toDateString() === today.toDateString()){
+    cursor = today;
+  } else if(days[0].toDateString() === yesterday.toDateString()){
+    cursor = yesterday; // grace period: today isn't over yet, streak still counts
+  } else {
+    return 0; // most recent entry is older than yesterday — streak is broken
+  }
+
   let streak = 0;
-  let cursor = new Date();
   for(const d of days){
-    if(new Date(d).toDateString() === cursor.toDateString()){
+    if(d.toDateString() === cursor.toDateString()){
       streak++;
       cursor.setDate(cursor.getDate()-1);
-    } else if(streak === 0 && new Date(d).toDateString() === new Date(cursor.getTime()+86400000).toDateString()){
-      continue;
     } else {
       break;
     }
@@ -1141,7 +1153,7 @@ function buildPlanText(){
   text += "\n\n";
 
   if(d.topEmotions.length){
-    text += "*💛 What I most often name feeling*\n";
+    text += "*💛 Feelings I name most often*\n";
     text += d.topEmotions.map(([em,count])=>`${EMOTION_EMOJI[em]||'•'} ${em} (${count}x)`).join("\n") + "\n\n";
   }
 
@@ -1287,7 +1299,7 @@ function buildAnchorPdf(){
 
     // Top emotions
     if(data.topEmotions.length){
-      sectionTitle('What I most often name feeling', colors.electric);
+      sectionTitle('Feelings I name most often', colors.electric);
       bulletList(data.topEmotions.map(([em,c])=>`${em} — ${c}x`), colors.electric);
       y += 8;
     }
