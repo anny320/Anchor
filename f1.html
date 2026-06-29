@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PE57LD1TWZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PE57LD1TWZ');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anchor for F1 — a regulation gym for race weekend</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#FFF8EC;
+    --panel:#FFFFFF;
+    --ink:#211B3D;
+    --electric:#2E6FF2;
+    --turquoise:#18C7B8;
+    --coral:#FF6F59;
+    --sunshine:#FFC93C;
+    --muted:#7A7390;
+    --line:#EDE3CE;
+    --display: 'Fraunces', 'Georgia', serif;
+    --body: 'Inter', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:32px 20px 80px;}
+
+  header{margin-bottom:28px;}
+  .edition-switch{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    margin-bottom:24px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .edition-switch-link{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.03em; text-decoration:none;
+    color:var(--muted); padding:6px 0;
+  }
+  .edition-switch-link:hover{color:var(--ink);}
+  .edition-switch-other{
+    color:#fff; background:var(--coral); padding:7px 14px; border-radius:16px;
+  }
+  .edition-switch-other:hover{opacity:0.9; color:#fff;}
+
+  .edition-switch-right{display:flex; align-items:center; gap:10px;}
+  .share-btn-small{
+    font-family:var(--body); font-weight:600; font-size:12px; color:var(--ink);
+    background:var(--panel); border:1px solid var(--line); padding:7px 14px;
+    border-radius:16px; cursor:pointer;
+  }
+  .share-btn-small:hover{border-color:var(--turquoise);}
+
+  .share-popover{
+    display:none; position:fixed; z-index:950; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:10px;
+    box-shadow:0 14px 36px rgba(33,27,61,0.18); width:200px;
+  }
+  .share-popover.show{display:block;}
+  .share-popover-title{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--muted); padding:4px 8px 8px;
+  }
+  .share-popover-opt{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+    background:none; border:none; cursor:pointer; font-family:var(--body); font-size:13.5px;
+    color:var(--ink); padding:9px 8px; border-radius:8px; text-decoration:none;
+  }
+  .share-popover-opt:hover{background:var(--bg);}
+  .share-popover-opt span{font-size:15px; width:20px; text-align:center;}
+
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--electric); margin-bottom:10px; font-weight:600;
+  }
+  h1{
+    font-family:var(--display); font-weight:600; font-size:clamp(28px,6vw,40px);
+    line-height:1.1; color:var(--ink);
+  }
+  .work-tag{color:#D72638; font-weight:600;}
+  .sub{color:var(--muted); font-size:15px; max-width:480px; margin-top:10px; line-height:1.5;}
+
+  /* Driver picker */
+  .driver-picker{margin-bottom:24px;}
+  .driver-form{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:14px 16px;
+  }
+  .driver-form-header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px;}
+  .driver-form-label{font-family:var(--body); font-weight:600; font-size:13.5px; color:var(--ink);}
+  .driver-form-hint{font-family:var(--mono); font-size:10.5px; color:var(--muted);}
+  .driver-form-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .driver-form input{
+    background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    font-family:var(--body); font-size:13.5px; padding:8px 12px; color:var(--ink);
+  }
+  .driver-form input:focus{outline:none; border-color:#D72638;}
+  .driver-color-row{display:flex; gap:6px;}
+  .driver-color-swatch{
+    width:22px; height:22px; border-radius:50%; border:2px solid transparent; cursor:pointer;
+  }
+  .driver-color-swatch.active{border-color:var(--ink);}
+  .driver-save-btn{
+    background:#D72638; color:#fff; border:none; font-family:var(--body); font-weight:600;
+    font-size:13px; padding:8px 16px; border-radius:14px; cursor:pointer; white-space:nowrap;
+  }
+  .driver-save-btn:disabled{opacity:0.5; cursor:default;}
+  .driver-skip-btn{
+    display:block; margin-top:10px; background:none; border:none; color:var(--muted);
+    font-family:var(--mono); font-size:11.5px; cursor:pointer; text-decoration:underline;
+  }
+
+  /* Driver chips (multi-driver display) */
+  .driver-chips-row{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:10px 16px; margin-bottom:10px;
+  }
+  .driver-chip{
+    display:flex; align-items:center; gap:6px; background:var(--bg);
+    border:1px solid var(--line); border-radius:20px; padding:6px 10px;
+  }
+  .driver-chip-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .driver-chip-label{font-family:var(--body); font-weight:600; font-size:13px; color:var(--ink);}
+  .driver-chip-remove{
+    background:none; border:none; color:var(--muted); cursor:pointer;
+    font-size:12px; padding:0 0 0 2px; line-height:1;
+  }
+  .driver-chip-remove:hover{color:var(--coral);}
+  .driver-chips-add{
+    background:none; border:1px dashed var(--line); border-radius:20px; padding:6px 12px;
+    font-family:var(--mono); font-size:11.5px; color:var(--muted); cursor:pointer;
+  }
+  .driver-chips-add:hover{border-color:var(--ink); color:var(--ink);}
+
+  .driver-reopen-link{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted); background:none; border:none;
+    cursor:pointer; text-decoration:underline; padding:6px 0; display:block;
+  }
+
+  nav{display:flex; gap:6px; margin:28px 0 24px; border-bottom:2px solid var(--line); padding-bottom:0;}
+  nav button{
+    background:none; border:none; color:var(--muted); font-family:var(--body);
+    font-size:14px; font-weight:600; padding:10px 4px; cursor:pointer;
+    border-bottom:3px solid transparent; margin-right:18px; transition:color .2s, border-color .2s;
+  }
+  nav button.active{color:var(--ink); border-bottom-color:var(--coral);}
+  nav button:focus-visible{outline:2px solid var(--electric); outline-offset:2px;}
+
+  section{display:none;}
+  section.active{display:block; animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  /* Breathe */
+  .breathe-stage{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 0 24px;
+  }
+  .orb-field{position:relative; width:240px; height:240px; display:flex; align-items:center; justify-content:center;}
+  .orb{
+    width:90px; height:90px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--electric), #1B4FC4 70%);
+    box-shadow:0 0 60px rgba(124,184,222,0.35);
+    transition:transform 4s ease-in-out, box-shadow 4s ease-in-out;
+  }
+  .ring{
+    position:absolute; inset:0; border-radius:50%; border:1px solid #2A3F52;
+  }
+  .phase-label{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--electric); margin-top:24px; min-height:20px;
+  }
+  .phase-count{font-family:var(--display); font-size:34px; color:var(--ink); margin-top:6px;}
+  .round-indicator{
+    font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:14px;
+    letter-spacing:0.04em; text-transform:uppercase; min-height:16px;
+  }
+  .session-length-row{
+    display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .session-length-label{font-family:var(--mono); font-size:11px; color:var(--muted); margin-right:4px;}
+  .length-btn{
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    font-family:var(--body); font-size:12px; font-weight:600; padding:6px 13px;
+    border-radius:14px; cursor:pointer;
+  }
+  .length-btn.active{border-color:var(--electric); color:var(--ink); background:rgba(46,111,242,0.08);}
+
+  .pattern-row{display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap;}
+  .pattern-btn{
+    background:var(--midnight-2); border:1px solid #2A3343; color:var(--muted);
+    font-family:var(--mono); font-size:12px; padding:8px 14px; border-radius:20px; cursor:pointer;
+  }
+  .pattern-btn.active{border-color:var(--coral); color:var(--ink);}
+  .pattern-more-btn{
+    background:none; border:none; color:var(--muted); font-family:var(--mono);
+    font-size:11.5px; letter-spacing:0.03em; padding:8px 10px; cursor:pointer;
+  }
+  .pattern-more-btn:hover{color:var(--ink);}
+  .pattern-row-more{display:none;}
+  .pattern-row-more.show{display:flex;}
+
+  .start-btn{
+    display:block; margin:28px auto 0; background:var(--coral); color:#fff;
+    font-family:var(--body); font-weight:600; font-size:15px; border:none;
+    padding:13px 32px; border-radius:30px; cursor:pointer; transition:opacity .2s;
+  }
+  .start-btn:hover{opacity:0.9;}
+  .start-btn.stop{background:var(--panel); color:var(--ink); border:1px solid var(--line);}
+
+  /* Breathe sub-nav */
+  .subnav{display:flex; gap:6px; margin-bottom:20px; background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:4px; width:fit-content;}
+  .subnav-btn{
+    background:none; border:none; cursor:pointer; font-family:var(--body); font-weight:600;
+    font-size:13px; color:var(--muted); padding:8px 16px; border-radius:20px; transition:background .15s, color .15s;
+  }
+  .subnav-btn.active{background:var(--electric); color:#fff;}
+  .subview{display:none;}
+  .subview.active{display:block;}
+
+  /* Visualize tools */
+  .vis-tool-row{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .vis-tool-btn{
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    font-family:var(--body); font-size:13px; font-weight:600; padding:9px 16px;
+    border-radius:20px; cursor:pointer;
+  }
+  .vis-tool-btn.active{border-color:var(--turquoise); color:var(--ink); background:rgba(24,199,184,0.1);}
+  .vis-tool{display:none;}
+  .vis-tool.active{display:block;}
+  .vis-desc{font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:16px; max-width:520px;}
+
+  .leaves-stage{
+    width:100%; height:280px; border-radius:16px; overflow:hidden; position:relative;
+    background:linear-gradient(180deg, #E8F3F1 0%, #D6EAE6 100%); border:1px solid var(--line);
+    margin-bottom:14px;
+  }
+  #leavesCanvas{width:100%; height:100%; display:block;}
+  .leaves-input-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .leaves-input-row input{
+    flex:1; min-width:200px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    color:var(--ink); font-family:var(--body); font-size:14px; padding:12px 14px;
+  }
+  .leaves-input-row input:focus{outline:none; border-color:var(--turquoise);}
+  .leaf-place-btn{
+    background:var(--turquoise); color:#fff; border:none; font-weight:600; font-family:var(--body);
+    font-size:14px; padding:12px 20px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  }
+
+  .anchor-steps{display:flex; flex-direction:column; gap:10px;}
+  .anchor-step{
+    display:flex; align-items:flex-start; gap:14px; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; cursor:pointer; transition:border-color .15s;
+  }
+  .anchor-step.done{border-color:var(--turquoise); background:rgba(24,199,184,0.06);}
+  .anchor-step-num{
+    width:26px; height:26px; border-radius:50%; background:var(--electric); color:#fff;
+    font-family:var(--mono); font-size:12px; font-weight:600; display:flex; align-items:center;
+    justify-content:center; flex-shrink:0;
+  }
+  .anchor-step.done .anchor-step-num{background:var(--turquoise);}
+  .anchor-step-text{font-size:14.5px; line-height:1.5; color:var(--ink);}
+  .anchor-step.done .anchor-step-text{color:var(--muted);}
+
+  /* Journal */
+  .field-label{
+    font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--electric); margin-bottom:8px; display:block;
+  }
+  textarea, input[type=text]{
+    width:100%; background:var(--midnight-2); border:1px solid #2A3343; border-radius:10px;
+    color:var(--ink); font-family:var(--body); font-size:15px; padding:14px;
+    resize:vertical; min-height:80px; margin-bottom:18px;
+  }
+  textarea:focus, input:focus{outline:none; border-color:var(--electric);}
+
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
+  .chip{
+    background:var(--panel); border:1.5px solid var(--line); color:var(--ink);
+    font-family:var(--body); font-size:13px; font-weight:500; padding:7px 14px;
+    border-radius:20px; cursor:pointer; transition:background .15s, border-color .15s, color .15s;
+  }
+  .chip.selected{background:var(--electric); border-color:var(--electric); color:#fff;}
+
+  select{
+    width:100%; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    color:var(--ink); font-family:var(--body); font-size:14px; padding:12px 14px;
+    margin-bottom:18px; cursor:pointer;
+  }
+  select:focus{outline:none; border-color:var(--electric);}
+
+  .streak-line{
+    font-family:var(--mono); font-size:12px; color:var(--turquoise); margin-bottom:18px;
+    padding:10px 14px; background:rgba(24,199,184,0.1); border-radius:8px; display:none;
+  }
+  .streak-line.show{display:block;}
+
+  .journal-header-row{
+    display:none; align-items:center; justify-content:space-between;
+    margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line);
+  }
+  .journal-header-row.show{display:flex;}
+  .journal-count{font-family:var(--mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;}
+  .journal-reset-btn{
+    background:none; border:none; cursor:pointer; font-family:var(--mono);
+    font-size:11px; letter-spacing:0.04em; color:var(--muted); text-transform:uppercase;
+  }
+  .journal-reset-btn:hover{color:var(--coral);}
+  .save-btn{
+    background:var(--turquoise); color:#fff; border:none; font-weight:600;
+    font-family:var(--body); font-size:14px; padding:11px 24px; border-radius:24px; cursor:pointer;
+  }
+  .entries{margin-top:32px; display:flex; flex-direction:column; gap:14px;}
+  .entry{
+    background:var(--midnight-2); border-left:2px solid var(--coral); border-radius:6px;
+    padding:14px 16px;
+  }
+  .entry-date{font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:6px;}
+  .entry-row{font-size:14px; line-height:1.5; margin-bottom:4px;}
+  .entry-row b{color:var(--electric); font-weight:500;}
+  .empty-state{color:var(--muted); font-size:14px; padding:24px 0; text-align:center; font-style:italic;}
+
+  /* Situations */
+  .sit-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    margin-bottom:14px; overflow:hidden;
+  }
+  .sit-head{
+    display:flex; align-items:center; gap:12px; padding:16px 18px; cursor:pointer;
+    user-select:none;
+  }
+  .sit-dot{
+    width:10px; height:10px; border-radius:50%; flex-shrink:0;
+  }
+  .sit-title{font-family:var(--display); font-weight:600; font-size:17px; color:var(--ink); flex:1;}
+  .sit-chevron{font-family:var(--mono); font-size:13px; color:var(--muted); transition:transform .2s;}
+  .sit-card.open .sit-chevron{transform:rotate(90deg);}
+  .sit-body{display:none; padding:0 18px 18px 18px;}
+  .sit-card.open .sit-body{display:block;}
+  .sit-why{font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:14px; padding-left:22px;}
+  .check-item{
+    display:flex; align-items:flex-start; gap:10px; padding:9px 0; padding-left:22px;
+    border-top:1px solid var(--line); cursor:pointer;
+  }
+  .check-item:first-of-type{border-top:none;}
+  .check-box{
+    width:18px; height:18px; border-radius:5px; border:2px solid var(--line);
+    flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:var(--panel); transition:background .15s, border-color .15s;
+  }
+  .check-item.checked .check-box{background:var(--turquoise); border-color:var(--turquoise); content:'';}
+  .check-item.checked .check-box::after{content:'✓';}
+  .check-text{font-size:14px; line-height:1.45; color:var(--ink);}
+  .check-item.checked .check-text{color:var(--muted); text-decoration:line-through;}
+  .sit-reset{
+    display:flex; align-items:center; gap:6px; margin-top:14px; padding-left:22px;
+    background:none; border:none; cursor:pointer; font-family:var(--mono);
+    font-size:11px; letter-spacing:0.04em; color:var(--muted); text-transform:uppercase;
+  }
+  .sit-reset:hover{color:var(--coral);}
+  .sit-try-btn{
+    display:block; margin:2px 0 16px 22px; background:var(--turquoise); color:#fff;
+    border:none; font-family:var(--body); font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:20px; cursor:pointer;
+  }
+  .sit-try-btn:hover{opacity:0.9;}
+
+  /* Plan/Share */
+  .plan-card{
+    background:var(--midnight-2); border:1px solid #2A3343; border-radius:14px;
+    padding:24px; margin-bottom:20px;
+  }
+  .plan-card h3{font-family:var(--display); font-weight:500; font-size:19px; margin-bottom:10px; color:var(--ink);}
+  .plan-card p{font-size:14px; color:var(--muted); line-height:1.6;}
+  .share-row{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
+  .share-btn{
+    flex:1; min-width:150px; display:flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:10px; padding:13px 16px; font-family:var(--body);
+    font-weight:600; font-size:14px; cursor:pointer; transition:opacity .2s;
+  }
+  .share-btn:hover{opacity:0.88;}
+  .btn-pdf{background:var(--coral); color:#fff;}
+  .btn-whatsapp{background:#25D366; color:#0B1A0F;}
+  .note{font-size:12px; color:var(--muted); margin-top:14px; line-height:1.5;}
+
+  footer{margin-top:48px; border-top:1px solid var(--line); padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
+  .copyright{margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--muted); opacity:0.8;}
+
+  /* Calm Check toast */
+  .calm-toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%, 120%);
+    background:var(--panel); border:1px solid var(--line); border-radius:20px;
+    padding:20px 24px 18px; box-shadow:0 16px 40px rgba(33,27,61,0.18);
+    z-index:900; width:min(360px, calc(100vw - 32px)); text-align:center;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    opacity:0; pointer-events:none;
+  }
+  .calm-toast.show{ transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+  .calm-toast-close{
+    position:absolute; top:10px; right:12px; background:none; border:none; cursor:pointer;
+    color:var(--muted); font-size:13px; padding:4px;
+  }
+  .calm-toast-close:hover{color:var(--ink);}
+  .calm-toast-title{
+    font-family:var(--display); font-weight:600; font-size:16px; color:var(--ink); margin-bottom:14px;
+  }
+  .calm-toast-options{display:flex; justify-content:space-between; gap:8px;}
+  .calm-opt{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:var(--bg); border:1px solid var(--line); border-radius:14px;
+    padding:10px 6px; cursor:pointer; font-family:var(--body); font-size:11px;
+    color:var(--muted); font-weight:600; transition:transform .15s, border-color .15s, background .15s;
+  }
+  .calm-opt:hover{transform:translateY(-2px); border-color:var(--turquoise);}
+  .calm-opt.picked{background:var(--turquoise); border-color:var(--turquoise); color:#fff;}
+  .calm-emoji{font-size:22px;}
+  .calm-toast-thanks{
+    font-family:var(--body); font-size:13.5px; color:var(--ink); padding:8px 0 2px;
+  }
+
+  /* PDF preview modal */
+  .pdf-modal{
+    display:none; position:fixed; inset:0; background:rgba(33,27,61,0.55);
+    z-index:1000; align-items:center; justify-content:center; padding:24px;
+  }
+  .pdf-modal.show{display:flex;}
+  .pdf-modal-inner{
+    background:var(--panel); border-radius:14px; width:100%; max-width:720px; height:90vh;
+    display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .pdf-modal-bar{
+    display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+    border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .pdf-modal-title{font-family:var(--display); font-weight:600; font-size:15px; color:var(--ink);}
+  .pdf-modal-actions{display:flex; gap:8px;}
+  .pdf-modal-btn{
+    border:none; border-radius:8px; padding:8px 14px; font-family:var(--body); font-weight:600;
+    font-size:13px; cursor:pointer;
+  }
+  .pdf-modal-download{background:var(--coral); color:#fff;}
+  .pdf-modal-close{background:var(--bg); color:var(--ink); border:1px solid var(--line);}
+  .pdf-iframe{flex:1; border:none; width:100%; background:#525659;}
+
+  /* Play */
+  .play-stage{
+    position:relative; width:100%; height:480px; border-radius:18px; overflow:hidden;
+    background:linear-gradient(180deg, #FFF8EC 0%, #FDEFD8 100%);
+    border:1px solid var(--line);
+  }
+  #popCanvas{width:100%; height:100%; display:block; touch-action:none; cursor:pointer;}
+  .play-hud{
+    position:absolute; top:14px; left:14px; right:14px; display:flex;
+    align-items:center; justify-content:space-between; pointer-events:none;
+  }
+  .play-hud > *{pointer-events:auto;}
+  #popCount{
+    font-family:var(--mono); font-size:12px; color:var(--ink); background:rgba(255,255,255,0.75);
+    padding:6px 12px; border-radius:20px; backdrop-filter:blur(4px);
+  }
+  .play-restart{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    background:rgba(255,255,255,0.85); border:1px solid var(--line); color:var(--muted);
+    padding:7px 14px; border-radius:20px; cursor:pointer;
+  }
+  .play-restart:hover{color:var(--coral);}
+  @media (max-width:480px){
+    .play-stage{height:420px;}
+  }
+  @media (max-width:600px){
+    .pdf-modal{padding:0;}
+    .pdf-modal-inner{height:100vh; border-radius:0; max-width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="edition-switch">
+    <a href="index.html" class="edition-switch-link">← Anchor home</a>
+    <div class="edition-switch-right">
+      <a href="somatic.html" class="edition-switch-link edition-switch-other" style="background:#D72638;">🧘 Anchor Somatic</a>
+      <button class="share-btn-small" id="shareAppBtn">📤 Share</button>
+    </div>
+  </div>
+
+  <div class="share-popover" id="sharePopover">
+    <div class="share-popover-title">Share Anchor for F1</div>
+    <a class="share-popover-opt" id="shareWhatsappLink" target="_blank" rel="noopener">
+      <span>💬</span> WhatsApp
+    </a>
+    <a class="share-popover-opt" id="shareXLink" target="_blank" rel="noopener">
+      <span>𝕏</span> X / Twitter
+    </a>
+    <button class="share-popover-opt" id="shareCopyLink">
+      <span>🔗</span> Copy link
+    </button>
+  </div>
+
+  <header>
+    <div class="eyebrow">🏁 Anchor for F1 · Race weekend, every weekend</div>
+    <h1>Racing is emotional.<br><span class="work-tag">Stay steady.</span></h1>
+    <p class="sub">Not therapy, not a strategist — just a fun companion for the chaos of caring this much about 90 minutes of lights-out. For qualy disappointment, safety car chaos, and the 3am off-season withdrawal.</p>
+  </header>
+
+  <!-- DRIVER PICKER -->
+  <div class="driver-picker" id="driverPicker">
+    <div class="driver-chips-row" id="driverChipsRow" style="display:none;"></div>
+    <button class="driver-reopen-link" id="driverReopenBtn" style="display:none;">🏎️ Add a driver</button>
+    <div class="driver-form" id="driverForm">
+      <div class="driver-form-header">
+        <span class="driver-form-label">🏎️ Who are you following this season?</span>
+        <span class="driver-form-hint">Up to 3 drivers</span>
+      </div>
+      <div class="driver-form-row">
+        <input type="text" id="driverNameInput" placeholder="Driver name" maxlength="20">
+        <input type="text" id="driverNumberInput" placeholder="#" maxlength="2" style="width:52px;">
+        <div class="driver-color-row" id="driverColorRow">
+          <button class="driver-color-swatch active" data-color="#D72638" style="background:#D72638;" title="Red"></button>
+          <button class="driver-color-swatch" data-color="#2E6FF2" style="background:#2E6FF2;" title="Blue"></button>
+          <button class="driver-color-swatch" data-color="#18C7B8" style="background:#18C7B8;" title="Teal"></button>
+          <button class="driver-color-swatch" data-color="#FFC93C" style="background:#FFC93C;" title="Yellow"></button>
+          <button class="driver-color-swatch" data-color="#FF6F59" style="background:#FF6F59;" title="Orange"></button>
+          <button class="driver-color-swatch" data-color="#9B5DE5" style="background:#9B5DE5;" title="Purple"></button>
+        </div>
+        <button class="driver-save-btn" id="driverSaveBtn">+ Add</button>
+      </div>
+      <button class="driver-skip-btn" id="driverSkipBtn">Skip for now</button>
+    </div>
+  </div>
+
+  <nav>
+    <button class="tab-btn active" data-tab="breathe">Breathe</button>
+    <button class="tab-btn" data-tab="situations">Situations</button>
+    <button class="tab-btn" data-tab="journal">Journal</button>
+    <button class="tab-btn" data-tab="plan">Plan &amp; Share</button>
+    <button class="tab-btn" data-tab="play">Play</button>
+  </nav>
+
+  <!-- BREATHE -->
+  <section id="breathe" class="active">
+    <div class="subnav">
+      <button class="subnav-btn active" data-subtab="breathing">Breathing</button>
+      <button class="subnav-btn" data-subtab="visualize">Visualize</button>
+    </div>
+
+    <!-- Breathing sub-view -->
+    <div class="subview active" id="sub-breathing">
+      <div class="pattern-row">
+        <button class="pattern-btn active" data-pattern="box">Formation Lap (4-4-4-4)</button>
+        <button class="pattern-btn" data-pattern="sigh">Chequered Flag Sigh</button>
+        <button class="pattern-btn" data-pattern="exhale">Cooldown Lap Exhale (4-8)</button>
+        <button class="pattern-more-btn" id="patternMoreBtn">More patterns ▾</button>
+      </div>
+      <div class="pattern-row pattern-row-more" id="patternRowMore">
+        <button class="pattern-btn" data-pattern="478">4-7-8</button>
+        <button class="pattern-btn" data-pattern="coherence">Pole Position Calm (5-5)</button>
+      </div>
+      <div class="breathe-stage">
+        <div class="orb-field">
+          <div class="ring" style="width:100%;height:100%;"></div>
+          <div class="ring" style="width:70%;height:70%; top:15%; left:15%;"></div>
+          <div class="orb" id="orb"></div>
+        </div>
+        <div class="phase-label" id="phaseLabel">press start when ready</div>
+        <div class="phase-count" id="phaseCount">&nbsp;</div>
+        <div class="round-indicator" id="roundIndicator"></div>
+      </div>
+      <button class="start-btn" id="startBtn">Start session</button>
+      <div class="session-length-row" id="sessionLengthRow">
+        <span class="session-length-label">Session length:</span>
+        <button class="length-btn" data-rounds="3">3 rounds</button>
+        <button class="length-btn active" data-rounds="5">5 rounds</button>
+        <button class="length-btn" data-rounds="10">10 rounds</button>
+        <button class="length-btn" data-rounds="0">No limit</button>
+      </div>
+    </div>
+
+    <!-- Visualize sub-view -->
+    <div class="subview" id="sub-visualize">
+      <div class="vis-tool-row">
+        <button class="vis-tool-btn active" data-vis="leaves">🍃 Leaves on a Stream</button>
+        <button class="vis-tool-btn" data-vis="anchor">⚓ Drop the Anchor</button>
+      </div>
+
+      <!-- Leaves on a Stream -->
+      <div class="vis-tool active" id="vis-leaves">
+        <p class="vis-desc">Notice the thought. Place it on a leaf. Watch it drift — you don't have to fight it or believe it, just let it pass.</p>
+        <div class="leaves-stage">
+          <canvas id="leavesCanvas"></canvas>
+        </div>
+        <div class="leaves-input-row">
+          <input type="text" id="leafInput" placeholder="What's on your mind right now?" maxlength="60">
+          <button class="leaf-place-btn" id="leafPlaceBtn">Place on a leaf</button>
+        </div>
+      </div>
+
+      <!-- Drop the Anchor -->
+      <div class="vis-tool" id="vis-anchor">
+        <p class="vis-desc">For when you feel swept away, dissociated, or stuck in your head. Move through these slowly — there's no rush.</p>
+        <div class="anchor-steps" id="anchorSteps"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SITUATIONS -->
+  <section id="situations">
+    <p class="sub" style="margin-bottom:22px;">Pick the one closest to what's happening. Check off steps as you go — they're tools, not a script. Skip what doesn't fit.</p>
+    <div id="situationList"></div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section id="journal">
+    <label class="field-label">Name what you're feeling (pick any that fit)</label>
+    <div class="chip-row" id="emotionChips"></div>
+
+    <label class="field-label">What dysregulated you today?</label>
+    <textarea id="trigger" placeholder="e.g. safety car came out right after our pit stop, felt the whole race slip away"></textarea>
+
+    <label class="field-label">If this connects to a situation you've checklisted, which one?</label>
+    <select id="situationTag">
+      <option value="">— not sure / none of these —</option>
+    </select>
+
+    <label class="field-label">What did you do, and did it help?</label>
+    <textarea id="response" placeholder="e.g. paced around the living room, did a settle-the-body session — helped enough to watch the rest"></textarea>
+
+    <label class="field-label">Even with this feeling here, what did you still do (or want to do) that matters to you?</label>
+    <textarea id="valuesAction" placeholder="e.g. still texted a friend back, still went to the gym — the feeling didn't get the final say"></textarea>
+
+    <label class="field-label">One thing you'd want your group chat to know about this</label>
+    <textarea id="forFuture" placeholder="e.g. yes I know it's just a sport, let me be dramatic about it for five more minutes"></textarea>
+
+    <button class="save-btn" id="saveEntry">Save entry</button>
+
+    <div class="streak-line" id="streakLine"></div>
+
+    <div class="journal-header-row" id="journalHeaderRow">
+      <span class="journal-count" id="journalCount"></span>
+      <button class="journal-reset-btn" id="resetJournal">↺ Reset all journal entries</button>
+    </div>
+
+    <div class="entries" id="entryList"></div>
+  </section>
+
+  <!-- PLAN & SHARE -->
+  <section id="plan">
+    <div class="plan-card">
+      <h3>Your regulation plan</h3>
+      <p>Built from your journal entries. This turns your private reflections into language you can actually use — in a 1:1, with a colleague, or just for yourself on a hard day.</p>
+    </div>
+    <div class="share-row">
+      <button class="share-btn btn-pdf" id="previewPdf">👁 Preview PDF</button>
+      <button class="share-btn btn-whatsapp" id="shareWhatsapp">↗ Share to WhatsApp</button>
+    </div>
+    <p class="note">Preview opens your plan as a PDF right in the browser — from there you can download it, then email it to yourself or save it anywhere you like. WhatsApp opens a pre-filled message you can send to yourself, a manager, or a colleague. Nothing here ever leaves your browser unless you choose to send it.</p>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play">
+    <p class="sub" style="margin-bottom:6px;">No score to lose, nothing to win. Tap the worries as they drift up and let them go.</p>
+    <div class="play-stage">
+      <canvas id="popCanvas"></canvas>
+      <div class="play-hud">
+        <span id="popCount">0 popped</span>
+        <button class="play-restart" id="popRestart">↺ Clear the air</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALM CHECK TOAST -->
+  <div class="calm-toast" id="calmToast">
+    <button class="calm-toast-close" id="calmToastClose" aria-label="Dismiss">✕</button>
+    <div class="calm-toast-title" id="calmToastTitle">How's the water now? 🌊</div>
+    <div class="calm-toast-options">
+      <button class="calm-opt" data-rating="stormy"><span class="calm-emoji">🌊</span>Stormy</button>
+      <button class="calm-opt" data-rating="choppy"><span class="calm-emoji">🐚</span>Choppy</button>
+      <button class="calm-opt" data-rating="calm"><span class="calm-emoji">💧</span>Calmer</button>
+      <button class="calm-opt" data-rating="glassy"><span class="calm-emoji">✨</span>Glassy</button>
+    </div>
+  </div>
+
+  <!-- PDF PREVIEW MODAL -->
+  <div class="pdf-modal" id="pdfModal">
+    <div class="pdf-modal-inner">
+      <div class="pdf-modal-bar">
+        <span class="pdf-modal-title">Anchor — Plan preview</span>
+        <div class="pdf-modal-actions">
+          <button class="pdf-modal-btn pdf-modal-download" id="modalDownload">↓ Download</button>
+          <button class="pdf-modal-btn pdf-modal-close" id="modalClose">✕ Close</button>
+        </div>
+      </div>
+      <iframe id="pdfFrame" class="pdf-iframe"></iframe>
+    </div>
+  </div>
+
+  <footer>
+    Everything you write stays on this device (local storage only) — nothing is uploaded anywhere. This tool supports self-regulation skills; it isn't a substitute for therapy, and it isn't a substitute for the real connection you're working toward.
+    <div class="copyright">© <span id="copyYear"></span> Wakara Technologies Limited. All rights reserved.</div>
+  </footer>
+
+</div>
+
+<script>
+const ANCHOR_EDITION = 'f1';
+function trackEvent(name, params={}){
+  if(typeof gtag === 'function'){
+    gtag('event', name, {edition: ANCHOR_EDITION, ...params});
+  }
+}
+
+// ---------- DRIVER PICKER (multi, up to 3) ----------
+const MAX_DRIVERS = 3;
+
+function getDrivers(){
+  try { return JSON.parse(localStorage.getItem('anchor_f1_drivers') || '[]'); }
+  catch(err){ return []; }
+}
+// Legacy single-driver migration
+(function migrateOldDriver(){
+  const old = localStorage.getItem('anchor_f1_driver');
+  if(old && !localStorage.getItem('anchor_f1_drivers')){
+    try {
+      const d = JSON.parse(old);
+      if(d && d.name) localStorage.setItem('anchor_f1_drivers', JSON.stringify([d]));
+    } catch(err){}
+    localStorage.removeItem('anchor_f1_driver');
+  }
+})();
+
+function saveDrivers(drivers){
+  localStorage.setItem('anchor_f1_drivers', JSON.stringify(drivers));
+}
+function clearDrivers(){
+  localStorage.removeItem('anchor_f1_drivers');
+  localStorage.removeItem('anchor_f1_driver_skipped');
+}
+
+// Legacy getDriver() still used by PDF/WhatsApp — returns first driver or null
+function getDriver(){
+  const drivers = getDrivers();
+  return drivers.length ? drivers[0] : null;
+}
+
+function personalize(text){
+  const drivers = getDrivers();
+  let name;
+  if(drivers.length === 0) name = 'your driver';
+  else if(drivers.length === 1) name = drivers[0].name;
+  else name = drivers.map(d=>d.name).join(' & ');
+  return text.replace(/\{\{driver\}\}/g, name);
+}
+
+function renderDriverUI(){
+  const drivers = getDrivers();
+  const skipped = localStorage.getItem('anchor_f1_driver_skipped') === 'true';
+  const chipsRow = document.getElementById('driverChipsRow');
+  const form = document.getElementById('driverForm');
+  const reopen = document.getElementById('driverReopenBtn');
+  const saveBtn = document.getElementById('driverSaveBtn');
+
+  if(drivers.length > 0){
+    chipsRow.style.display = 'flex';
+    reopen.style.display = 'none';
+
+    // Render chips + optional "add another" button
+    chipsRow.innerHTML = '';
+    drivers.forEach((d, idx)=>{
+      const chip = document.createElement('div');
+      chip.className = 'driver-chip';
+      chip.innerHTML = `<span class="driver-chip-dot" style="background:${d.color}"></span>
+        <span class="driver-chip-label">${escapeHtml(d.name)}${d.number ? ' #'+d.number : ''}</span>
+        <button class="driver-chip-remove" data-idx="${idx}" title="Remove">✕</button>`;
+      chipsRow.appendChild(chip);
+    });
+
+    if(drivers.length < MAX_DRIVERS){
+      // Show the form below chips for adding more
+      form.style.display = 'block';
+      saveBtn.textContent = '+ Add';
+      const addBtn = document.createElement('button');
+      addBtn.className = 'driver-chips-add';
+      addBtn.textContent = '+ Add another';
+      addBtn.addEventListener('click', ()=>{
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      });
+      chipsRow.appendChild(addBtn);
+      form.style.display = 'none'; // collapsed by default when chips exist
+    } else {
+      form.style.display = 'none';
+    }
+
+    chipsRow.querySelectorAll('.driver-chip-remove').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const idx = parseInt(btn.dataset.idx, 10);
+        const updated = getDrivers();
+        updated.splice(idx, 1);
+        saveDrivers(updated);
+        trackEvent('driver_removed');
+        renderDriverUI();
+        safely(renderSituations);
+      });
+    });
+
+  } else if(skipped){
+    chipsRow.style.display = 'none';
+    form.style.display = 'none';
+    reopen.style.display = 'block';
+  } else {
+    chipsRow.style.display = 'none';
+    form.style.display = 'block';
+    reopen.style.display = 'none';
+    saveBtn.textContent = '+ Add';
+  }
+}
+
+(function setupDriverPicker(){
+  let chosenColor = '#D72638';
+  document.querySelectorAll('.driver-color-swatch').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      document.querySelectorAll('.driver-color-swatch').forEach(s=>s.classList.remove('active'));
+      sw.classList.add('active');
+      chosenColor = sw.dataset.color;
+    });
+  });
+
+  document.getElementById('driverSaveBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('driverNameInput').value.trim();
+    const number = document.getElementById('driverNumberInput').value.trim();
+    if(!name) return;
+    const drivers = getDrivers();
+    if(drivers.length >= MAX_DRIVERS) return;
+    drivers.push({name, number, color: chosenColor});
+    saveDrivers(drivers);
+    localStorage.removeItem('anchor_f1_driver_skipped');
+    trackEvent('driver_set', {count: drivers.length});
+    document.getElementById('driverNameInput').value = '';
+    document.getElementById('driverNumberInput').value = '';
+    renderDriverUI();
+    safely(renderSituations);
+  });
+
+  document.getElementById('driverSkipBtn').addEventListener('click', ()=>{
+    localStorage.setItem('anchor_f1_driver_skipped', 'true');
+    renderDriverUI();
+  });
+
+  document.getElementById('driverReopenBtn').addEventListener('click', ()=>{
+    localStorage.removeItem('anchor_f1_driver_skipped');
+    renderDriverUI();
+  });
+
+  renderDriverUI();
+})();
+
+// ---------- SHARE ----------
+(function setupShare(){
+  const shareData = {
+    title: 'Anchor for F1',
+    text: "Found this fun companion for F1 fans called Anchor for F1 — for qualy disappointment, safety car chaos, and the off-season withdrawal. Thought you might find it useful too.",
+    url: window.location.href.split('#')[0]
+  };
+
+  const btn = document.getElementById('shareAppBtn');
+  const popover = document.getElementById('sharePopover');
+
+  btn.addEventListener('click', async ()=>{
+    trackEvent('share_clicked');
+    if(navigator.share){
+      try { await navigator.share(shareData); } catch(err){ /* user cancelled, fine */ }
+      return;
+    }
+    const rect = btn.getBoundingClientRect();
+    popover.style.top = (rect.bottom + 8) + 'px';
+    popover.style.right = (window.innerWidth - rect.right) + 'px';
+    popover.classList.toggle('show');
+  });
+
+  document.getElementById('shareWhatsappLink').href =
+    'https://wa.me/?text=' + encodeURIComponent(shareData.text + ' ' + shareData.url);
+  document.getElementById('shareXLink').href =
+    'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareData.text) + '&url=' + encodeURIComponent(shareData.url);
+
+  document.getElementById('shareCopyLink').addEventListener('click', async ()=>{
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      const btnEl = document.getElementById('shareCopyLink');
+      const original = btnEl.innerHTML;
+      btnEl.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(()=>{ btnEl.innerHTML = original; popover.classList.remove('show'); }, 1200);
+    } catch(err){ /* clipboard unavailable */ }
+  });
+
+  document.addEventListener('click', (e)=>{
+    if(!popover.contains(e.target) && e.target !== btn){
+      popover.classList.remove('show');
+    }
+  });
+})();
+
+// ---------- CALM CHECK (fun micro-rating) ----------
+function getCalmRatings(){
+  return JSON.parse(localStorage.getItem('anchor_f1_calmratings') || '[]');
+}
+function saveCalmRating(context, rating, detail){
+  const ratings = getCalmRatings();
+  ratings.unshift({date: new Date().toISOString(), context, detail: detail||null, rating});
+  localStorage.setItem('anchor_f1_calmratings', JSON.stringify(ratings));
+}
+
+const CALM_TITLES = {
+  breathing: "How's the water now? 🌊",
+  anchor: "Anchor dropped. How's the water? ⚓",
+  leaves: "Leaf sent off. How's the water? 🍃",
+  situation: "Checklist done. How's the water? 🧭"
+};
+
+let calmToastTimeout = null;
+
+function showCalmCheck(context, detail){
+  const toast = document.getElementById('calmToast');
+  const title = document.getElementById('calmToastTitle');
+  title.textContent = CALM_TITLES[context] || "How's the water now? 🌊";
+  toast.dataset.context = context;
+  toast.dataset.detail = detail || '';
+  toast.querySelectorAll('.calm-opt').forEach(b=>{
+    b.classList.remove('picked');
+    b.style.display = '';
+  });
+  const oldThanks = toast.querySelector('.calm-toast-thanks');
+  if(oldThanks) oldThanks.remove();
+  const optionsRow = toast.querySelector('.calm-toast-options');
+  optionsRow.style.display = 'flex';
+
+  toast.classList.add('show');
+  clearTimeout(calmToastTimeout);
+  calmToastTimeout = setTimeout(()=>{ hideCalmCheck(); }, 9000);
+}
+
+function hideCalmCheck(){
+  document.getElementById('calmToast').classList.remove('show');
+  clearTimeout(calmToastTimeout);
+}
+
+document.getElementById('calmToastClose').addEventListener('click', hideCalmCheck);
+
+document.querySelectorAll('.calm-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const toast = document.getElementById('calmToast');
+    const rating = btn.dataset.rating;
+    saveCalmRating(toast.dataset.context, rating, toast.dataset.detail);
+    trackEvent('calm_check_rating', {context: toast.dataset.context, rating: rating});
+
+    btn.classList.add('picked');
+    clearTimeout(calmToastTimeout);
+
+    const thanksMap = {
+      stormy: "That's okay — even showing up counts. 💙",
+      choppy: "Some movement is still movement.",
+      calm: "Glad that helped a little.",
+      glassy: "Love that. Carry it with you. ✨"
+    };
+    setTimeout(()=>{
+      const optionsRow = toast.querySelector('.calm-toast-options');
+      optionsRow.style.display = 'none';
+      const thanks = document.createElement('div');
+      thanks.className = 'calm-toast-thanks';
+      thanks.textContent = thanksMap[rating] || 'Thanks for checking in.';
+      toast.appendChild(thanks);
+      setTimeout(hideCalmCheck, 1800);
+    }, 350);
+  });
+});
+
+// ---------- TAB NAV ----------
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    trackEvent('tab_view', {tab: btn.dataset.tab});
+    if(btn.dataset.tab==='plan') renderPlan();
+    if(btn.dataset.tab==='journal') renderEntries();
+    if(btn.dataset.tab==='play') initPopGame();
+    else popRunning = false;
+    if(btn.dataset.tab!=='breathe') leavesRunning = false;
+  });
+});
+
+// ---------- BREATHING ----------
+const patterns = {
+  box: [{label:'inhale', secs:4, scale:1.5}, {label:'hold', secs:4, scale:1.5}, {label:'exhale', secs:4, scale:1}, {label:'hold', secs:4, scale:1}],
+  478: [{label:'inhale', secs:4, scale:1.5}, {label:'hold', secs:7, scale:1.5}, {label:'exhale', secs:8, scale:1}],
+  sigh: [{label:'inhale', secs:2, scale:1.3}, {label:'inhale again', secs:1.5, scale:1.6}, {label:'long exhale', secs:6, scale:1}],
+  coherence: [{label:'inhale', secs:5, scale:1.5}, {label:'exhale', secs:5, scale:1}],
+  exhale: [{label:'inhale', secs:4, scale:1.5}, {label:'long exhale', secs:8, scale:1}]
+};
+let currentPattern = 'box';
+let breathing = false;
+let breathTimer = null;
+let stepIndex = 0;
+
+document.querySelectorAll('.pattern-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.pattern-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPattern = btn.dataset.pattern;
+    if(breathing) stopBreathing();
+  });
+});
+
+const patternMoreBtn = document.getElementById('patternMoreBtn');
+const patternRowMore = document.getElementById('patternRowMore');
+if(patternMoreBtn){
+  patternMoreBtn.addEventListener('click', ()=>{
+    const showing = patternRowMore.classList.toggle('show');
+    patternMoreBtn.textContent = showing ? 'Fewer patterns ▴' : 'More patterns ▾';
+  });
+}
+
+// Breathe sub-nav: Breathing vs Visualize
+document.querySelectorAll('.subnav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.subview').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sub-'+btn.dataset.subtab).classList.add('active');
+    if(btn.dataset.subtab === 'visualize') initLeavesCanvas();
+    else { leavesRunning = false; if(breathing) stopBreathing(); }
+  });
+});
+
+// Visualize tool switching: Leaves vs Anchor
+document.querySelectorAll('.vis-tool-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.vis-tool-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.vis-tool').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('vis-'+btn.dataset.vis).classList.add('active');
+    if(btn.dataset.vis === 'leaves') initLeavesCanvas();
+    if(btn.dataset.vis === 'anchor'){ leavesRunning = false; renderAnchorSteps(); }
+  });
+});
+
+const orb = document.getElementById('orb');
+const phaseLabel = document.getElementById('phaseLabel');
+const phaseCount = document.getElementById('phaseCount');
+const roundIndicator = document.getElementById('roundIndicator');
+const startBtn = document.getElementById('startBtn');
+
+let sessionRoundLimit = 5; // 0 = no limit
+let roundsCompleted = 0;
+
+document.querySelectorAll('.length-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.length-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    sessionRoundLimit = parseInt(btn.dataset.rounds, 10);
+    if(breathing) stopBreathing();
+  });
+});
+
+function updateRoundIndicator(){
+  if(!breathing){ roundIndicator.textContent = ''; return; }
+  if(sessionRoundLimit > 0){
+    roundIndicator.textContent = `Round ${Math.min(roundsCompleted+1, sessionRoundLimit)} of ${sessionRoundLimit}`;
+  } else {
+    roundIndicator.textContent = `Round ${roundsCompleted+1} · no limit set — stop whenever you're ready`;
+  }
+}
+
+function runStep(){
+  const steps = patterns[currentPattern];
+  const phaseInRound = stepIndex % steps.length;
+  if(phaseInRound === 0 && stepIndex > 0){
+    roundsCompleted++;
+    if(sessionRoundLimit > 0 && roundsCompleted >= sessionRoundLimit){
+      finishBreathingSession();
+      return;
+    }
+  }
+  updateRoundIndicator();
+
+  const step = steps[phaseInRound];
+  phaseLabel.textContent = step.label;
+  orb.style.transition = `transform ${step.secs}s ease-in-out, box-shadow ${step.secs}s ease-in-out`;
+  orb.style.transform = `scale(${step.scale})`;
+  orb.style.boxShadow = step.scale > 1.2 ? '0 0 90px rgba(124,184,222,0.55)' : '0 0 40px rgba(124,184,222,0.25)';
+
+  let remaining = Math.round(step.secs);
+  phaseCount.textContent = remaining;
+  const countInterval = setInterval(()=>{
+    remaining -= 1;
+    phaseCount.textContent = remaining > 0 ? remaining : '';
+    if(remaining <= 0) clearInterval(countInterval);
+  }, 1000);
+
+  breathTimer = setTimeout(()=>{
+    stepIndex++;
+    if(breathing) runStep();
+  }, step.secs * 1000);
+}
+
+let breathingSessionStart = null;
+function startBreathing(){
+  breathing = true;
+  stepIndex = 0;
+  roundsCompleted = 0;
+  breathingSessionStart = Date.now();
+  startBtn.textContent = 'Stop session';
+  startBtn.classList.add('stop');
+  updateRoundIndicator();
+  runStep();
+}
+function stopBreathing(){
+  breathing = false;
+  clearTimeout(breathTimer);
+  startBtn.textContent = 'Start session';
+  startBtn.classList.remove('stop');
+  phaseLabel.textContent = 'press start when ready';
+  phaseCount.textContent = '\u00A0';
+  roundIndicator.textContent = '';
+  orb.style.transform = 'scale(1)';
+  orb.style.boxShadow = '0 0 60px rgba(124,184,222,0.35)';
+}
+function finishBreathingSession(){
+  const elapsed = breathingSessionStart ? Date.now() - breathingSessionStart : 0;
+  stopBreathing();
+  phaseLabel.textContent = 'session complete';
+  setTimeout(()=>{ if(!breathing) phaseLabel.textContent = 'press start when ready'; }, 2500);
+  trackEvent('breathing_complete', {pattern: currentPattern, rounds: sessionRoundLimit});
+  if(elapsed > 8000) showCalmCheck('breathing', currentPattern);
+}
+startBtn.addEventListener('click', ()=>{
+  if(breathing){
+    const elapsed = breathingSessionStart ? Date.now() - breathingSessionStart : 0;
+    stopBreathing();
+    if(elapsed > 12000) showCalmCheck('breathing', currentPattern);
+  } else {
+    startBreathing();
+  }
+});
+
+// ---------- JOURNAL ----------
+const EMOTION_OPTIONS = ['Tense','Devastated','Furious','Hyped','Anxious','Drained','Hopeful','Relieved','Nostalgic','Restless'];
+const EMOTION_EMOJI = {
+  'Tense':'😬','Devastated':'💔','Furious':'🤬','Hyped':'🤩','Anxious':'😟',
+  'Drained':'🥱','Hopeful':'🤞','Relieved':'😌','Nostalgic':'🥹','Restless':'😤'
+};
+let selectedEmotions = [];
+
+function renderEmotionChips(){
+  const row = document.getElementById('emotionChips');
+  row.innerHTML = EMOTION_OPTIONS.map(em=>
+    `<button type="button" class="chip ${selectedEmotions.includes(em)?'selected':''}" data-emotion="${em}">${EMOTION_EMOJI[em]} ${em}</button>`
+  ).join('');
+  row.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const em = chip.dataset.emotion;
+      if(selectedEmotions.includes(em)){
+        selectedEmotions = selectedEmotions.filter(x=>x!==em);
+      } else {
+        selectedEmotions.push(em);
+      }
+      chip.classList.toggle('selected');
+    });
+  });
+}
+renderEmotionChips();
+
+function getEntries(){
+  return JSON.parse(localStorage.getItem('anchor_f1_entries') || '[]');
+}
+function saveEntries(entries){
+  localStorage.setItem('anchor_f1_entries', JSON.stringify(entries));
+}
+
+function getStreak(){
+  const entries = getEntries();
+  if(entries.length === 0) return 0;
+
+  const days = [...new Set(entries.map(e=>new Date(e.date).toDateString()))]
+    .map(d=>new Date(d));
+  days.sort((a,b)=>b-a); // most recent first
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+
+  let cursor;
+  if(days[0].toDateString() === today.toDateString()){
+    cursor = today;
+  } else if(days[0].toDateString() === yesterday.toDateString()){
+    cursor = yesterday; // grace period: today isn't over yet, streak still counts
+  } else {
+    return 0; // most recent entry is older than yesterday — streak is broken
+  }
+
+  let streak = 0;
+  for(const d of days){
+    if(d.toDateString() === cursor.toDateString()){
+      streak++;
+      cursor.setDate(cursor.getDate()-1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderStreak(){
+  const line = document.getElementById('streakLine');
+  const entries = getEntries();
+  if(entries.length === 0){ line.classList.remove('show'); return; }
+  const streak = getStreak();
+  line.classList.add('show');
+  if(streak >= 2){
+    line.textContent = `${streak}-day streak — you've shown up for this ${streak} days running.`;
+  } else {
+    line.textContent = `${entries.length} entr${entries.length===1?'y':'ies'} logged so far.`;
+  }
+}
+
+document.getElementById('saveEntry').addEventListener('click', ()=>{
+  const trigger = document.getElementById('trigger').value.trim();
+  const response = document.getElementById('response').value.trim();
+  const valuesAction = document.getElementById('valuesAction').value.trim();
+  const forFuture = document.getElementById('forFuture').value.trim();
+  const situationTag = document.getElementById('situationTag').value;
+  if(!trigger && !response && !forFuture && !valuesAction && selectedEmotions.length===0) return;
+  const entries = getEntries();
+  entries.unshift({
+    date: new Date().toISOString(),
+    emotions: [...selectedEmotions],
+    situationTag,
+    trigger, response, valuesAction, forFuture
+  });
+  saveEntries(entries);
+  trackEvent('journal_entry_saved', {situation_tag: situationTag || 'none', emotion_count: selectedEmotions.length});
+  document.getElementById('trigger').value='';
+  document.getElementById('response').value='';
+  document.getElementById('valuesAction').value='';
+  document.getElementById('forFuture').value='';
+  document.getElementById('situationTag').value='';
+  selectedEmotions = [];
+  renderEmotionChips();
+  renderEntries();
+});
+
+function renderEntries(){
+  const list = document.getElementById('entryList');
+  const headerRow = document.getElementById('journalHeaderRow');
+  const countLabel = document.getElementById('journalCount');
+  const entries = getEntries();
+  renderStreak();
+  if(entries.length === 0){
+    list.innerHTML = '<div class="empty-state">No entries yet — your first one will show up here.</div>';
+    headerRow.classList.remove('show');
+    return;
+  }
+  headerRow.classList.add('show');
+  countLabel.textContent = `${entries.length} entr${entries.length===1?'y':'ies'}`;
+  list.innerHTML = entries.map(e=>{
+    const d = new Date(e.date);
+    const sitLabel = e.situationTag ? (situations.find(s=>s.id===e.situationTag)?.title || '') : '';
+    return `<div class="entry">
+      <div class="entry-date">${d.toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'})}${sitLabel ? ' · '+escapeHtml(sitLabel) : ''}</div>
+      ${e.emotions && e.emotions.length ? `<div class="entry-row"><b>Felt:</b> ${e.emotions.map(em=>`${EMOTION_EMOJI[em]||''} ${escapeHtml(em)}`).join(', ')}</div>` : ''}
+      ${e.trigger ? `<div class="entry-row"><b>Trigger:</b> ${escapeHtml(e.trigger)}</div>` : ''}
+      ${e.response ? `<div class="entry-row"><b>Response:</b> ${escapeHtml(e.response)}</div>` : ''}
+      ${e.valuesAction ? `<div class="entry-row"><b>Did anyway:</b> ${escapeHtml(e.valuesAction)}</div>` : ''}
+      ${e.forFuture ? `<div class="entry-row"><b>For the group chat:</b> ${escapeHtml(e.forFuture)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('resetJournal').addEventListener('click', ()=>{
+  const entries = getEntries();
+  const confirmed = confirm(
+    `This will permanently delete all ${entries.length} journal entr${entries.length===1?'y':'ies'} on this device. This can't be undone. Continue?`
+  );
+  if(!confirmed) return;
+  saveEntries([]);
+  renderEntries();
+});
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ---------- SITUATIONS ----------
+const situations = [
+  {
+    id: 'qualy-disappointment',
+    emoji: '\ud83c\udfc1',
+    recommended: {type:'somatic', tool:'move', label:'\ud83e\uddd8 Try: Movement Break'},
+    title: 'Qualifying disappointment',
+    color: 'var(--coral)',
+    why: "A bad qualifying session caps the whole weekend's ceiling before the race even starts — there's a specific deflation to watching {{driver}} line up P11 instead of the front row, with a whole Sunday now feeling like damage control.",
+    steps: [
+      "Notice the physical disappointment — clenched jaw, tight chest — and let a Movement Break shake some of it out before the race",
+      "Separate 'this changes our ceiling' from 'this race is already over' — strategy and chaos still happen in F1, often dramatically",
+      "Resist doom-posting in the group chat immediately after qualy — let the first wave pass first",
+      "Remember grid position predicts a lot, but not everything — some of the best races start from bad qualifying",
+      "If you need to vent, vent — just notice if it's venting or spiraling into the whole weekend being ruined before a wheel has turned in anger"
+    ]
+  },
+  {
+    id: 'safety-car-chaos',
+    emoji: '\ud83d\udea9',
+    recommended: {type:'somatic', tool:'settle', label:'\ud83e\uddd8 Try: Settle the Body'},
+    title: 'Safety car / red flag chaos',
+    color: 'var(--electric)',
+    why: "A safety car or red flag can undo a race strategy in seconds, and there's nothing you can do about it from the sofa — pure helplessness, watching someone else's afternoon (and yours) get rewritten in real time.",
+    steps: [
+      "Notice where the tension is sitting in your body — shoulders, jaw, hands — a Settle the Body session gives it somewhere to go",
+      "Name what's actually true: the unpredictability is part of why you watch this sport, even when it's not working in your favor right now",
+      "Resist refreshing timing apps obsessively during the stoppage — the information will still be there in five minutes",
+      "Remember every team is dealing with the same reset — it's not uniquely unfair to your driver",
+      "However it shakes out, the race isn't over until it's over — chaos cuts both ways"
+    ]
+  },
+  {
+    id: 'pit-stop-rage',
+    emoji: '\u2699\ufe0f',
+    recommended: {type:'somatic', tool:'move', label:'\ud83e\uddd8 Try: Movement Break'},
+    title: 'Pit stop disaster / strategy call rage',
+    color: 'var(--sunshine)',
+    why: "A botched pit stop or a strategy call that costs the race produces a very specific anger — it's not the driver, it's not the chaos of racing, it's a human decision or a fumbled wheel gun that feels preventable, which makes it sting more.",
+    steps: [
+      "Let the first hot wave move through physically — a Movement Break is built for exactly this kind of frustration",
+      "Say the angry thing out loud to an empty room before you say it to a forum, a group chat, or a stranger online",
+      "Remember pit crews and strategists are working at the edge of human reaction times under real pressure — mistakes happen because the margins are tiny, not because nobody cares",
+      "Separate 'that cost us the race' from 'they always do this' — recency bias makes the most recent failure feel like a pattern",
+      "If it's a genuine pattern over a season, that's worth a clearer, calmer take later — not one written mid-rage"
+    ]
+  },
+  {
+    id: 'championship-nerves',
+    emoji: '\ud83c\udfc6',
+    recommended: {type:'somatic', tool:'settle', label:'\ud83e\uddd8 Try: Settle the Body'},
+    title: 'Championship battle nerves',
+    color: 'var(--coral)',
+    why: "A tight title fight turns every session into points-math anxiety stretched across an entire season — it's not just one race's tension, it's carrying a low hum of dread for weeks at a time.",
+    steps: [
+      "A Settle the Body session helps with this kind of sustained, background tension better than a single deep breath will",
+      "Notice if you're recalculating {{driver}}'s championship math obsessively without any new information — that's anxiety, not strategy",
+      "Remember the points gap is what it is regardless of how much you refresh the standings page",
+      "Try to actually enjoy the racing in front of you, not just the table underneath it — both can coexist, but only one is in this exact race",
+      "Whatever the season's outcome, your attachment to the sport doesn't have to live or die with one championship"
+    ]
+  },
+  {
+    id: 'rival-fanbase-wars',
+    emoji: '\u2694\ufe0f',
+    recommended: {type:'visual', tool:'anchor', label:'\u2693 Try: Drop the Anchor'},
+    title: 'Rival fanbase wars',
+    color: 'var(--turquoise)',
+    why: "Driver and team rivalries can get genuinely heated online — banter is part of the fun until someone's favorite driver becomes a referendum on someone else's character, and the exchange stops being about racing at all.",
+    steps: [
+      "Ground yourself before replying — feet on the floor, one slow stretch, come back into your body before deciding what to send",
+      "Ask: is this still banter, or has it tipped into something meaner? If you're unsure, it probably has",
+      "You're allowed to just not respond — opting out isn't losing the exchange, it's recognizing it wasn't going anywhere good",
+      "Remember the driver doesn't know this argument is happening and wouldn't want you losing a friendship over it",
+      "Save your best takes for when you're not defensive — they land better anyway"
+    ]
+  },
+  {
+    id: 'dnf-heartbreak',
+    emoji: '\ud83d\udc94',
+    recommended: {type:'breathing', pattern:'exhale', label:'\ud83c\udf2c\ufe0f Try: Cooldown Lap Exhale'},
+    title: 'Driver retirement / DNF heartbreak',
+    color: 'var(--coral)',
+    why: "Watching a car pull off track with smoke coming out the back, race and points gone in one mechanical failure, is a sudden, total kind of disappointment — there's no slow fade to brace for, just an instant stop.",
+    steps: [
+      "Cooldown Lap Exhale breathing — long, slow exhales suit this kind of sudden grief better than a sharp reset",
+      "Let yourself feel it for a contained window rather than immediately needing to rationalize it away",
+      "Say out loud what you're actually mourning — the result, the championship implications, or just watching {{driver}}'s race end like that",
+      "Remember mechanical failures are not a referendum on the driver or the team's overall season",
+      "However bad today was, it's one data point in a long season — that's true even when it doesn't feel true yet"
+    ]
+  },
+  {
+    id: 'driver-swap-grief',
+    emoji: '\ud83d\udd04',
+    recommended: {type:'visual', tool:'leaves', label:'\ud83c\udf43 Try: Leaves on a Stream'},
+    title: 'Driver swap grief',
+    color: 'var(--electric)',
+    why: "When your favorite driver moves teams, retires, or gets replaced, the loyalty question gets complicated fast — is it the driver you love, the team, the number, the livery? Losing one can feel like losing all of it at once.",
+    steps: [
+      "Notice the specific thing you're grieving — it's rarely just 'the driver,' often it's a whole era you watched unfold",
+      "Place the swirl of thoughts on a leaf and let them drift rather than forcing an immediate decision about where your loyalty goes now",
+      "There's no rule that says you have to pick a side instantly — give it a season if you need to",
+      "Remember it's fine to follow the driver, the team, both, or neither — fandom doesn't come with a contract",
+      "Whatever you choose, it doesn't erase what you enjoyed about the years that already happened"
+    ]
+  },
+  {
+    id: 'offseason-withdrawal',
+    emoji: '\ud83d\udcc9',
+    recommended: {type:'somatic', tool:'move', label:'\ud83e\uddd8 Try: Movement Break'},
+    title: 'Off-season withdrawal',
+    color: 'var(--sunshine)',
+    why: "The long winter break leaves a strange gap — months of built-up race-weekend rhythm with nowhere to go. The restlessness is real, even if it sounds a little ridiculous to say out loud.",
+    steps: [
+      "A Movement Break can help with restless energy that doesn't have a race to attach itself to right now",
+      "Name it plainly: 'I miss having something to watch on Sundays' is a normal thing to feel, not something to be embarrassed about",
+      "Catch up on what you skipped during the season rush — old races, team documentaries, technical breakdowns",
+      "Off-season silly season news (driver market rumors, livery reveals) exists partly to fill exactly this gap — let yourself enjoy the noise",
+      "The season always comes back. This particular kind of waiting has a guaranteed end date"
+    ]
+  },
+  {
+    id: 'bad-race-not-driver',
+    emoji: '\ud83e\uddf1',
+    recommended: {type:'somatic', tool:'move', label:'\ud83e\uddd8 Try: Movement Break'},
+    title: "Bad race, not bad driver — tyres, strategy, bad luck",
+    color: 'var(--electric)',
+    why: "Watching {{driver}} struggle with underperforming tyres or a race ruined by something outside their control produces a very specific frustration — the performance is right there, and it's being wasted by variables they can't control from inside the car.",
+    steps: [
+      "A Movement Break first — this kind of 'wasted potential' frustration sits in the body as restless energy",
+      "Name what specifically went wrong: tyres? strategy? traffic? pit stop? Being specific helps it feel smaller than 'everything'",
+      "Separate {{driver}}'s actual pace from the result — a race result and a driver's real speed are different things, even when the commentators don't mention it",
+      "Resist posting hot takes about team failures mid-race — wait until the post-race debrief where you have more information",
+      "Remember most teams that make strategic errors are aware of them faster than the fans are — there's usually a reckoning internally"
+    ]
+  },
+  {
+    id: 'tyre-anxiety',
+    emoji: '\u26ab',
+    recommended: {type:'somatic', tool:'settle', label:'\ud83e\uddd8 Try: Settle the Body'},
+    title: 'Tyre cliff anxiety — watching the gap close lap by lap',
+    color: 'var(--coral)',
+    why: "The slow torture of watching gap numbers shrink as tyres fall off the cliff is its own category of helpless dread — you can see exactly what's coming, there's nothing anyone can do about it, and you just have to sit there watching the inevitable.",
+    steps: [
+      "Notice where the tension is in your body — this kind of slow-build dread tends to sit in shoulders and jaw — a Settle the Body session is built for this",
+      "Remind yourself tyre deg is visible to the team too: they're making real-time decisions you can't see from your screen",
+      "Resist refreshing lap time comparisons obsessively — it doesn't change the outcome and just amplifies the dread",
+      "Sometimes the cliff doesn't come — tyres surprise everyone, including the engineers. The projection isn't always the result",
+      "If it does fall apart, let the wave of disappointment happen, then let it move through"
+    ]
+  },
+  {
+    id: 'team-radio-frustration',
+    emoji: '\ud83d\udce1',
+    recommended: {type:'breathing', pattern:'sigh', label:'\ud83c\udf2c\ufe0f Try: Chequered Flag Sigh'},
+    title: "Team radio frustration — 'this car is undriveable'",
+    color: 'var(--sunshine)',
+    why: "Hearing your driver express frustration or confusion on team radio — 'something is wrong, I don't understand what's happening' — lands differently from just watching a bad lap time. It makes the struggle audible and personal in a way that can be genuinely distressing to hear.",
+    steps: [
+      "Chequered Flag Sigh breathing to interrupt the spike of hearing something distressing on the radio",
+      "Remember radio snippets are often out of context — what sounds catastrophic in a 10-second clip may be a routine conversation mid-stint",
+      "{{driver}} is still driving. They're managing. The broadcast just caught a moment of frustration, not the whole picture",
+      "Resist the urge to catastrophize a single radio message into a verdict on the whole season",
+      "If the frustration in the radio was warranted and the race was genuinely difficult, that's real — let yourself feel that rather than explaining it away"
+    ]
+  },
+  {
+    id: 'strategy-undone',
+    emoji: '\ud83d\udcca',
+    recommended: {type:'somatic', tool:'move', label:'\ud83e\uddd8 Try: Movement Break'},
+    title: "Undone by the team, not the track — wrong call rage",
+    color: 'var(--electric)',
+    why: "When the team makes the wrong tyre choice, misses a VSC opportunity, pits too early or too late — and you can see in real time that the chance is slipping — the rage is specifically about a decision, not fate. That feels worse, not better, because it was theoretically avoidable.",
+    steps: [
+      "A Movement Break to discharge the specific energy of watching a preventable mistake unfold",
+      "Say the angry thing out loud in an empty room, not on social media — it will still be wrong in an hour, but at least you won't have sent it",
+      "Remember strategy teams are watching the same data feed as you, plus significantly more — they made a call under uncertainty, not in hindsight",
+      "The 'obvious' decision is only obvious in retrospect: undercuts, VSC windows, and compound choices all involve probability, not certainty",
+      "If it keeps happening across multiple races, that's a pattern worth noting calmly — but one race in the heat of the moment isn't enough data"
+    ]
+  }
+];
+
+function getChecks(){
+  return JSON.parse(localStorage.getItem('anchor_f1_checks') || '{}');
+}
+function saveChecks(c){
+  localStorage.setItem('anchor_f1_checks', JSON.stringify(c));
+}
+
+function renderSituations(){
+  const container = document.getElementById('situationList');
+  const checks = getChecks();
+  container.innerHTML = situations.map(sit=>{
+    const stepsHtml = sit.steps.map((step, i)=>{
+      const key = sit.id + '-' + i;
+      const isChecked = !!checks[key];
+      return `<div class="check-item ${isChecked?'checked':''}" data-key="${key}">
+        <div class="check-box"></div>
+        <div class="check-text">${escapeHtml(personalize(step))}</div>
+      </div>`;
+    }).join('');
+    return `<div class="sit-card ${sit.id==='qualy-disappointment'?'open':''}" data-id="${sit.id}">
+      <div class="sit-head">
+        <div class="sit-dot" style="background:${sit.color}"></div>
+        <div class="sit-title">${sit.emoji||''} ${escapeHtml(sit.title)}</div>
+        <div class="sit-chevron">›</div>
+      </div>
+      <div class="sit-body">
+        <div class="sit-why">${escapeHtml(personalize(sit.why))}</div>
+        ${sit.recommended ? `<button class="sit-try-btn" data-recommend='${JSON.stringify(sit.recommended).replace(/'/g,"&#39;")}'>${sit.recommended.label}</button>` : ''}
+        ${stepsHtml}
+        <button class="sit-reset" data-reset="${sit.id}">↺ Reset checklist</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.sit-head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const card = head.closest('.sit-card');
+      const opening = !card.classList.contains('open');
+      card.classList.toggle('open');
+      if(opening) trackEvent('situation_open', {situation: card.dataset.id});
+    });
+  });
+  container.querySelectorAll('.check-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const key = item.dataset.key;
+      const c = getChecks();
+      const wasChecked = !!c[key];
+      c[key] = !wasChecked;
+      saveChecks(c);
+      item.classList.toggle('checked');
+
+      const card = item.closest('.sit-card');
+      const sitId = card.dataset.id;
+      const sit = situations.find(s=>s.id===sitId);
+      if(sit && !wasChecked){
+        const allDone = sit.steps.every((_, i)=> !!c[sitId+'-'+i]);
+        if(allDone) showCalmCheck('situation', sit.title);
+      }
+    });
+  });
+  container.querySelectorAll('.sit-try-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const rec = JSON.parse(btn.dataset.recommend.replace(/&#39;/g,"'"));
+      const sitId = btn.closest('.sit-card')?.dataset.id;
+      trackEvent('situation_try_exercise', {situation: sitId, exercise_type: rec.type, exercise: rec.pattern || rec.tool});
+      goToExercise(rec);
+    });
+  });
+  container.querySelectorAll('.sit-reset').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const sitId = btn.dataset.reset;
+      const c = getChecks();
+      Object.keys(c).forEach(key=>{
+        if(key.startsWith(sitId + '-')) delete c[key];
+      });
+      saveChecks(c);
+      renderSituations();
+      // keep this card open after re-render
+      const card = container.querySelector(`.sit-card[data-id="${sitId}"]`);
+      if(card) card.classList.add('open');
+    });
+  });
+}
+renderSituations();
+
+function safely(fn){
+  try { fn(); } catch(err) { console.warn('Anchor: a navigation step failed, continuing anyway', err); }
+}
+
+function setActiveTab(tabName){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+  if(tabBtn) tabBtn.classList.add('active');
+  const section = document.getElementById(tabName);
+  if(section) section.classList.add('active');
+  if(tabName === 'plan') safely(renderPlan);
+  if(tabName === 'journal') safely(renderEntries);
+  if(tabName === 'play') safely(initPopGame); else popRunning = false;
+  if(tabName !== 'breathe') leavesRunning = false;
+}
+
+function setActiveSubtab(subtab){
+  document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.subview').forEach(s=>s.classList.remove('active'));
+  const subBtn = document.querySelector(`.subnav-btn[data-subtab="${subtab}"]`);
+  if(subBtn) subBtn.classList.add('active');
+  const subview = document.getElementById('sub-'+subtab);
+  if(subview) subview.classList.add('active');
+  if(subtab === 'visualize') safely(initLeavesCanvas);
+  else { leavesRunning = false; if(breathing) safely(stopBreathing); }
+}
+
+function setActivePattern(pattern){
+  document.querySelectorAll('.pattern-btn').forEach(b=>b.classList.remove('active'));
+  const patternBtn = document.querySelector(`.pattern-btn[data-pattern="${pattern}"]`);
+  if(patternBtn) patternBtn.classList.add('active');
+  currentPattern = pattern;
+  if(breathing) safely(stopBreathing);
+
+  const moreRow = document.getElementById('patternRowMore');
+  const moreBtn = document.getElementById('patternMoreBtn');
+  if(moreRow && moreRow.contains(patternBtn)){
+    moreRow.classList.add('show');
+    if(moreBtn) moreBtn.textContent = 'Fewer patterns ▴';
+  }
+}
+
+function setActiveVisTool(tool){
+  document.querySelectorAll('.vis-tool-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.vis-tool').forEach(s=>s.classList.remove('active'));
+  const visBtn = document.querySelector(`.vis-tool-btn[data-vis="${tool}"]`);
+  if(visBtn) visBtn.classList.add('active');
+  const visEl = document.getElementById('vis-'+tool);
+  if(visEl) visEl.classList.add('active');
+  if(tool === 'leaves') safely(initLeavesCanvas);
+  if(tool === 'anchor'){ leavesRunning = false; safely(renderAnchorSteps); }
+}
+
+function goToExercise(rec){
+  if(rec.type === 'somatic'){
+    window.location.href = `somatic.html?open=${rec.tool}`;
+    return;
+  }
+
+  safely(()=>setActiveTab('breathe'));
+
+  if(rec.type === 'breathing'){
+    safely(()=>setActiveSubtab('breathing'));
+    safely(()=>setActivePattern(rec.pattern));
+  } else if(rec.type === 'visual'){
+    safely(()=>setActiveSubtab('visualize'));
+    safely(()=>setActiveVisTool(rec.tool));
+  }
+
+  safely(()=>{
+    const target = document.querySelector('.wrap');
+    if(target && typeof target.scrollIntoView === 'function'){
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+}
+
+// Populate the journal's situation-tag dropdown now that situations exists
+const sitSelect = document.getElementById('situationTag');
+situations.forEach(sit=>{
+  const opt = document.createElement('option');
+  opt.value = sit.id;
+  opt.textContent = sit.title;
+  sitSelect.appendChild(opt);
+});
+renderEntries();
+
+// ---------- PLAN & SHARE ----------
+function buildPlanData(){
+  const entries = getEntries();
+  const streak = getStreak();
+
+  const emotionCounts = {};
+  entries.forEach(e=>(e.emotions||[]).forEach(em=>{
+    emotionCounts[em] = (emotionCounts[em]||0) + 1;
+  }));
+  const topEmotions = Object.entries(emotionCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
+
+  const sitCounts = {};
+  entries.forEach(e=>{
+    if(e.situationTag){
+      const label = situations.find(s=>s.id===e.situationTag)?.title || e.situationTag;
+      sitCounts[label] = (sitCounts[label]||0) + 1;
+    }
+  });
+  const topSits = Object.entries(sitCounts).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+  return {
+    entries,
+    streak,
+    topEmotions,
+    topSits,
+    futureLines: entries.filter(e=>e.forFuture).map(e=>e.forFuture),
+    responseLines: entries.filter(e=>e.response).map(e=>e.response),
+    valuesLines: entries.filter(e=>e.valuesAction).map(e=>e.valuesAction),
+    recent: entries.slice(0,5)
+  };
+}
+
+function buildPlanText(){
+  const d = buildPlanData();
+  const driver = getDriver();
+  let text = "🏁 *ANCHOR FOR F1* — My Race Weekend Plan\n";
+  text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
+  text += "_Not a strategist. Just here for the chaos._\n";
+  const drivers = getDrivers();
+  if(drivers.length) text += `Following: ${drivers.map(d=>d.name+(d.number?' #'+d.number:'')).join(', ')}\n`;
+  text += "----------------------------------------\n\n";
+
+  if(d.entries.length === 0){
+    text += "No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.\n";
+    text += "\n----------------------------------------\n";
+    text += "© " + new Date().getFullYear() + " Wakara Technologies Limited\n";
+    return text;
+  }
+
+  text += "*🧭 Showing up*\n";
+  text += `${d.entries.length} entr${d.entries.length===1?'y':'ies'} logged total.`;
+  if(d.streak >= 2) text += ` Currently on a ${d.streak}-day streak.`;
+  text += "\n\n";
+
+  if(d.topEmotions.length){
+    text += "*💛 Feelings I name most often*\n";
+    text += d.topEmotions.map(([em,count])=>`${EMOTION_EMOJI[em]||'•'} ${em} (${count}x)`).join("\n") + "\n\n";
+  }
+
+  if(d.topSits.length){
+    text += "*📍 Situations that come up most*\n";
+    text += d.topSits.map(([label,count])=>{
+      const sit = situations.find(s=>s.title===label);
+      return `${sit?.emoji||'•'} ${label} (${count}x)`;
+    }).join("\n") + "\n\n";
+  }
+
+  text += "*🌬️ What tends to help me*\n";
+  text += (d.responseLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
+
+  if(d.valuesLines.length){
+    text += "*✅ Things I did anyway*\n";
+    text += "_Proof the feeling didn't get the final say:_\n";
+    text += d.valuesLines.slice(0,5).map(l=>"- "+l).join("\n") + "\n\n";
+  }
+
+  text += "*💬 What I'd want the group chat to know*\n";
+  text += (d.futureLines.slice(0,5).map(l=>"- "+l).join("\n") || "- (not enough entries yet)") + "\n\n";
+
+  text += "*🗒️ Recent entries*\n";
+  d.recent.forEach(e=>{
+    const dt = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
+    text += `\n*[${dt}]*\n`;
+    if(e.emotions && e.emotions.length) text += `Felt: ${e.emotions.map(em=>`${EMOTION_EMOJI[em]||''} ${em}`).join(', ')}\n`;
+    if(e.trigger) text += `Trigger: ${e.trigger}\n`;
+    if(e.response) text += `Response: ${e.response}\n`;
+    if(e.valuesAction) text += `Did anyway: ${e.valuesAction}\n`;
+    if(e.forFuture) text += `For the group chat: ${e.forFuture}\n`;
+  });
+
+  text += "\n----------------------------------------\n";
+  text += "© " + new Date().getFullYear() + " Wakara Technologies Limited\n";
+
+  return text;
+}
+
+function renderPlan(){
+  // plan card content stays static; data is generated on export
+}
+
+function buildAnchorPdf(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const data = buildPlanData();
+
+  const PAGE_W = 595.28, PAGE_H = 841.89;
+  const margin = 50;
+  const contentW = PAGE_W - margin*2;
+  const colors = {
+    bg: '#FFF8EC', ink: '#211B3D', electric: '#2E6FF2',
+    turquoise: '#18C7B8', coral: '#FF6F59', sunshine: '#FFC93C', muted: '#7A7390'
+  };
+  let y = 0;
+
+  function drawCoverHeader(){
+    doc.setFillColor(colors.electric);
+    doc.rect(0, 0, PAGE_W, 118, 'F');
+    // small accent dots, brand "signature"
+    doc.setFillColor(colors.coral); doc.circle(margin+6, 46, 6, 'F');
+    doc.setFillColor(colors.sunshine); doc.circle(margin+22, 46, 6, 'F');
+    doc.setFillColor(colors.turquoise); doc.circle(margin+38, 46, 6, 'F');
+
+    doc.setTextColor('#FFFFFF');
+    doc.setFont('helvetica','bold'); doc.setFontSize(28);
+    doc.text('ANCHOR: F1', margin, 78);
+    doc.setFont('helvetica','normal'); doc.setFontSize(11);
+    doc.text('Self-Regulation Plan', margin, 96);
+
+    doc.setFontSize(10);
+    doc.text(new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}), PAGE_W-margin, 78, {align:'right'});
+    const driver = getDriver();
+    const subRight = driver ? `Following: ${driver.name}${driver.number ? ' #'+driver.number : ''}` : 'Race weekend, every weekend.';
+    doc.text(subRight, PAGE_W-margin, 96, {align:'right'});
+
+    y = 150;
+  }
+
+  function drawSlimHeader(){
+    doc.setFillColor(colors.electric);
+    doc.rect(0, 0, PAGE_W, 36, 'F');
+    doc.setTextColor('#FFFFFF');
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.text('ANCHOR', margin, 24);
+    y = 60;
+  }
+
+  function ensureSpace(neededHeight){
+    if(y + neededHeight > PAGE_H - 70){
+      doc.addPage();
+      drawSlimHeader();
+    }
+  }
+
+  function sectionTitle(title, color){
+    ensureSpace(30);
+    doc.setFillColor(color);
+    doc.roundedRect(margin, y-9, 10, 10, 2, 2, 'F');
+    doc.setTextColor(colors.ink);
+    doc.setFont('helvetica','bold'); doc.setFontSize(12.5);
+    doc.text(title.toUpperCase(), margin+18, y);
+    y += 8;
+    doc.setDrawColor(230,225,210);
+    doc.line(margin, y+4, PAGE_W-margin, y+4);
+    y += 20;
+  }
+
+  function bodyText(str, opts={}){
+    doc.setFont('helvetica', opts.bold ? 'bold' : 'normal');
+    doc.setFontSize(opts.size || 10.5);
+    doc.setTextColor(opts.color || colors.ink);
+    const lines = doc.splitTextToSize(str, contentW - (opts.indent||0));
+    lines.forEach(line=>{
+      ensureSpace(16);
+      doc.text(line, margin + (opts.indent||0), y);
+      y += opts.lineHeight || 15;
+    });
+  }
+
+  function bulletList(items, color){
+    items.forEach(item=>{
+      ensureSpace(16);
+      doc.setFillColor(color);
+      doc.circle(margin+4, y-3.5, 2, 'F');
+      bodyText(item, {indent:14});
+      y += 3;
+    });
+  }
+
+  // ---- Cover / header ----
+  drawCoverHeader();
+
+  if(data.entries.length === 0){
+    bodyText("No journal entries yet. Visit the Journal tab and reflect on a moment that dysregulated you — your plan will build itself from there.", {size:11});
+  } else {
+    // Showing up
+    sectionTitle('Showing up', colors.turquoise);
+    let showingUp = `${data.entries.length} entr${data.entries.length===1?'y':'ies'} logged total.`;
+    if(data.streak >= 2) showingUp += ` Currently on a ${data.streak}-day streak.`;
+    bodyText(showingUp);
+    y += 8;
+
+    // Top emotions
+    if(data.topEmotions.length){
+      sectionTitle('Feelings I name most often', colors.electric);
+      bulletList(data.topEmotions.map(([em,c])=>`${em} — ${c}x`), colors.electric);
+      y += 8;
+    }
+
+    // Top situations
+    if(data.topSits.length){
+      sectionTitle('Situations that come up most', colors.coral);
+      bulletList(data.topSits.map(([label,c])=>`${label} — ${c}x`), colors.coral);
+      y += 8;
+    }
+
+    // What helps
+    sectionTitle('What tends to help me', colors.turquoise);
+    bulletList(data.responseLines.slice(0,5).length ? data.responseLines.slice(0,5) : ['Not enough entries yet'], colors.turquoise);
+    y += 8;
+
+    // Values actions (ACT)
+    if(data.valuesLines.length){
+      sectionTitle('Things I did anyway', colors.sunshine);
+      bodyText("Proof the feeling didn't get the final say:", {size:9.5, color: colors.muted});
+      y += 4;
+      bulletList(data.valuesLines.slice(0,5), colors.sunshine);
+      y += 8;
+    }
+
+    // For the group chat
+    sectionTitle("What I'd want the group chat to know", colors.electric);
+    bulletList(data.futureLines.slice(0,5).length ? data.futureLines.slice(0,5) : ['Not enough entries yet'], colors.electric);
+    y += 8;
+
+    // Recent entries
+    sectionTitle('Recent entries', colors.coral);
+    data.recent.forEach(e=>{
+      ensureSpace(20);
+      const dt = new Date(e.date).toLocaleDateString(undefined,{month:'short', day:'numeric'});
+      bodyText(dt, {bold:true, size:10});
+      if(e.emotions && e.emotions.length) bodyText(`Felt: ${e.emotions.join(', ')}`, {indent:8, color: colors.muted});
+      if(e.trigger) bodyText(`Trigger: ${e.trigger}`, {indent:8});
+      if(e.response) bodyText(`Response: ${e.response}`, {indent:8});
+      if(e.valuesAction) bodyText(`Did anyway: ${e.valuesAction}`, {indent:8});
+      if(e.forFuture) bodyText(`For the group chat: ${e.forFuture}`, {indent:8});
+      y += 10;
+    });
+  }
+
+  // ---- Footer on every page ----
+  const totalPages = doc.internal.getNumberOfPages();
+  for(let p=1; p<=totalPages; p++){
+    doc.setPage(p);
+    doc.setDrawColor(230,225,210);
+    doc.line(margin, PAGE_H-50, PAGE_W-margin, PAGE_H-50);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.setTextColor(colors.muted);
+    doc.text('© ' + new Date().getFullYear() + ' Wakara Technologies Limited. All rights reserved.', margin, PAGE_H-34);
+    doc.text(`Page ${p} of ${totalPages}`, PAGE_W-margin, PAGE_H-34, {align:'right'});
+  }
+
+  return doc;
+}
+
+let currentPdfDoc = null;
+let currentPdfUrl = null;
+
+document.getElementById('previewPdf').addEventListener('click', ()=>{
+  currentPdfDoc = buildAnchorPdf();
+  if(currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
+  currentPdfUrl = currentPdfDoc.output('bloburl');
+  document.getElementById('pdfFrame').src = currentPdfUrl;
+  document.getElementById('pdfModal').classList.add('show');
+  trackEvent('pdf_preview_opened');
+});
+
+document.getElementById('modalDownload').addEventListener('click', ()=>{
+  if(currentPdfDoc) currentPdfDoc.save('anchor-regulation-plan.pdf');
+  trackEvent('pdf_downloaded');
+});
+
+document.getElementById('modalClose').addEventListener('click', ()=>{
+  document.getElementById('pdfModal').classList.remove('show');
+});
+document.getElementById('pdfModal').addEventListener('click', (e)=>{
+  if(e.target.id === 'pdfModal') document.getElementById('pdfModal').classList.remove('show');
+});
+
+document.getElementById('shareWhatsapp').addEventListener('click', ()=>{
+  const text = buildPlanText();
+  const url = 'https://wa.me/?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+});
+
+document.getElementById('copyYear').textContent = new Date().getFullYear();
+
+// ---------- PLAY: Pop the Worries ----------
+const POP_WORDS = [
+  'DNF', 'safety car', 'box box box', 'track limits', 'penalty',
+  'P11', 'no pit stop', 'championship gap', 'red flag', 'qualy disaster',
+  'team radio silence', 'tyre gamble', 'what if we lose it', 'parc ferme'
+];
+const POP_COLORS = ['#2E6FF2', '#FF6F59', '#18C7B8', '#FFC93C'];
+
+let popCtx = null, popCanvas = null;
+let popBubbles = [];
+let popParticles = [];
+let popCount = 0;
+let popInitialized = false;
+let popLastSpawn = 0;
+let popRunning = false;
+let popDpr = 1;
+
+function resizePopCanvas(){
+  if(!popCanvas) return;
+  const rect = popCanvas.parentElement.getBoundingClientRect();
+  popDpr = window.devicePixelRatio || 1;
+  popCanvas.width = rect.width * popDpr;
+  popCanvas.height = rect.height * popDpr;
+  popCtx.setTransform(popDpr, 0, 0, popDpr, 0, 0);
+}
+
+function spawnBubble(){
+  const rect = popCanvas.parentElement.getBoundingClientRect();
+  const r = 28 + Math.random()*22;
+  popBubbles.push({
+    x: r + Math.random() * (rect.width - r*2),
+    y: rect.height + r,
+    r,
+    speed: 0.4 + Math.random()*0.5,
+    sway: Math.random()*Math.PI*2,
+    swaySpeed: 0.015 + Math.random()*0.015,
+    swayAmp: 10 + Math.random()*16,
+    color: POP_COLORS[Math.floor(Math.random()*POP_COLORS.length)],
+    word: POP_WORDS[Math.floor(Math.random()*POP_WORDS.length)],
+    alpha: 0,
+    popped: false
+  });
+}
+
+function popBubble(b){
+  b.popped = true;
+  popCount++;
+  document.getElementById('popCount').textContent = `${popCount} popped`;
+  for(let i=0;i<10;i++){
+    const angle = (Math.PI*2/10)*i + Math.random()*0.4;
+    popParticles.push({
+      x: b.x, y: b.y,
+      vx: Math.cos(angle)*(1.5+Math.random()*1.5),
+      vy: Math.sin(angle)*(1.5+Math.random()*1.5),
+      r: 2+Math.random()*2,
+      color: b.color,
+      life: 1
+    });
+  }
+}
+
+function popLoop(ts){
+  if(!popRunning) return;
+  const rect = popCanvas.parentElement.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  popCtx.clearRect(0,0,w,h);
+
+  if(ts - popLastSpawn > 1100 && popBubbles.length < 9){
+    spawnBubble();
+    popLastSpawn = ts;
+  }
+
+  popBubbles.forEach(b=>{
+    if(b.popped) return;
+    b.y -= b.speed;
+    b.sway += b.swaySpeed;
+    b.alpha = Math.min(1, b.alpha + 0.03);
+    const drawX = b.x + Math.sin(b.sway)*b.swayAmp;
+
+    popCtx.globalAlpha = b.alpha * 0.85;
+    popCtx.beginPath();
+    popCtx.arc(drawX, b.y, b.r, 0, Math.PI*2);
+    popCtx.fillStyle = b.color;
+    popCtx.fill();
+
+    popCtx.globalAlpha = b.alpha * 0.35;
+    popCtx.beginPath();
+    popCtx.arc(drawX - b.r*0.3, b.y - b.r*0.3, b.r*0.35, 0, Math.PI*2);
+    popCtx.fillStyle = '#FFFFFF';
+    popCtx.fill();
+
+    popCtx.globalAlpha = b.alpha;
+    popCtx.fillStyle = '#FFFFFF';
+    popCtx.font = `${Math.max(10, b.r*0.32)}px Inter, sans-serif`;
+    popCtx.textAlign = 'center';
+    popCtx.textBaseline = 'middle';
+    popCtx.fillText(b.word, drawX, b.y);
+
+    b._drawX = drawX;
+  });
+  popCtx.globalAlpha = 1;
+
+  popBubbles = popBubbles.filter(b=>!b.popped && b.y + b.r > -10);
+
+  popParticles.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.life -= 0.025;
+    popCtx.globalAlpha = Math.max(0, p.life);
+    popCtx.beginPath();
+    popCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    popCtx.fillStyle = p.color;
+    popCtx.fill();
+  });
+  popCtx.globalAlpha = 1;
+  popParticles = popParticles.filter(p=>p.life > 0);
+
+  requestAnimationFrame(popLoop);
+}
+
+function getEventPos(e){
+  const rect = popCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+function handlePopTap(e){
+  e.preventDefault();
+  const pos = getEventPos(e);
+  for(let i=popBubbles.length-1; i>=0; i--){
+    const b = popBubbles[i];
+    if(b.popped) continue;
+    const dx = pos.x - (b._drawX ?? b.x);
+    const dy = pos.y - b.y;
+    if(dx*dx + dy*dy <= b.r*b.r){
+      popBubble(b);
+      break;
+    }
+  }
+}
+
+// ---------- VISUALIZE: Leaves on a Stream ----------
+let leavesCanvas = null, leavesCtx = null;
+let leaves = [];
+let leavesInitialized = false;
+let leavesRunning = false;
+let leavesDpr = 1;
+
+function resizeLeavesCanvas(){
+  if(!leavesCanvas) return;
+  const rect = leavesCanvas.parentElement.getBoundingClientRect();
+  leavesDpr = window.devicePixelRatio || 1;
+  leavesCanvas.width = rect.width * leavesDpr;
+  leavesCanvas.height = rect.height * leavesDpr;
+  leavesCtx.setTransform(leavesDpr, 0, 0, leavesDpr, 0, 0);
+}
+
+function addLeaf(text){
+  const rect = leavesCanvas.parentElement.getBoundingClientRect();
+  leaves.push({
+    x: -60,
+    y: 40 + Math.random() * (rect.height - 80),
+    text: text.slice(0, 40),
+    speed: 0.5 + Math.random()*0.3,
+    bob: Math.random()*Math.PI*2,
+    alpha: 1
+  });
+}
+
+function leavesLoop(){
+  if(!leavesRunning) return;
+  const rect = leavesCanvas.parentElement.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  leavesCtx.clearRect(0,0,w,h);
+
+  // decorative stream lines
+  leavesCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+  leavesCtx.lineWidth = 1.5;
+  for(let i=0;i<3;i++){
+    const baseY = h*0.25 + i*h*0.25;
+    leavesCtx.beginPath();
+    for(let x=0;x<=w;x+=10){
+      const yy = baseY + Math.sin((x*0.02) + (Date.now()*0.0006) + i) * 6;
+      if(x===0) leavesCtx.moveTo(x,yy); else leavesCtx.lineTo(x,yy);
+    }
+    leavesCtx.stroke();
+  }
+
+  leaves.forEach(l=>{
+    l.x += l.speed;
+    l.bob += 0.04;
+    const drawY = l.y + Math.sin(l.bob)*5;
+    if(l.x > w*0.78) l.alpha = Math.max(0, l.alpha - 0.012);
+
+    leavesCtx.globalAlpha = l.alpha;
+    leavesCtx.font = '20px serif';
+    leavesCtx.textBaseline = 'middle';
+    leavesCtx.fillText('🍃', l.x, drawY);
+
+    leavesCtx.font = '12px Inter, sans-serif';
+    leavesCtx.fillStyle = '#21433D';
+    leavesCtx.fillText(l.text, l.x+24, drawY);
+  });
+  leavesCtx.globalAlpha = 1;
+
+  leaves = leaves.filter(l=> l.x < w+80 && l.alpha > 0);
+
+  requestAnimationFrame(leavesLoop);
+}
+
+function initLeavesCanvas(){
+  if(!leavesInitialized){
+    leavesCanvas = document.getElementById('leavesCanvas');
+    leavesCtx = leavesCanvas.getContext('2d');
+    window.addEventListener('resize', resizeLeavesCanvas);
+    document.getElementById('leafPlaceBtn').addEventListener('click', placeCurrentLeaf);
+    document.getElementById('leafInput').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') placeCurrentLeaf();
+    });
+    leavesInitialized = true;
+  }
+  resizeLeavesCanvas();
+  if(!leavesRunning){
+    leavesRunning = true;
+    requestAnimationFrame(leavesLoop);
+  }
+}
+function placeCurrentLeaf(){
+  const input = document.getElementById('leafInput');
+  const text = input.value.trim();
+  if(!text) return;
+  addLeaf(text);
+  input.value = '';
+}
+
+// ---------- VISUALIZE: Drop the Anchor ----------
+const ANCHOR_STEPS_LIST = [
+  "Feel your feet flat on the floor — notice the contact, the weight of your body.",
+  "Take one slow stretch: reach your arms up, or roll your shoulders back.",
+  "Name 5 things you can see around you right now.",
+  "Name 4 things you can hear.",
+  "Name 3 things you can physically feel — fabric, temperature, your own breath.",
+  '"I am here, right now, and this moment is survivable." Say it out loud or in your head.'
+];
+let anchorDone = [];
+
+function renderAnchorSteps(){
+  const container = document.getElementById('anchorSteps');
+  if(anchorDone.length !== ANCHOR_STEPS_LIST.length){
+    anchorDone = ANCHOR_STEPS_LIST.map(()=>false);
+  }
+  container.innerHTML = ANCHOR_STEPS_LIST.map((step,i)=>`
+    <div class="anchor-step ${anchorDone[i]?'done':''}" data-idx="${i}">
+      <div class="anchor-step-num">${anchorDone[i]?'✓':i+1}</div>
+      <div class="anchor-step-text">${escapeHtml(step)}</div>
+    </div>
+  `).join('');
+  container.querySelectorAll('.anchor-step').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = parseInt(el.dataset.idx,10);
+      const wasComplete = anchorDone.every(Boolean);
+      anchorDone[idx] = !anchorDone[idx];
+      renderAnchorSteps();
+      const isComplete = anchorDone.every(Boolean);
+      if(isComplete && !wasComplete) showCalmCheck('anchor');
+    });
+  });
+}
+renderAnchorSteps();
+
+function initPopGame(){
+  if(!popInitialized){
+    popCanvas = document.getElementById('popCanvas');
+    popCtx = popCanvas.getContext('2d');
+    popCanvas.addEventListener('mousedown', handlePopTap);
+    popCanvas.addEventListener('touchstart', handlePopTap, {passive:false});
+    window.addEventListener('resize', resizePopCanvas);
+    document.getElementById('popRestart').addEventListener('click', ()=>{
+      popBubbles = [];
+      popParticles = [];
+      popCount = 0;
+      document.getElementById('popCount').textContent = '0 popped';
+    });
+    popInitialized = true;
+  }
+  resizePopCanvas();
+  if(!popRunning){
+    popRunning = true;
+    popLastSpawn = 0;
+    requestAnimationFrame(popLoop);
+  }
+}
+</script>
+</body>
+</html>
