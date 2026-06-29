@@ -125,6 +125,21 @@
     color:var(--electric); margin-top:24px; min-height:20px;
   }
   .phase-count{font-family:var(--display); font-size:34px; color:var(--ink); margin-top:6px;}
+  .round-indicator{
+    font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:14px;
+    letter-spacing:0.04em; text-transform:uppercase; min-height:16px;
+  }
+  .session-length-row{
+    display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .session-length-label{font-family:var(--mono); font-size:11px; color:var(--muted); margin-right:4px;}
+  .length-btn{
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    font-family:var(--body); font-size:12px; font-weight:600; padding:6px 13px;
+    border-radius:14px; cursor:pointer;
+  }
+  .length-btn.active{border-color:var(--electric); color:var(--ink); background:rgba(46,111,242,0.08);}
 
   .pattern-row{display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap;}
   .pattern-btn{
@@ -467,8 +482,16 @@
         </div>
         <div class="phase-label" id="phaseLabel">press start when ready</div>
         <div class="phase-count" id="phaseCount">&nbsp;</div>
+        <div class="round-indicator" id="roundIndicator"></div>
       </div>
       <button class="start-btn" id="startBtn">Start session</button>
+      <div class="session-length-row" id="sessionLengthRow">
+        <span class="session-length-label">Session length:</span>
+        <button class="length-btn" data-rounds="3">3 rounds</button>
+        <button class="length-btn active" data-rounds="5">5 rounds</button>
+        <button class="length-btn" data-rounds="10">10 rounds</button>
+        <button class="length-btn" data-rounds="0">No limit</button>
+      </div>
     </div>
 
     <!-- Visualize sub-view -->
@@ -778,11 +801,43 @@ document.querySelectorAll('.vis-tool-btn').forEach(btn=>{
 const orb = document.getElementById('orb');
 const phaseLabel = document.getElementById('phaseLabel');
 const phaseCount = document.getElementById('phaseCount');
+const roundIndicator = document.getElementById('roundIndicator');
 const startBtn = document.getElementById('startBtn');
+
+let sessionRoundLimit = 5; // 0 = no limit
+let roundsCompleted = 0;
+
+document.querySelectorAll('.length-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.length-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    sessionRoundLimit = parseInt(btn.dataset.rounds, 10);
+    if(breathing) stopBreathing();
+  });
+});
+
+function updateRoundIndicator(){
+  if(!breathing){ roundIndicator.textContent = ''; return; }
+  if(sessionRoundLimit > 0){
+    roundIndicator.textContent = `Round ${Math.min(roundsCompleted+1, sessionRoundLimit)} of ${sessionRoundLimit}`;
+  } else {
+    roundIndicator.textContent = `Round ${roundsCompleted+1} · no limit set — stop whenever you're ready`;
+  }
+}
 
 function runStep(){
   const steps = patterns[currentPattern];
-  const step = steps[stepIndex % steps.length];
+  const phaseInRound = stepIndex % steps.length;
+  if(phaseInRound === 0 && stepIndex > 0){
+    roundsCompleted++;
+    if(sessionRoundLimit > 0 && roundsCompleted >= sessionRoundLimit){
+      finishBreathingSession();
+      return;
+    }
+  }
+  updateRoundIndicator();
+
+  const step = steps[phaseInRound];
   phaseLabel.textContent = step.label;
   orb.style.transition = `transform ${step.secs}s ease-in-out, box-shadow ${step.secs}s ease-in-out`;
   orb.style.transform = `scale(${step.scale})`;
@@ -806,9 +861,11 @@ let breathingSessionStart = null;
 function startBreathing(){
   breathing = true;
   stepIndex = 0;
+  roundsCompleted = 0;
   breathingSessionStart = Date.now();
   startBtn.textContent = 'Stop session';
   startBtn.classList.add('stop');
+  updateRoundIndicator();
   runStep();
 }
 function stopBreathing(){
@@ -818,8 +875,16 @@ function stopBreathing(){
   startBtn.classList.remove('stop');
   phaseLabel.textContent = 'press start when ready';
   phaseCount.textContent = '\u00A0';
+  roundIndicator.textContent = '';
   orb.style.transform = 'scale(1)';
   orb.style.boxShadow = '0 0 60px rgba(124,184,222,0.35)';
+}
+function finishBreathingSession(){
+  const elapsed = breathingSessionStart ? Date.now() - breathingSessionStart : 0;
+  stopBreathing();
+  phaseLabel.textContent = 'session complete';
+  setTimeout(()=>{ if(!breathing) phaseLabel.textContent = 'press start when ready'; }, 2500);
+  if(elapsed > 8000) showCalmCheck('breathing', currentPattern);
 }
 startBtn.addEventListener('click', ()=>{
   if(breathing){
