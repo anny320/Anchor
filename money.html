@@ -147,6 +147,13 @@
     font-family:var(--mono); font-size:12px; padding:8px 14px; border-radius:20px; cursor:pointer;
   }
   .pattern-btn.active{border-color:var(--coral); color:var(--ink);}
+  .pattern-more-btn{
+    background:none; border:none; color:var(--muted); font-family:var(--mono);
+    font-size:11.5px; letter-spacing:0.03em; padding:8px 10px; cursor:pointer;
+  }
+  .pattern-more-btn:hover{color:var(--ink);}
+  .pattern-row-more{display:none;}
+  .pattern-row-more.show{display:flex;}
 
   .start-btn{
     display:block; margin:28px auto 0; background:var(--coral); color:#fff;
@@ -469,10 +476,13 @@
     <div class="subview active" id="sub-breathing">
       <div class="pattern-row">
         <button class="pattern-btn active" data-pattern="box">Box (4-4-4-4)</button>
-        <button class="pattern-btn" data-pattern="478">4-7-8</button>
         <button class="pattern-btn" data-pattern="sigh">Physiological sigh</button>
-        <button class="pattern-btn" data-pattern="coherence">Coherence (5-5)</button>
         <button class="pattern-btn" data-pattern="exhale">Extended exhale (4-8)</button>
+        <button class="pattern-more-btn" id="patternMoreBtn">More patterns ▾</button>
+      </div>
+      <div class="pattern-row pattern-row-more" id="patternRowMore">
+        <button class="pattern-btn" data-pattern="478">4-7-8</button>
+        <button class="pattern-btn" data-pattern="coherence">Coherence (5-5)</button>
       </div>
       <div class="breathe-stage">
         <div class="orb-field">
@@ -785,6 +795,15 @@ document.querySelectorAll('.pattern-btn').forEach(btn=>{
     if(breathing) stopBreathing();
   });
 });
+
+const patternMoreBtn = document.getElementById('patternMoreBtn');
+const patternRowMore = document.getElementById('patternRowMore');
+if(patternMoreBtn){
+  patternMoreBtn.addEventListener('click', ()=>{
+    const showing = patternRowMore.classList.toggle('show');
+    patternMoreBtn.textContent = showing ? 'Fewer patterns ▴' : 'More patterns ▾';
+  });
+}
 
 // Breathe sub-nav: Breathing vs Visualize
 document.querySelectorAll('.subnav-btn').forEach(btn=>{
@@ -1302,6 +1321,13 @@ function setActivePattern(pattern){
   if(patternBtn) patternBtn.classList.add('active');
   currentPattern = pattern;
   if(breathing) safely(stopBreathing);
+
+  const moreRow = document.getElementById('patternRowMore');
+  const moreBtn = document.getElementById('patternMoreBtn');
+  if(moreRow && moreRow.contains(patternBtn)){
+    moreRow.classList.add('show');
+    if(moreBtn) moreBtn.textContent = 'Fewer patterns ▴';
+  }
 }
 
 function setActiveVisTool(tool){

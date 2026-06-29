@@ -92,6 +92,49 @@
   .work-tag{color:#D72638; font-weight:600;}
   .sub{color:var(--muted); font-size:15px; max-width:480px; margin-top:10px; line-height:1.5;}
 
+  /* Driver picker */
+  .driver-picker{margin-bottom:24px;}
+  .driver-form{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:14px 16px;
+  }
+  .driver-form-label{font-family:var(--body); font-weight:600; font-size:13.5px; color:var(--ink); margin-right:4px;}
+  .driver-form input{
+    background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    font-family:var(--body); font-size:13.5px; padding:8px 12px; color:var(--ink);
+  }
+  .driver-form input:focus{outline:none; border-color:#D72638;}
+  .driver-color-row{display:flex; gap:6px;}
+  .driver-color-swatch{
+    width:22px; height:22px; border-radius:50%; border:2px solid transparent; cursor:pointer;
+  }
+  .driver-color-swatch.active{border-color:var(--ink);}
+  .driver-save-btn{
+    background:#D72638; color:#fff; border:none; font-family:var(--body); font-weight:600;
+    font-size:13px; padding:8px 16px; border-radius:14px; cursor:pointer;
+  }
+  .driver-skip-btn{
+    background:none; border:none; color:var(--muted); font-family:var(--mono); font-size:11.5px;
+    cursor:pointer; text-decoration:underline;
+  }
+  .driver-badge{
+    display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line);
+    border-radius:16px; padding:10px 16px; width:fit-content;
+  }
+  .driver-badge-chip{
+    width:14px; height:14px; border-radius:50%; flex-shrink:0;
+  }
+  .driver-badge-text{font-family:var(--body); font-weight:600; font-size:13.5px; color:var(--ink);}
+  .driver-edit-link{
+    background:none; border:none; color:var(--muted); font-family:var(--mono); font-size:11px;
+    cursor:pointer; text-decoration:underline; padding:0;
+  }
+  .driver-edit-link:hover{color:var(--ink);}
+  .driver-reopen-link{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted); background:none; border:none;
+    cursor:pointer; text-decoration:underline; padding:6px 0;
+  }
+
   nav{display:flex; gap:6px; margin:28px 0 24px; border-bottom:2px solid var(--line); padding-bottom:0;}
   nav button{
     background:none; border:none; color:var(--muted); font-family:var(--body);
@@ -147,6 +190,13 @@
     font-family:var(--mono); font-size:12px; padding:8px 14px; border-radius:20px; cursor:pointer;
   }
   .pattern-btn.active{border-color:var(--coral); color:var(--ink);}
+  .pattern-more-btn{
+    background:none; border:none; color:var(--muted); font-family:var(--mono);
+    font-size:11.5px; letter-spacing:0.03em; padding:8px 10px; cursor:pointer;
+  }
+  .pattern-more-btn:hover{color:var(--ink);}
+  .pattern-row-more{display:none;}
+  .pattern-row-more.show{display:flex;}
 
   .start-btn{
     display:block; margin:28px auto 0; background:var(--coral); color:#fff;
@@ -451,6 +501,31 @@
     <p class="sub">Not therapy, not a strategist — just a fun companion for the chaos of caring this much about 90 minutes of lights-out. For qualy disappointment, safety car chaos, and the 3am off-season withdrawal.</p>
   </header>
 
+  <!-- DRIVER PICKER -->
+  <div class="driver-picker" id="driverPicker">
+    <div class="driver-badge" id="driverBadge" style="display:none;">
+      <span class="driver-badge-chip" id="driverBadgeChip"></span>
+      <span class="driver-badge-text" id="driverBadgeText"></span>
+      <button class="driver-edit-link" id="driverEditBtn">Edit</button>
+      <button class="driver-edit-link" id="driverClearBtn">Clear</button>
+    </div>
+    <button class="driver-reopen-link" id="driverReopenBtn" style="display:none;">🏎️ Set your driver</button>
+    <div class="driver-form" id="driverForm">
+      <span class="driver-form-label">🏎️ Following someone this season?</span>
+      <input type="text" id="driverNameInput" placeholder="Driver name" maxlength="20">
+      <input type="text" id="driverNumberInput" placeholder="#" maxlength="2" style="width:48px;">
+      <div class="driver-color-row" id="driverColorRow">
+        <button class="driver-color-swatch active" data-color="#D72638" style="background:#D72638;"></button>
+        <button class="driver-color-swatch" data-color="#2E6FF2" style="background:#2E6FF2;"></button>
+        <button class="driver-color-swatch" data-color="#18C7B8" style="background:#18C7B8;"></button>
+        <button class="driver-color-swatch" data-color="#FFC93C" style="background:#FFC93C;"></button>
+        <button class="driver-color-swatch" data-color="#FF6F59" style="background:#FF6F59;"></button>
+      </div>
+      <button class="driver-save-btn" id="driverSaveBtn">Save</button>
+      <button class="driver-skip-btn" id="driverSkipBtn">Skip</button>
+    </div>
+  </div>
+
   <nav>
     <button class="tab-btn active" data-tab="breathe">Breathe</button>
     <button class="tab-btn" data-tab="situations">Situations</button>
@@ -470,10 +545,13 @@
     <div class="subview active" id="sub-breathing">
       <div class="pattern-row">
         <button class="pattern-btn active" data-pattern="box">Formation Lap (4-4-4-4)</button>
-        <button class="pattern-btn" data-pattern="478">4-7-8</button>
         <button class="pattern-btn" data-pattern="sigh">Chequered Flag Sigh</button>
-        <button class="pattern-btn" data-pattern="coherence">Pole Position Calm (5-5)</button>
         <button class="pattern-btn" data-pattern="exhale">Cooldown Lap Exhale (4-8)</button>
+        <button class="pattern-more-btn" id="patternMoreBtn">More patterns ▾</button>
+      </div>
+      <div class="pattern-row pattern-row-more" id="patternRowMore">
+        <button class="pattern-btn" data-pattern="478">4-7-8</button>
+        <button class="pattern-btn" data-pattern="coherence">Pole Position Calm (5-5)</button>
       </div>
       <div class="breathe-stage">
         <div class="orb-field">
@@ -627,6 +705,104 @@ function trackEvent(name, params={}){
     gtag('event', name, {edition: ANCHOR_EDITION, ...params});
   }
 }
+
+// ---------- DRIVER PICKER ----------
+function getDriver(){
+  try { return JSON.parse(localStorage.getItem('anchor_f1_driver') || 'null'); }
+  catch(err){ return null; }
+}
+function saveDriver(driver){
+  localStorage.setItem('anchor_f1_driver', JSON.stringify(driver));
+}
+function clearDriver(){
+  localStorage.removeItem('anchor_f1_driver');
+  localStorage.removeItem('anchor_f1_driver_skipped');
+}
+function personalize(text){
+  const d = getDriver();
+  const name = d && d.name ? d.name : 'your driver';
+  return text.replace(/\{\{driver\}\}/g, name);
+}
+
+function renderDriverUI(){
+  const driver = getDriver();
+  const skipped = localStorage.getItem('anchor_f1_driver_skipped') === 'true';
+  const badge = document.getElementById('driverBadge');
+  const form = document.getElementById('driverForm');
+  const reopen = document.getElementById('driverReopenBtn');
+
+  if(driver){
+    badge.style.display = 'flex';
+    form.style.display = 'none';
+    reopen.style.display = 'none';
+    document.getElementById('driverBadgeChip').style.background = driver.color;
+    document.getElementById('driverBadgeText').textContent =
+      `Following ${driver.name}${driver.number ? ' #'+driver.number : ''}`;
+  } else if(skipped){
+    badge.style.display = 'none';
+    form.style.display = 'none';
+    reopen.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+    form.style.display = 'flex';
+    reopen.style.display = 'none';
+  }
+}
+
+(function setupDriverPicker(){
+  let chosenColor = '#D72638';
+  document.querySelectorAll('.driver-color-swatch').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      document.querySelectorAll('.driver-color-swatch').forEach(s=>s.classList.remove('active'));
+      sw.classList.add('active');
+      chosenColor = sw.dataset.color;
+    });
+  });
+
+  document.getElementById('driverSaveBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('driverNameInput').value.trim();
+    const number = document.getElementById('driverNumberInput').value.trim();
+    if(!name) return;
+    saveDriver({name, number, color: chosenColor});
+    localStorage.removeItem('anchor_f1_driver_skipped');
+    trackEvent('driver_set');
+    renderDriverUI();
+    safely(renderSituations);
+  });
+
+  document.getElementById('driverSkipBtn').addEventListener('click', ()=>{
+    localStorage.setItem('anchor_f1_driver_skipped', 'true');
+    renderDriverUI();
+  });
+
+  document.getElementById('driverReopenBtn').addEventListener('click', ()=>{
+    localStorage.removeItem('anchor_f1_driver_skipped');
+    renderDriverUI();
+  });
+
+  document.getElementById('driverEditBtn').addEventListener('click', ()=>{
+    const driver = getDriver();
+    if(driver){
+      document.getElementById('driverNameInput').value = driver.name;
+      document.getElementById('driverNumberInput').value = driver.number || '';
+      document.querySelectorAll('.driver-color-swatch').forEach(s=>{
+        s.classList.toggle('active', s.dataset.color === driver.color);
+      });
+      chosenColor = driver.color;
+    }
+    localStorage.removeItem('anchor_f1_driver');
+    renderDriverUI();
+  });
+
+  document.getElementById('driverClearBtn').addEventListener('click', ()=>{
+    clearDriver();
+    trackEvent('driver_cleared');
+    renderDriverUI();
+    safely(renderSituations);
+  });
+
+  renderDriverUI();
+})();
 
 // ---------- SHARE ----------
 (function setupShare(){
@@ -784,6 +960,15 @@ document.querySelectorAll('.pattern-btn').forEach(btn=>{
     if(breathing) stopBreathing();
   });
 });
+
+const patternMoreBtn = document.getElementById('patternMoreBtn');
+const patternRowMore = document.getElementById('patternRowMore');
+if(patternMoreBtn){
+  patternMoreBtn.addEventListener('click', ()=>{
+    const showing = patternRowMore.classList.toggle('show');
+    patternMoreBtn.textContent = showing ? 'Fewer patterns ▴' : 'More patterns ▾';
+  });
+}
 
 // Breathe sub-nav: Breathing vs Visualize
 document.querySelectorAll('.subnav-btn').forEach(btn=>{
@@ -1064,7 +1249,7 @@ const situations = [
     recommended: {type:'somatic', tool:'move', label:'\ud83e\uddd8 Try: Movement Break'},
     title: 'Qualifying disappointment',
     color: 'var(--coral)',
-    why: "A bad qualifying session caps the whole weekend's ceiling before the race even starts — there's a specific deflation to watching your driver line up P11 instead of the front row, with a whole Sunday now feeling like damage control.",
+    why: "A bad qualifying session caps the whole weekend's ceiling before the race even starts — there's a specific deflation to watching {{driver}} line up P11 instead of the front row, with a whole Sunday now feeling like damage control.",
     steps: [
       "Notice the physical disappointment — clenched jaw, tight chest — and let a Movement Break shake some of it out before the race",
       "Separate 'this changes our ceiling' from 'this race is already over' — strategy and chaos still happen in F1, often dramatically",
@@ -1112,7 +1297,7 @@ const situations = [
     why: "A tight title fight turns every session into points-math anxiety stretched across an entire season — it's not just one race's tension, it's carrying a low hum of dread for weeks at a time.",
     steps: [
       "A Settle the Body session helps with this kind of sustained, background tension better than a single deep breath will",
-      "Notice if you're recalculating the championship math obsessively without any new information — that's anxiety, not strategy",
+      "Notice if you're recalculating {{driver}}'s championship math obsessively without any new information — that's anxiety, not strategy",
       "Remember the points gap is what it is regardless of how much you refresh the standings page",
       "Try to actually enjoy the racing in front of you, not just the table underneath it — both can coexist, but only one is in this exact race",
       "Whatever the season's outcome, your attachment to the sport doesn't have to live or die with one championship"
@@ -1143,7 +1328,7 @@ const situations = [
     steps: [
       "Cooldown Lap Exhale breathing — long, slow exhales suit this kind of sudden grief better than a sharp reset",
       "Let yourself feel it for a contained window rather than immediately needing to rationalize it away",
-      "Say out loud what you're actually mourning — the result, the championship implications, or just watching your driver's race end like that",
+      "Say out loud what you're actually mourning — the result, the championship implications, or just watching {{driver}}'s race end like that",
       "Remember mechanical failures are not a referendum on the driver or the team's overall season",
       "However bad today was, it's one data point in a long season — that's true even when it doesn't feel true yet"
     ]
@@ -1196,17 +1381,17 @@ function renderSituations(){
       const isChecked = !!checks[key];
       return `<div class="check-item ${isChecked?'checked':''}" data-key="${key}">
         <div class="check-box"></div>
-        <div class="check-text">${escapeHtml(step)}</div>
+        <div class="check-text">${escapeHtml(personalize(step))}</div>
       </div>`;
     }).join('');
-    return `<div class="sit-card ${sit.id==='ghosted'?'open':''}" data-id="${sit.id}">
+    return `<div class="sit-card ${sit.id==='qualy-disappointment'?'open':''}" data-id="${sit.id}">
       <div class="sit-head">
         <div class="sit-dot" style="background:${sit.color}"></div>
         <div class="sit-title">${sit.emoji||''} ${escapeHtml(sit.title)}</div>
         <div class="sit-chevron">›</div>
       </div>
       <div class="sit-body">
-        <div class="sit-why">${escapeHtml(sit.why)}</div>
+        <div class="sit-why">${escapeHtml(personalize(sit.why))}</div>
         ${sit.recommended ? `<button class="sit-try-btn" data-recommend='${JSON.stringify(sit.recommended).replace(/'/g,"&#39;")}'>${sit.recommended.label}</button>` : ''}
         ${stepsHtml}
         <button class="sit-reset" data-reset="${sit.id}">↺ Reset checklist</button>
@@ -1301,6 +1486,13 @@ function setActivePattern(pattern){
   if(patternBtn) patternBtn.classList.add('active');
   currentPattern = pattern;
   if(breathing) safely(stopBreathing);
+
+  const moreRow = document.getElementById('patternRowMore');
+  const moreBtn = document.getElementById('patternMoreBtn');
+  if(moreRow && moreRow.contains(patternBtn)){
+    moreRow.classList.add('show');
+    if(moreBtn) moreBtn.textContent = 'Fewer patterns ▴';
+  }
 }
 
 function setActiveVisTool(tool){
@@ -1382,9 +1574,11 @@ function buildPlanData(){
 
 function buildPlanText(){
   const d = buildPlanData();
+  const driver = getDriver();
   let text = "🏁 *ANCHOR FOR F1* — My Race Weekend Plan\n";
   text += new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + "\n";
   text += "_Not a strategist. Just here for the chaos._\n";
+  if(driver) text += `Following: ${driver.name}${driver.number ? ' #'+driver.number : ''}\n`;
   text += "----------------------------------------\n\n";
 
   if(d.entries.length === 0){
@@ -1475,7 +1669,9 @@ function buildAnchorPdf(){
 
     doc.setFontSize(10);
     doc.text(new Date().toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}), PAGE_W-margin, 78, {align:'right'});
-    doc.text('Race weekend, every weekend.', PAGE_W-margin, 96, {align:'right'});
+    const driver = getDriver();
+    const subRight = driver ? `Following: ${driver.name}${driver.number ? ' #'+driver.number : ''}` : 'Race weekend, every weekend.';
+    doc.text(subRight, PAGE_W-margin, 96, {align:'right'});
 
     y = 150;
   }
