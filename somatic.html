@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PE57LD1TWZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PE57LD1TWZ');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anchor — Somatic: settle the body, in the body</title>
+<style>
+  :root{
+    --bg:#FFF8EC;
+    --panel:#FFFFFF;
+    --ink:#211B3D;
+    --electric:#2E6FF2;
+    --turquoise:#18C7B8;
+    --coral:#FF6F59;
+    --sunshine:#FFC93C;
+    --muted:#7A7390;
+    --line:#EDE3CE;
+    --display: 'Fraunces', 'Georgia', serif;
+    --body: 'Inter', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:32px 20px 80px;}
+
+  .edition-switch{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    margin-bottom:24px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .edition-switch-link{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.03em; text-decoration:none;
+    color:var(--muted); padding:6px 0;
+  }
+  .edition-switch-link:hover{color:var(--ink);}
+
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--electric); margin-bottom:10px; font-weight:600;
+  }
+  h1{
+    font-family:var(--display); font-weight:600; font-size:clamp(28px,6vw,40px);
+    line-height:1.1; color:var(--ink);
+  }
+  .work-tag{color:var(--coral); font-weight:500;}
+  .sub{color:var(--muted); font-size:15px; max-width:480px; margin-top:10px; line-height:1.5;}
+
+  nav{display:flex; gap:6px; margin:28px 0 24px; border-bottom:2px solid var(--line); padding-bottom:0;}
+  nav button{
+    background:none; border:none; color:var(--muted); font-family:var(--body);
+    font-size:14px; font-weight:600; padding:10px 4px; cursor:pointer;
+    border-bottom:3px solid transparent; margin-right:18px; transition:color .2s, border-color .2s;
+  }
+  nav button.active{color:var(--ink); border-bottom-color:var(--coral);}
+  nav button:focus-visible{outline:2px solid var(--electric); outline-offset:2px;}
+
+  section{display:none;}
+  section.active{display:block; animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .vis-desc{font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:18px; max-width:520px;}
+
+  /* ---- Settle the Body: mirror figure ---- */
+  .figure-stage{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:28px 0 20px;
+  }
+  .figure-field{
+    width:200px; height:260px; position:relative; display:flex; align-items:center; justify-content:center;
+  }
+  #mirrorFigure{width:100%; height:100%;}
+  #mirrorFigure .fig-part{
+    transition: transform 5s ease-in-out, fill 5s ease-in-out;
+    transform-origin:center;
+  }
+  #mirrorFigure.tense .fig-torso{ transform:scaleY(0.96) scaleX(1.04); fill:var(--coral); }
+  #mirrorFigure.tense .fig-head{ transform:translateY(2px); }
+  #mirrorFigure.tense .fig-armL{ transform:rotate(8deg); }
+  #mirrorFigure.tense .fig-armR{ transform:rotate(-8deg); }
+  #mirrorFigure.tense .fig-handL, #mirrorFigure.tense .fig-handR{ transform:scale(1.25); }
+  #mirrorFigure.tense .fig-legL{ transform:rotate(-4deg); }
+  #mirrorFigure.tense .fig-legR{ transform:rotate(4deg); }
+  #mirrorFigure.tense .fig-shoulders{ transform:translateY(-6px); }
+  #mirrorFigure.tense .fig-face{ transform:scale(0.92); }
+
+  #mirrorFigure.release .fig-torso{ transform:scaleY(1) scaleX(1); fill:var(--turquoise); }
+  #mirrorFigure.release .fig-head{ transform:translateY(0); }
+  #mirrorFigure.release .fig-armL{ transform:rotate(0deg); }
+  #mirrorFigure.release .fig-armR{ transform:rotate(0deg); }
+  #mirrorFigure.release .fig-handL, #mirrorFigure.release .fig-handR{ transform:scale(1); }
+  #mirrorFigure.release .fig-legL{ transform:rotate(0deg); }
+  #mirrorFigure.release .fig-legR{ transform:rotate(0deg); }
+  #mirrorFigure.release .fig-shoulders{ transform:translateY(0); }
+  #mirrorFigure.release .fig-face{ transform:scale(1); }
+
+  .phase-label{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--electric); margin-top:20px; min-height:20px; text-align:center;
+  }
+  .phase-sub{font-family:var(--body); font-size:13px; color:var(--muted); margin-top:4px; text-align:center; min-height:18px;}
+  .round-indicator{
+    font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:14px;
+    letter-spacing:0.04em; text-transform:uppercase; min-height:16px;
+  }
+  .start-btn{
+    display:block; margin:24px auto 0; background:var(--coral); color:#fff;
+    font-family:var(--body); font-weight:600; font-size:15px; border:none;
+    padding:13px 32px; border-radius:30px; cursor:pointer; transition:opacity .2s;
+  }
+  .start-btn:hover{opacity:0.9;}
+  .start-btn.stop{background:var(--panel); color:var(--ink); border:1px solid var(--line);}
+
+  /* sub-nav for picking exercise within somatic page */
+  .subnav{display:flex; gap:6px; margin-bottom:20px; background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:4px; width:fit-content;}
+  .subnav-btn{
+    background:none; border:none; cursor:pointer; font-family:var(--body); font-weight:600;
+    font-size:13px; color:var(--muted); padding:8px 16px; border-radius:20px; transition:background .15s, color .15s;
+  }
+  .subnav-btn.active{background:var(--electric); color:#fff;}
+  .subview{display:none;}
+  .subview.active{display:block;}
+
+  /* ---- Movement break ---- */
+  .move-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:28px 24px; text-align:center; margin-bottom:16px;
+  }
+  .move-step-label{font-family:var(--mono); font-size:11px; color:var(--turquoise); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;}
+  .move-step-text{font-family:var(--display); font-size:22px; font-weight:600; color:var(--ink); line-height:1.3; margin-bottom:14px;}
+  .move-timer{font-family:var(--mono); font-size:36px; color:var(--electric); margin-bottom:6px;}
+  .move-progress{display:flex; gap:6px; justify-content:center; margin-top:16px;}
+  .move-dot{width:8px; height:8px; border-radius:50%; background:var(--line);}
+  .move-dot.done{background:var(--turquoise);}
+  .move-dot.current{background:var(--coral);}
+  .move-choice-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
+  .move-choice-btn{
+    background:var(--bg); border:1px solid var(--line); color:var(--ink); font-family:var(--body);
+    font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:18px; cursor:pointer;
+  }
+  .move-choice-btn:hover{border-color:var(--turquoise);}
+
+  /* ---- Calm Check toast (shared component) ---- */
+  .calm-toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%, 120%);
+    background:var(--panel); border:1px solid var(--line); border-radius:20px;
+    padding:20px 24px 18px; box-shadow:0 16px 40px rgba(33,27,61,0.18);
+    width:min(360px, calc(100vw - 32px)); z-index:1000; opacity:0; pointer-events:none;
+    transition:transform .35s ease, opacity .35s ease;
+  }
+  .calm-toast.show{ transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+  .calm-toast-close{
+    position:absolute; top:10px; right:12px; background:none; border:none; cursor:pointer;
+    color:var(--muted); font-size:13px; padding:4px;
+  }
+  .calm-toast-close:hover{color:var(--ink);}
+  .calm-toast-title{
+    font-family:var(--display); font-weight:600; font-size:16px; color:var(--ink); margin-bottom:14px;
+  }
+  .calm-toast-options{display:flex; justify-content:space-between; gap:8px;}
+  .calm-opt{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:var(--bg); border:1px solid var(--line); border-radius:14px;
+    padding:10px 4px; cursor:pointer; font-family:var(--body); font-size:11.5px; color:var(--ink);
+    transition:border-color .15s, background .15s;
+  }
+  .calm-opt:hover{border-color:var(--turquoise);}
+  .calm-opt.picked{border-color:var(--turquoise); background:rgba(24,199,184,0.1);}
+  .calm-emoji{font-size:20px;}
+  .calm-toast-thanks{
+    font-family:var(--body); font-size:13.5px; color:var(--ink); padding:8px 0 2px;
+  }
+
+  footer{margin-top:48px; border-top:1px solid var(--line); padding-top:18px; color:var(--muted); font-size:12px; line-height:1.6;}
+
+  @media (max-width:420px){
+    .figure-field{width:170px; height:230px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="edition-switch">
+    <a href="index.html" class="edition-switch-link">← Anchor home</a>
+  </div>
+
+  <header>
+    <div class="eyebrow">Self-regulation, in the body</div>
+    <h1>Anchor <span class="work-tag">Somatic</span></h1>
+    <p class="sub">Some stress doesn't respond to thinking it through. These tools work through the body instead — tension, breath, movement — to bring your nervous system down a notch.</p>
+  </header>
+
+  <nav>
+    <button class="tab-btn active" data-tab="settle">Settle the Body</button>
+    <button class="tab-btn" data-tab="move">Movement Break</button>
+  </nav>
+
+  <!-- SETTLE THE BODY -->
+  <section id="settle" class="active">
+    <p class="vis-desc">Progressive tension and release. Tense each part on the cue, hold, then let it drop — your body holds onto stress as muscle tension, and this gives it somewhere to put it down. Move with the figure, like a mirror.</p>
+
+    <div class="figure-stage">
+      <div class="figure-field">
+        <svg id="mirrorFigure" class="release" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+          <!-- legs -->
+          <g class="fig-part fig-legL" style="transform-origin:50px 110px;">
+            <rect x="44" y="108" width="12" height="42" rx="6" fill="#D8CDB8"/>
+          </g>
+          <g class="fig-part fig-legR" style="transform-origin:70px 110px;">
+            <rect x="64" y="108" width="12" height="42" rx="6" fill="#D8CDB8"/>
+          </g>
+          <!-- torso -->
+          <rect class="fig-part fig-torso" x="40" y="62" width="40" height="50" rx="14" fill="var(--turquoise)" style="transform-origin:60px 87px;"/>
+          <!-- shoulders group (arms attach here so they rise together) -->
+          <g class="fig-part fig-shoulders" style="transform-origin:60px 68px;">
+            <g class="fig-part fig-armL" style="transform-origin:42px 70px;">
+              <rect x="26" y="66" width="12" height="34" rx="6" fill="#D8CDB8"/>
+              <circle class="fig-part fig-handL" cx="32" cy="100" r="7" fill="#C7B89C" style="transform-origin:32px 100px;"/>
+            </g>
+            <g class="fig-part fig-armR" style="transform-origin:78px 70px;">
+              <rect x="82" y="66" width="12" height="34" rx="6" fill="#D8CDB8"/>
+              <circle class="fig-part fig-handR" cx="88" cy="100" r="7" fill="#C7B89C" style="transform-origin:88px 100px;"/>
+            </g>
+          </g>
+          <!-- head -->
+          <g class="fig-part fig-head" style="transform-origin:60px 45px;">
+            <circle cx="60" cy="40" r="22" fill="#E8DAC0"/>
+            <circle class="fig-part fig-face" cx="60" cy="40" r="6" fill="#FFC93C" style="transform-origin:60px 40px;"/>
+          </g>
+        </svg>
+      </div>
+      <div class="phase-label" id="phaseLabel">press start when ready</div>
+      <div class="phase-sub" id="phaseSub">&nbsp;</div>
+      <div class="round-indicator" id="roundIndicator"></div>
+    </div>
+    <button class="start-btn" id="settleBtn">Start session</button>
+  </section>
+
+  <!-- MOVEMENT BREAK -->
+  <section id="move">
+    <p class="vis-desc">For when stress has been sitting in your body for hours, not minutes — back-to-back meetings, hunched over a screen, avoidance that's kept you frozen in place. Stress hormones are meant to be moved through, not just sat with.</p>
+    <div class="move-card">
+      <div class="move-step-label" id="moveStepLabel">Step 1 of 6</div>
+      <div class="move-step-text" id="moveStepText">Stand up</div>
+      <div class="move-timer" id="moveTimer">5</div>
+      <div class="move-choice-row" id="moveChoiceRow" style="display:none;"></div>
+      <div class="move-progress" id="moveProgress"></div>
+    </div>
+    <button class="start-btn" id="moveBtn">Start movement break</button>
+  </section>
+
+  <!-- CALM CHECK TOAST -->
+  <div class="calm-toast" id="calmToast">
+    <button class="calm-toast-close" id="calmToastClose" aria-label="Dismiss">✕</button>
+    <div class="calm-toast-title" id="calmToastTitle">How's the water now? 🌊</div>
+    <div class="calm-toast-options">
+      <button class="calm-opt" data-rating="stormy"><span class="calm-emoji">🌊</span>Stormy</button>
+      <button class="calm-opt" data-rating="choppy"><span class="calm-emoji">🐚</span>Choppy</button>
+      <button class="calm-opt" data-rating="calm"><span class="calm-emoji">💧</span>Calmer</button>
+      <button class="calm-opt" data-rating="glassy"><span class="calm-emoji">✨</span>Glassy</button>
+    </div>
+  </div>
+
+  <footer>
+    Anchor is a self-regulation gym, not a substitute for therapy or medical care. If you're in crisis, please reach out to a crisis line or mental health professional in your area.
+  </footer>
+
+</div>
+
+<script>
+const ANCHOR_EDITION = 'somatic';
+
+function trackEvent(name, params={}){
+  if(typeof gtag === 'function'){
+    gtag('event', name, {edition: ANCHOR_EDITION, ...params});
+  }
+}
+
+// ---------- TAB NAV ----------
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    trackEvent('tab_view', {tab: btn.dataset.tab});
+  });
+});
+
+// ---------- CALM CHECK (shared, namespaced) ----------
+function getCalmRatings(){
+  return JSON.parse(localStorage.getItem('anchor_somatic_calmratings') || '[]');
+}
+function saveCalmRating(context, rating, detail){
+  const ratings = getCalmRatings();
+  ratings.unshift({date: new Date().toISOString(), context, detail: detail||null, rating});
+  localStorage.setItem('anchor_somatic_calmratings', JSON.stringify(ratings));
+}
+const CALM_TITLES = {
+  bodyscan: "Tension released. How's the water? 🌊",
+  movement: "Nice reset. How's the water? 🌊"
+};
+let calmToastTimeout = null;
+function showCalmCheck(context, detail){
+  const toast = document.getElementById('calmToast');
+  const title = document.getElementById('calmToastTitle');
+  title.textContent = CALM_TITLES[context] || "How's the water now? 🌊";
+  toast.dataset.context = context;
+  toast.dataset.detail = detail || '';
+  toast.querySelectorAll('.calm-opt').forEach(b=>{
+    b.classList.remove('picked');
+    b.style.display = '';
+  });
+  const oldThanks = toast.querySelector('.calm-toast-thanks');
+  if(oldThanks) oldThanks.remove();
+  const optionsRow = toast.querySelector('.calm-toast-options');
+  optionsRow.style.display = 'flex';
+  toast.classList.add('show');
+  clearTimeout(calmToastTimeout);
+  calmToastTimeout = setTimeout(()=>{ hideCalmCheck(); }, 9000);
+}
+function hideCalmCheck(){
+  document.getElementById('calmToast').classList.remove('show');
+  clearTimeout(calmToastTimeout);
+}
+document.getElementById('calmToastClose').addEventListener('click', hideCalmCheck);
+document.querySelectorAll('.calm-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const toast = document.getElementById('calmToast');
+    const rating = btn.dataset.rating;
+    saveCalmRating(toast.dataset.context, rating, toast.dataset.detail);
+    trackEvent('calm_check_rating', {context: toast.dataset.context, rating: rating});
+    btn.classList.add('picked');
+    clearTimeout(calmToastTimeout);
+    const thanksMap = {
+      stormy: "That's okay — even showing up counts. 💙",
+      choppy: "Some movement is still movement.",
+      calm: "Glad that helped a little.",
+      glassy: "Love that. Carry it with you. ✨"
+    };
+    setTimeout(()=>{
+      const optionsRow = toast.querySelector('.calm-toast-options');
+      optionsRow.style.display = 'none';
+      const thanks = document.createElement('div');
+      thanks.className = 'calm-toast-thanks';
+      thanks.textContent = thanksMap[rating] || 'Thanks for checking in.';
+      toast.appendChild(thanks);
+      setTimeout(hideCalmCheck, 1800);
+    }, 350);
+  });
+});
+
+// ---------- SETTLE THE BODY (mirror figure) ----------
+const SETTLE_STEPS = [
+  {part:'Feet & calves',  tense:'Press your feet into the floor, tense your calves', release:'Let your feet soften, feel the floor hold you'},
+  {part:'Hands & arms',   tense:'Make fists, tense your forearms', release:'Open your hands, let your arms hang loose'},
+  {part:'Shoulders',      tense:'Raise your shoulders up toward your ears', release:'Drop your shoulders, feel them fall'},
+  {part:'Face & jaw',     tense:'Scrunch your face, clench your jaw', release:'Let your face go slack, jaw loose'},
+  {part:'Whole body',     tense:'Tense everything at once — legs, arms, shoulders, face', release:'Release it all. Take a slow breath in, and out.'}
+];
+const figure = document.getElementById('mirrorFigure');
+const phaseLabel = document.getElementById('phaseLabel');
+const phaseSub = document.getElementById('phaseSub');
+const roundIndicator = document.getElementById('roundIndicator');
+const settleBtn = document.getElementById('settleBtn');
+
+let settling = false;
+let settleTimer = null;
+let settleStepIndex = 0;
+let settleSessionStart = null;
+
+function runSettleStep(){
+  if(!settling) return;
+  if(settleStepIndex >= SETTLE_STEPS.length){
+    finishSettleSession();
+    return;
+  }
+  const step = SETTLE_STEPS[settleStepIndex];
+  roundIndicator.textContent = `Step ${settleStepIndex+1} of ${SETTLE_STEPS.length} · ${step.part}`;
+
+  // Tense phase (5s)
+  figure.classList.remove('release');
+  figure.classList.add('tense');
+  phaseLabel.textContent = 'Tense';
+  phaseSub.textContent = step.tense;
+
+  settleTimer = setTimeout(()=>{
+    if(!settling) return;
+    // Release phase (5s)
+    figure.classList.remove('tense');
+    figure.classList.add('release');
+    phaseLabel.textContent = 'Release';
+    phaseSub.textContent = step.release;
+
+    settleTimer = setTimeout(()=>{
+      if(!settling) return;
+      settleStepIndex++;
+      runSettleStep();
+    }, 5000);
+  }, 5000);
+}
+
+function startSettle(){
+  settling = true;
+  settleStepIndex = 0;
+  settleSessionStart = Date.now();
+  settleBtn.textContent = 'Stop session';
+  settleBtn.classList.add('stop');
+  runSettleStep();
+  trackEvent('bodyscan_start', {});
+}
+function stopSettle(){
+  settling = false;
+  clearTimeout(settleTimer);
+  settleBtn.textContent = 'Start session';
+  settleBtn.classList.remove('stop');
+  phaseLabel.textContent = 'press start when ready';
+  phaseSub.textContent = '\u00A0';
+  roundIndicator.textContent = '';
+  figure.classList.remove('tense');
+  figure.classList.add('release');
+}
+function finishSettleSession(){
+  const elapsed = settleSessionStart ? Date.now() - settleSessionStart : 0;
+  stopSettle();
+  phaseLabel.textContent = 'session complete';
+  setTimeout(()=>{ if(!settling) phaseLabel.textContent = 'press start when ready'; }, 2500);
+  trackEvent('bodyscan_complete', {});
+  if(elapsed > 8000) showCalmCheck('bodyscan', 'settle_the_body');
+}
+settleBtn.addEventListener('click', ()=>{
+  if(settling){
+    const elapsed = settleSessionStart ? Date.now() - settleSessionStart : 0;
+    stopSettle();
+    if(elapsed > 12000) showCalmCheck('bodyscan', 'settle_the_body');
+  } else {
+    startSettle();
+  }
+});
+
+// ---------- MOVEMENT BREAK ----------
+const MOVE_STEPS = [
+  {label:'Stand up', seconds:5},
+  {label:'Shake out your hands and arms', seconds:15},
+  {label:'Roll your shoulders back, slowly', seconds:10},
+  {label:'Twist gently side to side', seconds:15},
+  {label:'CHOICE', seconds:0}, // handled specially
+  {label:'One settling breath in, and out', seconds:6}
+];
+const MOVE_CHOICES = [
+  {label:'🚶 Walk to a window and back', seconds:20},
+  {label:'🦵 Five slow squats', seconds:20}
+];
+
+const moveStepLabel = document.getElementById('moveStepLabel');
+const moveStepText = document.getElementById('moveStepText');
+const moveTimer = document.getElementById('moveTimer');
+const moveChoiceRow = document.getElementById('moveChoiceRow');
+const moveProgress = document.getElementById('moveProgress');
+const moveBtn = document.getElementById('moveBtn');
+
+let moving = false;
+let moveIndex = 0;
+let moveCountdown = null;
+let moveSessionStart = null;
+let moveTotalSteps = MOVE_STEPS.length;
+
+function renderMoveProgress(){
+  moveProgress.innerHTML = '';
+  for(let i=0;i<moveTotalSteps;i++){
+    const dot = document.createElement('div');
+    dot.className = 'move-dot' + (i < moveIndex ? ' done' : i === moveIndex ? ' current' : '');
+    moveProgress.appendChild(dot);
+  }
+}
+
+function runMoveCountdown(seconds, onDone){
+  let remaining = seconds;
+  moveTimer.textContent = remaining;
+  clearInterval(moveCountdown);
+  moveCountdown = setInterval(()=>{
+    if(!moving) { clearInterval(moveCountdown); return; }
+    remaining--;
+    moveTimer.textContent = Math.max(remaining,0);
+    if(remaining <= 0){
+      clearInterval(moveCountdown);
+      onDone();
+    }
+  }, 1000);
+}
+
+function runMoveStep(){
+  if(!moving) return;
+  renderMoveProgress();
+  if(moveIndex >= MOVE_STEPS.length){
+    finishMoveSession();
+    return;
+  }
+  const step = MOVE_STEPS[moveIndex];
+  moveStepLabel.textContent = `Step ${moveIndex+1} of ${moveTotalSteps}`;
+
+  if(step.label === 'CHOICE'){
+    moveStepText.textContent = 'Pick one';
+    moveTimer.textContent = '';
+    moveChoiceRow.style.display = 'flex';
+    moveChoiceRow.innerHTML = '';
+    MOVE_CHOICES.forEach(choice=>{
+      const b = document.createElement('button');
+      b.className = 'move-choice-btn';
+      b.textContent = choice.label;
+      b.addEventListener('click', ()=>{
+        moveChoiceRow.style.display = 'none';
+        moveStepText.textContent = choice.label;
+        runMoveCountdown(choice.seconds, ()=>{
+          moveIndex++;
+          runMoveStep();
+        });
+      });
+      moveChoiceRow.appendChild(b);
+    });
+  } else {
+    moveChoiceRow.style.display = 'none';
+    moveStepText.textContent = step.label;
+    runMoveCountdown(step.seconds, ()=>{
+      moveIndex++;
+      runMoveStep();
+    });
+  }
+}
+
+function startMove(){
+  moving = true;
+  moveIndex = 0;
+  moveSessionStart = Date.now();
+  moveBtn.textContent = 'Stop movement break';
+  moveBtn.classList.add('stop');
+  runMoveStep();
+  trackEvent('movement_start', {});
+}
+function stopMove(){
+  moving = false;
+  clearInterval(moveCountdown);
+  moveBtn.textContent = 'Start movement break';
+  moveBtn.classList.remove('stop');
+  moveStepLabel.textContent = 'Step 1 of ' + moveTotalSteps;
+  moveStepText.textContent = 'Stand up';
+  moveTimer.textContent = MOVE_STEPS[0].seconds;
+  moveChoiceRow.style.display = 'none';
+  moveIndex = 0;
+  renderMoveProgress();
+}
+function finishMoveSession(){
+  const elapsed = moveSessionStart ? Date.now() - moveSessionStart : 0;
+  moving = false;
+  clearInterval(moveCountdown);
+  moveBtn.textContent = 'Start movement break';
+  moveBtn.classList.remove('stop');
+  moveStepLabel.textContent = 'Done';
+  moveStepText.textContent = 'Nice — back to it, a little steadier.';
+  moveTimer.textContent = '';
+  moveIndex = MOVE_STEPS.length;
+  renderMoveProgress();
+  trackEvent('movement_complete', {});
+  if(elapsed > 8000) showCalmCheck('movement', 'movement_break');
+}
+moveBtn.addEventListener('click', ()=>{
+  if(moving){
+    const elapsed = moveSessionStart ? Date.now() - moveSessionStart : 0;
+    stopMove();
+    if(elapsed > 8000) showCalmCheck('movement', 'movement_break');
+  } else {
+    startMove();
+  }
+});
+renderMoveProgress();
+</script>
+</body>
+</html>
