@@ -343,6 +343,17 @@
 <script>
 document.getElementById('copyYear').textContent = new Date().getFullYear();
 
+function trackEvent(name, params={}){
+  if(typeof gtag === 'function'){
+    gtag('event', name, {edition: 'landing', ...params});
+  }
+}
+document.querySelectorAll('.edition-card, .featured-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    trackEvent('edition_card_click', {destination: card.getAttribute('href')});
+  });
+});
+
 (function setupShare(){
   const shareData = {
     title: 'Anchor',
@@ -354,6 +365,7 @@ document.getElementById('copyYear').textContent = new Date().getFullYear();
   const popover = document.getElementById('sharePopover');
 
   btn.addEventListener('click', async ()=>{
+    trackEvent('share_clicked');
     if(navigator.share){
       try { await navigator.share(shareData); } catch(err){ /* user cancelled, fine */ }
       return;

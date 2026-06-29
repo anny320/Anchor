@@ -620,6 +620,13 @@
 </div>
 
 <script>
+const ANCHOR_EDITION = 'money';
+function trackEvent(name, params={}){
+  if(typeof gtag === 'function'){
+    gtag('event', name, {edition: ANCHOR_EDITION, ...params});
+  }
+}
+
 // ---------- SHARE ----------
 (function setupShare(){
   const shareData = {
@@ -632,6 +639,7 @@
   const popover = document.getElementById('sharePopover');
 
   btn.addEventListener('click', async ()=>{
+    trackEvent('share_clicked');
     if(navigator.share){
       try { await navigator.share(shareData); } catch(err){ /* user cancelled, fine */ }
       return;
@@ -717,6 +725,7 @@ document.querySelectorAll('.calm-opt').forEach(btn=>{
     const toast = document.getElementById('calmToast');
     const rating = btn.dataset.rating;
     saveCalmRating(toast.dataset.context, rating, toast.dataset.detail);
+    trackEvent('calm_check_rating', {context: toast.dataset.context, rating: rating});
 
     btn.classList.add('picked');
     clearTimeout(calmToastTimeout);
@@ -746,6 +755,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
+    trackEvent('tab_view', {tab: btn.dataset.tab});
     if(btn.dataset.tab==='plan') renderPlan();
     if(btn.dataset.tab==='journal') renderEntries();
     if(btn.dataset.tab==='play') initPopGame();
@@ -886,6 +896,7 @@ function finishBreathingSession(){
   stopBreathing();
   phaseLabel.textContent = 'session complete';
   setTimeout(()=>{ if(!breathing) phaseLabel.textContent = 'press start when ready'; }, 2500);
+  trackEvent('breathing_complete', {pattern: currentPattern, rounds: sessionRoundLimit});
   if(elapsed > 8000) showCalmCheck('breathing', currentPattern);
 }
 startBtn.addEventListener('click', ()=>{
@@ -992,6 +1003,7 @@ document.getElementById('saveEntry').addEventListener('click', ()=>{
     trigger, response, valuesAction, forFuture
   });
   saveEntries(entries);
+  trackEvent('journal_entry_saved', {situation_tag: situationTag || 'none', emotion_count: selectedEmotions.length});
   document.getElementById('trigger').value='';
   document.getElementById('response').value='';
   document.getElementById('valuesAction').value='';
@@ -1205,7 +1217,10 @@ function renderSituations(){
 
   container.querySelectorAll('.sit-head').forEach(head=>{
     head.addEventListener('click', ()=>{
-      head.closest('.sit-card').classList.toggle('open');
+      const card = head.closest('.sit-card');
+      const opening = !card.classList.contains('open');
+      card.classList.toggle('open');
+      if(opening) trackEvent('situation_open', {situation: card.dataset.id});
     });
   });
   container.querySelectorAll('.check-item').forEach(item=>{
@@ -1230,6 +1245,8 @@ function renderSituations(){
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
       const rec = JSON.parse(btn.dataset.recommend.replace(/&#39;/g,"'"));
+      const sitId = btn.closest('.sit-card')?.dataset.id;
+      trackEvent('situation_try_exercise', {situation: sitId, exercise_type: rec.type, exercise: rec.pattern || rec.tool});
       goToExercise(rec);
     });
   });
@@ -1595,10 +1612,12 @@ document.getElementById('previewPdf').addEventListener('click', ()=>{
   currentPdfUrl = currentPdfDoc.output('bloburl');
   document.getElementById('pdfFrame').src = currentPdfUrl;
   document.getElementById('pdfModal').classList.add('show');
+  trackEvent('pdf_preview_opened');
 });
 
 document.getElementById('modalDownload').addEventListener('click', ()=>{
   if(currentPdfDoc) currentPdfDoc.save('anchor-regulation-plan.pdf');
+  trackEvent('pdf_downloaded');
 });
 
 document.getElementById('modalClose').addEventListener('click', ()=>{
